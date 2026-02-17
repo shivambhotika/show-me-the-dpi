@@ -210,38 +210,43 @@ def generate_insight(
     benchmark_position: Optional[str],
     percentile_rank: Optional[int],
 ) -> str:
+    def _ordinal(n: int) -> str:
+        if 10 <= (n % 100) <= 20:
+            suffix = "th"
+        else:
+            suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+        return f"{n}{suffix}"
+
     if pd.isna(dpi) or pd.isna(rvpi):
-        realization_note = "realization mix cannot be assessed from available cash-flow data"
-    elif rvpi > dpi:
-        realization_note = "value is currently weighted toward unrealized gains"
-    elif dpi > rvpi:
-        realization_note = "value is currently weighted toward realized distributions"
+        realization_view = "realization mix is not assessable from available data"
+    elif dpi >= rvpi * 1.1:
+        realization_view = "returns are tilted toward realized distributions"
+    elif rvpi >= dpi * 1.1:
+        realization_view = "returns are tilted toward unrealized value"
     else:
-        realization_note = "realized and unrealized value are currently balanced"
+        realization_view = "realized and unrealized value are broadly balanced"
 
     sentence_one = (
         f"TVPI is {_format_multiple(tvpi)}, DPI is {_format_multiple(dpi)}, and "
-        f"RVPI is {_format_multiple(rvpi)}; {realization_note}."
+        f"RVPI is {_format_multiple(rvpi)}; {realization_view}."
     )
 
-    if benchmark_position == "top_quartile":
-        benchmark_text = "above the top-quartile benchmark"
-    elif benchmark_position == "above_median":
-        benchmark_text = "above the median benchmark"
-    elif benchmark_position == "below_median":
-        benchmark_text = "below the median benchmark"
-    else:
-        benchmark_text = "unavailable"
+    benchmark_text_map = {
+        "top_quartile": "above the top-quartile benchmark",
+        "above_median": "above the median benchmark",
+        "below_median": "below the median benchmark",
+    }
+    benchmark_text = benchmark_text_map.get(benchmark_position)
+    percentile_text = None if percentile_rank is None else f"in the {_ordinal(percentile_rank)} percentile by TVPI"
 
-    if percentile_rank is None:
-        percentile_text = "percentile rank is unavailable"
+    if benchmark_text and percentile_text:
+        sentence_two = f"Relative performance is {benchmark_text} and {percentile_text}."
+    elif benchmark_text:
+        sentence_two = f"Relative performance is {benchmark_text}; percentile rank is unavailable."
+    elif percentile_text:
+        sentence_two = f"Benchmark position is unavailable; the fund is {percentile_text}."
     else:
-        percentile_text = f"the fund is in the {percentile_rank}th percentile by TVPI"
-
-    if benchmark_text == "unavailable":
-        sentence_two = f"Benchmark position is unavailable, and {percentile_text}."
-    else:
-        sentence_two = f"Benchmark position is {benchmark_text}, and {percentile_text}."
+        sentence_two = "Benchmark position and percentile rank are unavailable."
 
     return f"{sentence_one} {sentence_two}"
 
@@ -403,10 +408,10 @@ def _render_performance_calculator_tab() -> None:
     st.caption("Simple model using paid-in capital, fund life, exit multiple, and distribution pace.")
 
     i1, i2, i3 = st.columns(3)
-    paid_in = i1.number_input("Paid-In Capital", min_value=0.0, value=10_000_000.0, step=500_000.0)
-    fund_life_years = int(i2.number_input("Fund Life (Years)", min_value=1, value=10, step=1))
-    exit_multiple = i3.number_input("Exit Multiple", min_value=0.0, value=2.0, step=0.1)
-    distribution_pace = st.slider("Distribution Pace", min_value=0, max_value=100, value=50)
+    paid_in = i1.number_input("paid_in", min_value=0.0, value=10_000_000.0, step=500_000.0)
+    fund_life_years = int(i2.number_input("fund life (years)", min_value=1, value=10, step=1))
+    exit_multiple = i3.number_input("exit multiple", min_value=0.0, value=2.0, step=0.1)
+    distribution_pace = st.slider("distribution pace", min_value=0, max_value=100, value=50)
 
     total_value = paid_in * exit_multiple
     realized_share = max(0.25, min(0.95, distribution_pace / 100.0))
@@ -454,12 +459,12 @@ def _render_performance_calculator_tab() -> None:
         line={"color": "#2C3E50", "width": 3},
     )
     cumulative_fig.update_layout(
-        title="Cumulative Cash (Modeled)",
+        title="Cumulative Cash Flow (Modeled)",
         template="plotly_white",
         height=320,
         margin={"l": 10, "r": 10, "t": 35, "b": 10},
         xaxis_title="Year",
-        yaxis_title="Cumulative Net Cash",
+        yaxis_title="Cumulative Cash Flow",
         showlegend=False,
     )
     st.plotly_chart(cumulative_fig, use_container_width=True)
@@ -479,6 +484,18 @@ def _render_glossary_tab() -> None:
     )
 
 
+def _render_summary_row(df: pd.DataFrame) -> None:
+    fund_count = int(len(df))
+    gp_count = int(df["gp_name"].dropna().nunique()) if "gp_name" in df.columns else 0
+    median_tvpi = pd.to_numeric(df["TVPI"], errors="coerce").median() if "TVPI" in df.columns else float("nan")
+
+    st.subheader("Portfolio Summary")
+    s1, s2, s3 = st.columns(3)
+    s1.metric("Number of Funds", f"{fund_count}")
+    s2.metric("Unique GPs", f"{gp_count}")
+    s3.metric("Median TVPI", _format_multiple(median_tvpi))
+
+
 def main() -> None:
     df = _add_metric_columns(load_data())
 
@@ -491,6 +508,8 @@ def main() -> None:
         filtered_df = filtered_df[
             filtered_df["fund_name"].astype(str).str.contains(search_term, case=False, na=False)
         ]
+
+    _render_summary_row(filtered_df)
 
     tab1, tab2, tab3, tab4 = st.tabs(
         ["Fund Database", "Fund Detail & Insights", "Performance Calculator", "Glossary"]
