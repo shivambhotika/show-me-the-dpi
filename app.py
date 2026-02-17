@@ -78,6 +78,19 @@ def _benchmark_bucket(tvpi: float, benchmark: Optional[Dict[str, float]]) -> Opt
     return "below_median"
 
 
+def _calculate_tvpi_percentile(selected_tvpi: float, tvpi_series: pd.Series) -> Optional[int]:
+    if pd.isna(selected_tvpi):
+        return None
+
+    valid_tvpi = pd.to_numeric(tvpi_series, errors="coerce").dropna()
+    if valid_tvpi.empty:
+        return None
+
+    percentile = (valid_tvpi <= float(selected_tvpi)).mean() * 100
+    percentile_int = int(round(percentile))
+    return max(1, min(100, percentile_int))
+
+
 @st.cache_data(show_spinner=False)
 def load_data(db_path: str = "openlp.db") -> pd.DataFrame:
     try:
@@ -161,8 +174,17 @@ def generate_insight(dpi: float, rvpi: float, tvpi: float, vintage_year) -> str:
     return " ".join(insight_parts) if insight_parts else "Not enough data to generate an insight yet."
 
 
-def render_benchmark_section(vintage_year, tvpi: float) -> Optional[Dict[str, float]]:
+def render_benchmark_section(
+    vintage_year, tvpi: float, all_tvpi: pd.Series
+) -> Optional[Dict[str, float]]:
     st.subheader("Benchmark Comparison")
+
+    percentile_rank = _calculate_tvpi_percentile(tvpi, all_tvpi)
+    if percentile_rank is None:
+        st.write("TVPI percentile is unavailable due to missing or invalid data.")
+    else:
+        st.write(f"This fund is in the {percentile_rank}th percentile by TVPI.")
+
     benchmark = _get_benchmark(vintage_year)
 
     if benchmark is None:
@@ -297,7 +319,7 @@ def main() -> None:
     st.info(generate_insight(dpi, rvpi, tvpi, selected_row.get("vintage_year")))
 
     # Benchmark comparison
-    benchmark = render_benchmark_section(selected_row.get("vintage_year"), tvpi)
+    benchmark = render_benchmark_section(selected_row.get("vintage_year"), tvpi, df["TVPI"])
 
     # Charts and benchmark bar chart
     render_charts(selected_row, tvpi, benchmark)
