@@ -7,6 +7,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from streamlit.delta_generator import DeltaGenerator
 
 
 st.set_page_config(
@@ -15,6 +16,20 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+
+# Dedent markdown on all containers (st, columns, expanders, etc.) so HTML never shows as raw code.
+_orig_dg_markdown = DeltaGenerator.markdown
+
+
+def _dg_markdown_dedent(self, body, *args, **kwargs):
+    if isinstance(body, str):
+        body = dedent(body)
+    return _orig_dg_markdown(self, body, *args, **kwargs)
+
+
+DeltaGenerator.markdown = _dg_markdown_dedent
+
 
 def _render_html(html_text: str):
     st.markdown(dedent(html_text).strip(), unsafe_allow_html=True)
@@ -26,13 +41,14 @@ def inject_css():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-    .main .block-container { padding: 2rem 2.5rem 2rem 2.5rem; max-width: 100%; }
-    .stApp { background-color: #FFFFFF; font-family: 'Inter', sans-serif; }
+    :root, html, body, .stApp { color-scheme: light !important; }
+    .main .block-container { padding: 1rem 1.8rem 1.1rem 1.8rem; max-width: 100%; }
+    .stApp { background-color: #FFFFFF; color: #111827; font-family: 'Inter', sans-serif; }
     #MainMenu, footer, header { visibility: hidden; }
     .stDeployButton { display: none; }
 
     .stTabs [data-baseweb="tab-list"] {
-        background: #FFFFFF; border-bottom: 1px solid #E5E7EB; gap: 0; padding: 0; margin-bottom: 2rem;
+        background: #FFFFFF; border-bottom: 1px solid #E5E7EB; gap: 0; padding: 0; margin-bottom: 1.3rem;
     }
     .stTabs [data-baseweb="tab"] {
         font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500;
@@ -170,11 +186,30 @@ def inject_css():
     .source-notes { font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280; line-height: 1.5; }
     .source-sync { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #9CA3AF; }
 
-    .stTextInput input, .stSelectbox select { font-family: 'IBM Plex Mono', monospace; font-size: 12px; border: 1px solid #E5E7EB; border-radius: 6px; }
-    .stTextInput input:focus { border-color: #E8571F; box-shadow: 0 0 0 2px rgba(232, 87, 31, 0.1); }
+    .stTextInput input,
+    .stSelectbox select,
+    .stSelectbox [data-baseweb="select"] > div,
+    .stSelectbox [data-baseweb="select"] div,
+    .stNumberInput input,
+    .stButton > button {
+        font-family: 'IBM Plex Mono', monospace !important;
+        font-size: 12px !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 6px !important;
+        background: #FFFFFF !important;
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+    .stTextInput input::placeholder { color: #9CA3AF !important; }
+    .stTextInput input:focus { border-color: #E8571F !important; box-shadow: 0 0 0 2px rgba(232, 87, 31, 0.1) !important; }
+    .stRadio label, .stRadio div, .stSelectbox label, .stTextInput label { color: #111827 !important; }
 
     .record-count { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; color: #E8571F; margin-left: 12px; }
     .chart-subtitle { font-family: 'Inter', sans-serif; font-size: 12px; color: #9CA3AF; margin-bottom: 16px; }
+    .footer-wrap { margin-top: 1.2rem; border-top: 1px solid #E5E7EB; padding-top: 12px; }
+    .footer-text { font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280; line-height: 1.55; }
+    .footer-links a { color: #E8571F; text-decoration: none; }
+    .footer-links a:hover { text-decoration: underline; }
     </style>
     """,
         unsafe_allow_html=True,
@@ -580,7 +615,7 @@ def render_fund_database(df_unified: pd.DataFrame, df_gp_disclosed: pd.DataFrame
         st.session_state["db_page"] = 0
         st.session_state["db_source_type"] = source_type
 
-    cols = st.columns([3, 1.5, 1.5, 0.8])
+    cols = st.columns([3.3, 1.6, 1.6])
     with cols[0]:
         query = st.text_input("SEARCH FUND/GP", placeholder="TYPE QUERY HERE...")
     with cols[1]:
@@ -589,8 +624,6 @@ def render_fund_database(df_unified: pd.DataFrame, df_gp_disclosed: pd.DataFrame
     with cols[2]:
         years = sorted(base_df["vintage_year"].dropna().astype(int).unique().tolist())
         year_filter = st.selectbox("VINTAGE", ["ALL YEARS"] + [str(y) for y in years])
-    with cols[3]:
-        st.button("⚙", key="db_filter_icon")
 
     df_display = base_df.copy()
     if query:
@@ -622,14 +655,16 @@ def render_fund_database(df_unified: pd.DataFrame, df_gp_disclosed: pd.DataFrame
     show_source_type = source_type == "Both"
     render_fund_table(page_df, show_source_type=show_source_type)
 
-    nav_cols = st.columns([4, 1, 1])
+    nav_cols = st.columns([8, 2])
     with nav_cols[0]:
         txt = "SHOWING 0–0 OF 0" if total == 0 else "SHOWING {0}–{1} OF {2}".format(start + 1, end, total)
         st.markdown('<span class="irr-na">{0}</span>'.format(txt), unsafe_allow_html=True)
     with nav_cols[1]:
-        prev_clicked = st.button("← PREV", key="db_prev")
-    with nav_cols[2]:
-        next_clicked = st.button("NEXT →", key="db_next")
+        pager_cols = st.columns([1, 1], gap="small")
+        with pager_cols[0]:
+            prev_clicked = st.button("← PREV", key="db_prev")
+        with pager_cols[1]:
+            next_clicked = st.button("NEXT →", key="db_next")
 
     if prev_clicked and page_idx > 0:
         st.session_state["db_page"] = page_idx - 1
@@ -702,7 +737,7 @@ def _render_metric_card(label: str, value: str, dpi=False):
 def render_firms(df_master: pd.DataFrame):
     gps = sorted(df_master["canonical_gp"].dropna().astype(str).unique().tolist())
 
-    render_page_header("FIRMS", "VC & GROWTH EQUITY MANAGERS — PUBLIC LP DATA", "{0:,} FIRMS TRACKED".format(len(gps)))
+    render_page_header("TOP FIRMS", "VC & GROWTH EQUITY MANAGERS — PUBLIC LP DATA", "{0:,} FIRMS TRACKED".format(len(gps)))
 
     source_by_gp = (
         df_master.groupby("canonical_gp")["data_source_type"]
@@ -1420,6 +1455,58 @@ def render_sources(df_unified: pd.DataFrame, df_master: pd.DataFrame):
     )
 
 
+def render_about():
+    render_page_header("ABOUT", "PROJECT CONTEXT, METHOD, AND LIMITATIONS")
+
+    _render_html(
+        """
+        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#374151;line-height:1.75;
+                    padding:18px 20px;background:#FAFAFA;border-radius:8px;border:1px solid #E5E7EB;">
+            <strong>Show Me the DPI</strong> is a research project focused on one practical question:
+            how much cash VC/PE funds have actually returned to LPs. The dataset combines public LP disclosures
+            from pension systems and endowments with clearly-labeled GP self-disclosed performance where available.
+            <br><br>
+            The core metric is <strong>DPI</strong> (Distributed-to-Paid-In), shown in orange across the product.
+            TVPI and IRR are included for context, but DPI is prioritized because it reflects realized outcomes,
+            not only unrealized marks.
+            <br><br>
+            This is not investment advice and not a complete census of all funds. LP-reported and GP-reported numbers
+            can differ due to reporting dates, valuation policies, fees/carry treatment, and selective disclosure.
+            Use this as a starting point for diligence and always cross-check original filings where possible.
+        </div>
+        """
+    )
+
+    st.markdown('<div class="section-label">WHAT THIS TOOL EMPHASIZES</div>', unsafe_allow_html=True)
+    _render_html(
+        """
+        <ul style="margin-top:0; color:#374151; line-height:1.7;">
+          <li>Cash realization first (DPI), then valuation context (TVPI), then annualized return (IRR).</li>
+          <li>Source transparency on every page, with LP vs GP disclosure separation.</li>
+          <li>Analyst-friendly structure for fast comparison across firms, vintages, and source types.</li>
+        </ul>
+        """
+    )
+
+
+def render_footer():
+    _render_html(
+        """
+        <div class="footer-wrap">
+            <div class="footer-text">
+                Data is compiled from public disclosures and select GP-published reports. Figures may differ by LP methodology,
+                valuation date, and fee treatment. GP-disclosed data can include selection bias.
+            </div>
+            <div class="footer-text footer-links" style="margin-top:6px;">
+                Created by resident venture nerd — Shivam Bhotika ·
+                <a href="https://x.com/shivambhotika" target="_blank">Twitter</a> ·
+                <a href="https://shivambhotika.github.io/" target="_blank">Website</a>
+            </div>
+        </div>
+        """
+    )
+
+
 def main():
     try:
         df_unified = load_unified()
@@ -1439,37 +1526,43 @@ def main():
         st.error("Failed loading vc_fund_master.csv: {0}".format(exc))
         return
 
-    st.markdown(
+    _render_html(
         """
-    <div style="display:flex;align-items:center;gap:12px;padding-bottom:1.5rem;border-bottom:1px solid #E5E7EB;margin-bottom:0">
-        <div style="width:32px;height:32px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center">
-            <span style="color:white;font-size:16px;font-weight:800">D</span>
+        <div style="display:flex;align-items:center;gap:10px;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
+            <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                <span style="color:white;font-size:14px;font-weight:800">D</span>
+            </div>
+            <div>
+                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#111827">SHOW ME THE </span>
+                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#E8571F">DPI</span>
+            </div>
+            <div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#9CA3AF">
+                PUBLIC LP DISCLOSURE RESEARCH · {0:,} FUNDS
+            </div>
         </div>
-        <div>
-            <span style="font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:#111827">SHOW ME THE </span>
-            <span style="font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:#E8571F">DPI</span>
-        </div>
-        <div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#9CA3AF">
-            PUBLIC LP DISCLOSURE RESEARCH · {0:,} FUNDS
-        </div>
-    </div>
-    """.format(len(df_unified)),
-        unsafe_allow_html=True,
+        """.format(len(df_unified))
     )
 
-    tab1, tab2, tab3, tab4 = st.tabs(["FUND DATABASE", "FIRMS", "INSIGHTS", "SOURCES"])
+    tab_about, tab_insights, tab_firms, tab_database, tab_sources = st.tabs(
+        ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
+    )
 
-    with tab1:
-        render_fund_database(df_unified, df_gp_disclosed)
+    with tab_about:
+        render_about()
 
-    with tab2:
-        render_firms(df_master)
-
-    with tab3:
+    with tab_insights:
         render_insights(df_master)
 
-    with tab4:
+    with tab_firms:
+        render_firms(df_master)
+
+    with tab_database:
+        render_fund_database(df_unified, df_gp_disclosed)
+
+    with tab_sources:
         render_sources(df_unified, df_master)
+
+    render_footer()
 
 
 if __name__ == "__main__":
