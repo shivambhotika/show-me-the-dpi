@@ -1,0 +1,51 @@
+canonical_gp,fund_name,vintage_year,source,reporting_period,tvpi,dpi,net_irr
+Accel,Accel-KKR Company LLC,2000.0,WSIB,ir093024,2.3,2.32140974,0.0815
+Accel,"Accel-KKR Capital Partners VII, LP",2025.0,CalPERS,unknown,1.0,0.0,1.0
+B Capital,"B Capital Global Growth III, L.P.",2023.0,CalPERS,unknown,1.0,0.045443390717086,1.0
+B Capital,"B Capital Ascent Fund III, L.P.",2024.0,CalPERS,unknown,1.0,0.0004359703128265,1.0
+B Capital,"B Capital Opportunities Fund II, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Balderton,"Balderton Capital Growth II, S.L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Balderton,"Balderton Capital IX, S.L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Base10,"Base10 Partners III, L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.0040999999999999
+Base10,"Base10 Series B I, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Bessemer,BVP Forge Institutional L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Bessemer,Bessemer Venture Partners XII Institutional L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Canaan,Canaan Gold Coast L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Canaan,Canaan XIII Healthcare Fund L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Canaan,Canaan XIII L.P.,2024.0,CalPERS,unknown,1.0,0.0066822586034079,1.0
+General Catalyst,"General Catalyst Group XI - Health Assurance, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+General Catalyst,"General Catalyst Group XII - Creation, L.P.",2024.0,CalPERS,unknown,1.0,0.0019345729795737,1.0
+General Catalyst,"General Catalyst Group XII - Endurance, L.P.",2024.0,CalPERS,unknown,1.0,0.0001649818451282,1.0
+General Catalyst,"General Catalyst Group XII - Health Assurance, L.P.",2024.0,CalPERS,unknown,1.0,0.0001032553928078,1.0
+General Catalyst,"General Catalyst Group XII - Ignition, L.P.",2024.0,CalPERS,unknown,1.0,0.0014111556350162,1.0
+General Catalyst,"General Catalyst Group XII, L.P.",2024.0,WSIB,ir093024,1.1,,0.138
+Hedosophia,Hedosophia Partners VI L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Hedosophia,Hedosophia Strategic Partners L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+HongShan,"HongShan Capital Seed Fund III, L.P.",2022.0,CalPERS,unknown,1.0,0.0,-0.0960999999999999
+HongShan,"HongShan Capital Venture Fund IX, L.P.",2022.0,CalPERS,unknown,1.0,0.0,-0.0851
+HongShan,"HongShan Capital Growth Fund VII, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+HongShan,"HongShan Capital Expansion Fund I, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Khosla Ventures,"Khosla Ventures III, L.P.",2009.0,CalPERS,unknown,1.849507005,1.814230595,0.0969999999999999
+Khosla Ventures,"Khosla Ventures Seed, L.P.",2009.0,CalPERS,unknown,1.177716633333333,0.20807215,0.0139999999999999
+Lightspeed,"Lightspeed Opportunity Fund II, LP",2022.0,CalPERS,unknown,1.0,0.0,0.2011
+Lightspeed,"Lightspeed Venture Partners Select V, L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.1081
+Lightspeed,"Lightspeed Venture Partners XIV-A (Inception), L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.1691
+Lightspeed,"Lightspeed Venture Partners XIV-B (Ignite), L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.2281
+Lightspeed,"Lightspeed Opportunity Fund III, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Lightspeed Venture Partners Select VI, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Lightspeed Venture Partners XV-A (Inception), L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Lightspeed Venture Partners XV-B (Ignite), L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Mayfield,Mayfield XIV,2013.0,Oregon Treasury,2025-Q3,3.8,2.748971193415638,0.198
+Mayfield,Mayfield Select,2017.0,Oregon Treasury,2025-Q3,1.75,1.142857142857143,0.153
+Mayfield,Mayfield XV,2017.0,Oregon Treasury,2025-Q3,2.19,0.38671875,0.158
+Mayfield,Mayfield Select II,2021.0,Oregon Treasury,2025-Q3,1.37,0.0,0.149
+Mayfield,Mayfield XVI,2021.0,Oregon Treasury,2025-Q3,1.52,0.0,0.184
+Mayfield,Mayfield Select III,2023.0,Oregon Treasury,2025-Q3,1.05,0.0,
+Mayfield,Mayfield XVII,2023.0,Oregon Treasury,2025-Q3,1.22,0.0,
+Mayfield,"Mayfield XVII, a Delaware Limited Partnership",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Mayfield,"Mayfield Select III, a Delaware Limited Partnership",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Sequoia,"Sequoia Global Growth Fund III - Endurance Partners, L.P.",2018.0,WSIB,ir093024,1.7,0.330057960884682,0.16
+Thrive Capital,"Thrive Capital Partners VIII Growth, L.P.",2023.0,CalPERS,unknown,1.0,0.1615299355971991,1.0
+Thrive Capital,"Thrive Capital Partners IX Growth, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Thrive Capital,"Thrive Capital Partners Opportunity Fund, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Thrive Capital,"Thrive Capital Partners IX, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
