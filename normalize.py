@@ -1,206 +1,395 @@
-import pandas as pd
 import os
+import re
+from datetime import date
 
-def normalize_calpers(df):
-    """Map CalPERS columns to unified schema."""
-    col_map = {}
-    for col in df.columns:
-        col_l = col.lower()
-        if "fund" in col_l and "name" in col_l:
-            col_map[col] = "fund_name"
-        elif "vintage" in col_l:
-            col_map[col] = "vintage_year"
-        elif "irr" in col_l:
-            col_map[col] = "net_irr"
-        elif "multiple" in col_l or "tvpi" in col_l or "investment_multiple" in col_l:
-            col_map[col] = "tvpi"
-        elif "committed" in col_l:
-            col_map[col] = "capital_committed"
-        elif "distributed" in col_l or "cash_out" in col_l:
-            col_map[col] = "capital_distributed"
-        elif "contributed" in col_l or "cash_in" in col_l:
-            col_map[col] = "capital_contributed"
-    
-    df = df.rename(columns=col_map)
-    df["dpi"] = None  # CalPERS doesn't report DPI directly
+import pandas as pd
+
+UNIFIED_COLUMNS = [
+    "fund_name",
+    "vintage_year",
+    "capital_committed",
+    "capital_contributed",
+    "capital_distributed",
+    "nav",
+    "net_irr",
+    "tvpi",
+    "dpi",
+    "source",
+    "scraped_date",
+    "reporting_period",
+]
+
+SOURCE_FILES = [
+    ("data/calpers.csv", "CalPERS"),
+    ("data/calstrs.csv", "CalSTRS"),
+    ("data/oregon.csv", "Oregon Treasury"),
+    ("data/wsib.csv", "WSIB"),
+    ("data/utimco.csv", "UTIMCO"),
+    ("data/psers.csv", "PSERS"),
+]
+
+DEDUP_COLUMNS = ["fund_name", "vintage_year", "source", "reporting_period"]
+
+SOURCE_COLUMN_MAP = {
+    "CalPERS": {
+        "fund": "fund_name",
+        "vintage_year": "vintage_year",
+        "capital_committed": "capital_committed",
+        "cash_in": "capital_contributed",
+        "cash_out": "capital_distributed",
+        "cash_out_&_remaining_value": "total_value",
+        "investment_multiple": "tvpi",
+        "net_irr": "net_irr",
+        "source": "source",
+        "scraped_date": "scraped_date",
+        "reporting_period": "reporting_period",
+    },
+    "CalSTRS": {
+        "fund_name": "fund_name",
+        "vintage_year": "vintage_year",
+        "capital_committed": "capital_committed",
+        "capital_contributed": "capital_contributed",
+        "capital_distributed": "capital_distributed",
+        "nav": "nav",
+        "net_irr": "net_irr",
+        "tvpi": "tvpi",
+        "dpi": "dpi",
+        "source": "source",
+        "scraped_date": "scraped_date",
+        "reporting_period": "reporting_period",
+    },
+    "Oregon Treasury": {
+        "fund_name": "fund_name",
+        "vintage_year": "vintage_year",
+        "capital_committed": "capital_committed",
+        "capital_contributed": "capital_contributed",
+        "capital_distributed": "capital_distributed",
+        "nav": "nav",
+        "net_irr": "net_irr",
+        "tvpi": "tvpi",
+        "dpi": "dpi",
+        "source": "source",
+        "scraped_date": "scraped_date",
+        "reporting_period": "reporting_period",
+    },
+    "WSIB": {
+        "investment_name": "fund_name",
+        "initial_investment_date": "vintage_year",
+        "capital_committed": "capital_committed",
+        "paid-in_capital_a": "capital_contributed",
+        "capital_distributed_1_c_": "capital_distributed",
+        "current_market_value_b": "nav",
+        "total_value_b+c": "total_value",
+        "total_value_multiple_b+c_a": "tvpi",
+        "net_irr_2": "net_irr",
+        "source": "source",
+        "scraped_date": "scraped_date",
+        "reporting_period": "reporting_period",
+    },
+    "UTIMCO": {
+        "fund_name": "fund_name",
+        "investment_name": "fund_name",
+        "manager": "fund_name",
+        "partnership": "fund_name",
+        "col_0": "fund_name",
+        "vintage_year": "vintage_year",
+        "capital_committed": "capital_committed",
+        "capital_contributed": "capital_contributed",
+        "capital_distributed": "capital_distributed",
+        "nav": "nav",
+        "net_irr": "net_irr",
+        "tvpi": "tvpi",
+        "dpi": "dpi",
+        "source": "source",
+        "scraped_date": "scraped_date",
+        "reporting_period": "reporting_period",
+    },
+    "PSERS": {
+        "fund_name": "fund_name",
+        "partnership_name": "fund_name",
+        "investment_name": "fund_name",
+        "vintage_year": "vintage_year",
+        "capital_committed": "capital_committed",
+        "commitment": "capital_committed",
+        "capital_contributed": "capital_contributed",
+        "contributions": "capital_contributed",
+        "capital_distributed": "capital_distributed",
+        "distributions": "capital_distributed",
+        "nav": "nav",
+        "market_value": "nav",
+        "net_irr": "net_irr",
+        "irr": "net_irr",
+        "tvpi": "tvpi",
+        "dpi": "dpi",
+        "source": "source",
+        "scraped_date": "scraped_date",
+        "reporting_period": "reporting_period",
+    },
+}
+
+MISSING_TOKENS = {"", "-", "--", "na", "n/a", "n.m.", "n/m", "nm", "null", "none"}
+
+
+def standardize_column_names(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    df.columns = (
+        df.columns.astype(str)
+        .str.strip()
+        .str.lower()
+        .str.replace("\n", "_", regex=False)
+        .str.replace(" ", "_", regex=False)
+    )
     return df
 
-def normalize_calstrs(df):
-    """Map CalSTRS columns to unified schema."""
-    col_map = {}
-    for col in df.columns:
-        col_l = col.lower()
-        if "fund" in col_l or "manager" in col_l or "name" in col_l:
-            col_map[col] = "fund_name"
-        elif "vintage" in col_l:
-            col_map[col] = "vintage_year"
-        elif "irr" in col_l:
-            col_map[col] = "net_irr"
-        elif "committed" in col_l:
-            col_map[col] = "capital_committed"
-        elif "distributed" in col_l:
-            col_map[col] = "capital_distributed"
-        elif "contributed" in col_l:
-            col_map[col] = "capital_contributed"
-        elif "market" in col_l or "value" in col_l or "nav" in col_l:
-            col_map[col] = "nav"
-    
-    df = df.rename(columns=col_map)
-    df["tvpi"] = None
-    df["dpi"] = None
+
+def clean_numeric(value):
+    if pd.isna(value):
+        return float("nan")
+
+    text = str(value).strip()
+    if text.lower() in MISSING_TOKENS:
+        return float("nan")
+
+    negative = False
+    if text.startswith("(") and text.endswith(")"):
+        negative = True
+        text = text[1:-1].strip()
+
+    text = text.replace(",", "")
+    text = text.replace("$", "")
+    text = text.replace("%", "")
+    text = text.replace("x", "").replace("X", "")
+    text = text.strip()
+
+    if text.lower() in MISSING_TOKENS:
+        return float("nan")
+
+    text = re.sub(r"[^0-9.\-]", "", text)
+    if text in {"", ".", "-", "-."}:
+        return float("nan")
+
+    try:
+        number = float(text)
+    except ValueError:
+        return float("nan")
+
+    if negative:
+        number = -number
+
+    return number
+
+
+def clean_irr(value):
+    if pd.isna(value):
+        return float("nan")
+
+    original = str(value)
+    had_percent = "%" in original
+    number = clean_numeric(value)
+    if pd.isna(number):
+        return float("nan")
+
+    if had_percent:
+        return number / 100.0
+
+    if abs(number) > 1 and abs(number) <= 100:
+        return number / 100.0
+
+    return number
+
+
+def clean_year(value):
+    if pd.isna(value):
+        return float("nan")
+
+    match = re.search(r"(19|20)\d{2}", str(value))
+    if not match:
+        return float("nan")
+
+    try:
+        return float(int(match.group(0)))
+    except ValueError:
+        return float("nan")
+
+
+def safe_divide(numerator, denominator):
+    num = pd.to_numeric(numerator, errors="coerce")
+    den = pd.to_numeric(denominator, errors="coerce")
+    den = den.where(den != 0)
+    return num / den
+
+
+def normalize_fund_name(series: pd.Series) -> pd.Series:
+    result = series.fillna("UNKNOWN_FUND").astype(str)
+    result = result.str.strip().str.replace(r"\s+", " ", regex=True)
+    result = result.replace({"": "UNKNOWN_FUND", "nan": "UNKNOWN_FUND", "None": "UNKNOWN_FUND"})
+    return result
+
+
+def coalesce_duplicate_columns(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    while True:
+        duplicated = pd.Series(df.columns).value_counts()
+        duplicated = duplicated[duplicated > 1]
+        if duplicated.empty:
+            break
+
+        col_name = duplicated.index[0]
+        dup_df = df.loc[:, df.columns == col_name]
+        merged = dup_df.bfill(axis=1).iloc[:, 0]
+        df = df.loc[:, df.columns != col_name]
+        df[col_name] = merged
+
     return df
 
-def normalize_utimco(df):
-    """Map UTIMCO columns to unified schema."""
-    col_map = {}
-    for col in df.columns:
-        col_l = col.lower()
-        if "fund" in col_l or "name" in col_l or "manager" in col_l:
-            if col_map.get("fund_name") is None:
-                col_map[col] = "fund_name"
-        elif "invested" in col_l:
-            col_map[col] = "capital_contributed"
-        elif "returned" in col_l:
-            col_map[col] = "capital_distributed"
-        elif "value" in col_l or "nav" in col_l:
-            col_map[col] = "nav"
-        elif "cash" in col_l and "cash" in col_l:
-            col_map[col] = "tvpi"
-        elif "irr" in col_l:
-            col_map[col] = "net_irr"
-    
-    df = df.rename(columns=col_map)
-    df["vintage_year"] = None  # UTIMCO doesn't always report vintage per fund
-    df["dpi"] = None
+
+def map_source_columns(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
+    source_map = SOURCE_COLUMN_MAP.get(source_name, {})
+    rename_map = {col: source_map[col] for col in df.columns if col in source_map}
+    mapped = df.rename(columns=rename_map)
+    mapped = coalesce_duplicate_columns(mapped)
+    return mapped
+
+
+def remove_wsib_non_data_rows(df: pd.DataFrame) -> pd.DataFrame:
+    if "fund_name" not in df.columns:
+        return df
+
+    result = df.copy()
+    result = result[result["fund_name"].notna()]
+
+    exclusion_terms = [
+        "Corporate Finance",
+        "Contributions",
+        "Adjusted Market Value",
+        "Distributions",
+    ]
+
+    pattern = "|".join(re.escape(term) for term in exclusion_terms)
+    result = result[~result["fund_name"].astype(str).str.contains(pattern, case=False, na=False)]
+    return result
+
+
+def add_missing_unified_columns(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    for col in UNIFIED_COLUMNS:
+        if col not in df.columns:
+            df[col] = float("nan") if col not in {"fund_name", "source", "scraped_date", "reporting_period"} else None
     return df
 
-def normalize_psers(df):
-    col_map = {}
-    for col in df.columns:
-        col_l = col.lower()
-        if ("fund" in col_l or "partnership" in col_l or "manager" in col_l) and "name" in col_l:
-            col_map[col] = "fund_name"
-        elif col_l == col_l and "fund" in col_l and col_map.get("fund_name") is None:
-            col_map[col] = "fund_name"
-        elif "vintage" in col_l:
-            col_map[col] = "vintage_year"
-        elif "irr" in col_l:
-            col_map[col] = "net_irr"
-        elif "tvpi" in col_l or "multiple" in col_l:
-            col_map[col] = "tvpi"
-        elif "dpi" in col_l:
-            col_map[col] = "dpi"
-        elif "committed" in col_l:
-            col_map[col] = "capital_committed"
-        elif "contributed" in col_l or "called" in col_l or "drawn" in col_l:
-            col_map[col] = "capital_contributed"
-        elif "distributed" in col_l:
-            col_map[col] = "capital_distributed"
-        elif "market" in col_l or "nav" in col_l or "value" in col_l:
-            col_map[col] = "nav"
-    df = df.rename(columns=col_map)
-    return df
 
-def normalize_oregon(df):
-    col_map = {}
-    for col in df.columns:
-        col_l = col.lower()
-        if "fund" in col_l or "partnership" in col_l:
-            col_map[col] = "fund_name"
-        elif "vintage" in col_l:
-            col_map[col] = "vintage_year"
-        elif "tvpi" in col_l:
-            col_map[col] = "tvpi"
-        elif "dpi" in col_l:
-            col_map[col] = "dpi"
-        elif "irr" in col_l:
-            col_map[col] = "net_irr"
-        elif "committed" in col_l:
-            col_map[col] = "capital_committed"
-        elif "contributed" in col_l or "called" in col_l:
-            col_map[col] = "capital_contributed"
-        elif "distributed" in col_l:
-            col_map[col] = "capital_distributed"
-        elif "market" in col_l or "value" in col_l:
-            col_map[col] = "nav"
-    df = df.rename(columns=col_map)
-    return df
+def post_process_source(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
+    result = df.copy()
 
-def normalize_wsib(df):
-    col_map = {}
-    for col in df.columns:
-        col_l = col.lower()
-        if "partnership" in col_l or ("fund" in col_l and "name" in col_l):
-            col_map[col] = "fund_name"
-        elif "vintage" in col_l:
-            col_map[col] = "vintage_year"
-        elif "irr" in col_l:
-            col_map[col] = "net_irr"
-        elif "tvpi" in col_l or "multiple" in col_l:
-            col_map[col] = "tvpi"
-        elif "dpi" in col_l:
-            col_map[col] = "dpi"
-        elif "committed" in col_l:
-            col_map[col] = "capital_committed"
-        elif "contributed" in col_l or "called" in col_l or "funded" in col_l:
-            col_map[col] = "capital_contributed"
-        elif "distributed" in col_l:
-            col_map[col] = "capital_distributed"
-        elif "value" in col_l or "nav" in col_l:
-            col_map[col] = "nav"
-    df = df.rename(columns=col_map)
-    return df
+    if source_name == "WSIB":
+        result = remove_wsib_non_data_rows(result)
+
+    if "total_value" not in result.columns:
+        result["total_value"] = float("nan")
+
+    result = add_missing_unified_columns(result)
+
+    result["fund_name"] = normalize_fund_name(result["fund_name"])
+    result["vintage_year"] = result["vintage_year"].apply(clean_year)
+
+    numeric_cols = [
+        "capital_committed",
+        "capital_contributed",
+        "capital_distributed",
+        "nav",
+        "tvpi",
+        "dpi",
+        "total_value",
+    ]
+    for col in numeric_cols:
+        result[col] = result[col].apply(clean_numeric)
+
+    result["net_irr"] = result["net_irr"].apply(clean_irr)
+
+    if source_name == "CalPERS":
+        calpers_nav = result["total_value"] - result["capital_distributed"]
+        result["nav"] = result["nav"].fillna(calpers_nav)
+
+    derived_dpi = safe_divide(result["capital_distributed"], result["capital_contributed"])
+    result["dpi"] = result["dpi"].fillna(derived_dpi)
+
+    derived_tvpi = safe_divide(result["capital_distributed"].fillna(0) + result["nav"].fillna(0), result["capital_contributed"])
+    result["tvpi"] = result["tvpi"].fillna(derived_tvpi)
+
+    result["source"] = source_name
+
+    if "scraped_date" not in result.columns:
+        result["scraped_date"] = str(date.today())
+    result["scraped_date"] = result["scraped_date"].fillna(str(date.today()))
+
+    if "reporting_period" not in result.columns:
+        result["reporting_period"] = "unknown"
+    result["reporting_period"] = result["reporting_period"].fillna("unknown")
+
+    return result
+
+
+def print_source_diagnostics(source_name: str, raw_rows: int, after_mapping: int, after_cleaning: int, after_dedup: int) -> None:
+    print(f"Source: {source_name}")
+    print(f"raw_rows={raw_rows}")
+    print(f"after_mapping={after_mapping}")
+    print(f"after_cleaning={after_cleaning}")
+    print(f"after_dedup={after_dedup}")
+
 
 def build_unified_dataset():
-    unified_cols = [
-        "fund_name", "vintage_year", "capital_committed", 
-        "capital_contributed", "capital_distributed", "nav",
-        "net_irr", "tvpi", "dpi", "source", "scraped_date", "reporting_period"
-    ]
-    
     frames = []
-    
-    sources = {
-        "data/calpers.csv": normalize_calpers,
-        "data/calstrs.csv": normalize_calstrs,
-        "data/utimco.csv": normalize_utimco,
-        "data/psers.csv": normalize_psers,
-        "data/oregon.csv": normalize_oregon,
-        "data/wsib.csv": normalize_wsib,
-    }
-    
-    for filepath, normalizer in sources.items():
-        if os.path.exists(filepath):
-            df = pd.read_csv(filepath)
-            df = normalizer(df)
-            
-            # Add any missing unified columns
-            for col in unified_cols:
-                if col not in df.columns:
-                    df[col] = None
-            
-            frames.append(df[unified_cols])
-            print(f"Loaded {len(df)} rows from {filepath}")
-        else:
+
+    for filepath, source_name in SOURCE_FILES:
+        if not os.path.exists(filepath):
+            print_source_diagnostics(source_name, 0, 0, 0, 0)
             print(f"Warning: {filepath} not found — skipping")
-    
+            continue
+
+        try:
+            raw_df = pd.read_csv(filepath)
+        except Exception as exc:
+            print_source_diagnostics(source_name, 0, 0, 0, 0)
+            print(f"Warning: failed to read {filepath}: {exc}")
+            continue
+
+        raw_rows = len(raw_df)
+
+        standardized_df = standardize_column_names(raw_df)
+        mapped_df = map_source_columns(standardized_df, source_name)
+        after_mapping = len(mapped_df)
+
+        cleaned_df = post_process_source(mapped_df, source_name)
+        after_cleaning = len(cleaned_df)
+
+        deduped_df = cleaned_df.drop_duplicates(subset=DEDUP_COLUMNS, keep="last")
+        after_dedup = len(deduped_df)
+
+        print_source_diagnostics(source_name, raw_rows, after_mapping, after_cleaning, after_dedup)
+
+        frames.append(deduped_df[UNIFIED_COLUMNS])
+
     if not frames:
         print("No data files found. Run scrapers first.")
         return
-    
+
     combined = pd.concat(frames, ignore_index=True)
-    
-    # Basic deduplication — same fund name + vintage + source
-    combined = combined.drop_duplicates(subset=["fund_name", "vintage_year", "source"])
-    
-    # Sort by vintage year descending
-    combined = combined.sort_values("vintage_year", ascending=False, na_position="last")
-    
+    combined = combined.drop_duplicates(subset=DEDUP_COLUMNS, keep="last")
+
+    combined["fund_name"] = normalize_fund_name(combined["fund_name"])
+    combined["vintage_year"] = combined["vintage_year"].apply(clean_year)
+
     os.makedirs("data", exist_ok=True)
     combined.to_csv("data/unified_funds.csv", index=False)
-    print(f"\nUnified dataset: {len(combined)} total fund entries")
-    print(f"Sources: {combined['source'].value_counts().to_dict()}")
-    print("Saved to data/unified_funds.csv")
+
+    print(f"TOTAL_ROWS={len(combined)}")
+    print(f"ROWS_WITH_DPI={int(combined['dpi'].notna().sum())}")
+    print(f"ROWS_WITH_TVPI={int(combined['tvpi'].notna().sum())}")
+    print(f"ROWS_WITH_IRR={int(combined['net_irr'].notna().sum())}")
+    print("ROWS_PER_SOURCE")
+    for source_name, count in combined["source"].value_counts(dropna=False).items():
+        print(f"{source_name}={count}")
+
 
 if __name__ == "__main__":
     build_unified_dataset()
