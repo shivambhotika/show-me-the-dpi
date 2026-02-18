@@ -16,18 +16,8 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Streamlit markdown treats leading indentation as code blocks.
-# Dedent every markdown body to keep custom HTML rendering correctly.
-_st_markdown = st.markdown
-
-
-def _markdown_dedent(body, *args, **kwargs):
-    if isinstance(body, str):
-        body = dedent(body)
-    return _st_markdown(body, *args, **kwargs)
-
-
-st.markdown = _markdown_dedent
+def _render_html(html_text: str):
+    st.markdown(dedent(html_text).strip(), unsafe_allow_html=True)
 
 
 def inject_css():
@@ -418,20 +408,16 @@ def load_master_full():
 
 
 def render_page_header(title: str, subtitle: str, count: str = None):
-    count_html = ""
-    if count:
-        count_html = '<span class="record-count">{0}</span>'.format(html.escape(count))
-    st.markdown(
-        """
-    <div style="margin-bottom: 0.5rem;">
-        <div style="display:flex; align-items:baseline; gap:4px;">
-            <span class="page-title">{0}<span class="page-title-accent">.</span></span>
-            {1}
-        </div>
-        <div class="page-subtitle">{2}</div>
-    </div>
-    """.format(html.escape(title), count_html, html.escape(subtitle)),
-        unsafe_allow_html=True,
+    count_html = '<span class="record-count">{0}</span>'.format(html.escape(count)) if count else ""
+    _render_html(
+        (
+            '<div style="margin-bottom:0.5rem;">'
+            '<div style="display:flex;align-items:baseline;gap:4px;">'
+            '<span class="page-title">{0}<span class="page-title-accent">.</span></span>{1}'
+            '</div>'
+            '<div class="page-subtitle">{2}</div>'
+            '</div>'
+        ).format(html.escape(title), count_html, html.escape(subtitle))
     )
 
 
@@ -506,19 +492,19 @@ def render_fund_table(df_display: pd.DataFrame, show_source_type: bool = False):
         if show_source_type:
             source_type_cell = "<td>{0}</td>".format(source_type_badge(row.get("data_source_type")))
 
-        rows_html += """
-        <tr>
-          <td class="id-col">{0}</td>
-          <td style="font-weight:500">{1}</td>
-          <td class="numeric">{2}</td>
-          <td><span class="badge {3}">{4}</span></td>
-          {5}
-          <td class="numeric">{6}</td>
-          <td class="numeric">{7}</td>
-          <td class="dpi-col">{8}</td>
-          <td class="numeric">{9}</td>
-        </tr>
-        """.format(
+        rows_html += (
+            "<tr>"
+            '<td class="id-col">{0}</td>'
+            '<td style="font-weight:500">{1}</td>'
+            '<td class="numeric">{2}</td>'
+            '<td><span class="badge {3}">{4}</span></td>'
+            "{5}"
+            '<td class="numeric">{6}</td>'
+            '<td class="numeric">{7}</td>'
+            '<td class="dpi-col">{8}</td>'
+            '<td class="numeric">{9}</td>'
+            "</tr>"
+        ).format(
             str(i + 1).zfill(3),
             name,
             vintage,
@@ -535,28 +521,14 @@ def render_fund_table(df_display: pd.DataFrame, show_source_type: bool = False):
     if show_source_type:
         source_type_header = "<th>SOURCE TYPE</th>"
 
-    st.markdown(
-        """
-    <table class="fund-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>FUND NAME</th>
-          <th class="right">VINTAGE</th>
-          <th>SOURCE</th>
-          {0}
-          <th class="right">COMMITTED</th>
-          <th class="right">TVPI</th>
-          <th class="right" style="color:#E8571F">DPI ▲</th>
-          <th class="right">IRR</th>
-        </tr>
-      </thead>
-      <tbody>
-        {1}
-      </tbody>
-    </table>
-    """.format(source_type_header, rows_html),
-        unsafe_allow_html=True,
+    _render_html(
+        (
+            '<table class="fund-table"><thead><tr>'
+            "<th>ID</th><th>FUND NAME</th><th class=\"right\">VINTAGE</th><th>SOURCE</th>{0}"
+            '<th class="right">COMMITTED</th><th class="right">TVPI</th>'
+            '<th class="right" style="color:#E8571F">DPI ▲</th><th class="right">IRR</th>'
+            "</tr></thead><tbody>{1}</tbody></table>"
+        ).format(source_type_header, rows_html)
     )
 
 
@@ -878,19 +850,19 @@ def render_firms(df_master: pd.DataFrame):
             gross_col = "<th class='right'>GROSS TVPI</th>"
             gross_cell = "<td class='numeric'>{0}</td>".format(_fmt_multiple(r.get("gross_tvpi")))
 
-        rows_html += """
-        <tr>
-          <td style="font-weight:500">{0}</td>
-          <td class="numeric">{1}</td>
-          <td>{2}</td>
-          <td class="numeric">{3}</td>
-          {4}
-          <td class="numeric">{5}</td>
-          <td class="dpi-col">{6}</td>
-          <td class="numeric">{7}</td>
-          <td>{8}</td>
-        </tr>
-        """.format(
+        rows_html += (
+            "<tr>"
+            '<td style="font-weight:500">{0}</td>'
+            '<td class="numeric">{1}</td>'
+            "<td>{2}</td>"
+            '<td class="numeric">{3}</td>'
+            "{4}"
+            '<td class="numeric">{5}</td>'
+            '<td class="dpi-col">{6}</td>'
+            '<td class="numeric">{7}</td>'
+            "<td>{8}</td>"
+            "</tr>"
+        ).format(
             html.escape(str(r.get("fund_name", ""))),
             vintage,
             html.escape(str(r.get("fund_category", "—"))),
@@ -903,26 +875,14 @@ def render_firms(df_master: pd.DataFrame):
         )
 
     gross_header = "<th class='right'>GROSS TVPI</th>" if is_gp_disclosed else ""
-    st.markdown(
-        """
-    <table class="fund-table" style="margin-top:1rem;">
-      <thead>
-        <tr>
-          <th>FUND</th>
-          <th class="right">VINTAGE</th>
-          <th>STRATEGY</th>
-          <th class="right">SIZE</th>
-          {0}
-          <th class="right">NET TVPI</th>
-          <th class="right" style="color:#E8571F">NET DPI</th>
-          <th class="right">NET IRR</th>
-          <th>STATUS</th>
-        </tr>
-      </thead>
-      <tbody>{1}</tbody>
-    </table>
-    """.format(gross_header, rows_html),
-        unsafe_allow_html=True,
+    _render_html(
+        (
+            '<table class="fund-table" style="margin-top:1rem;"><thead><tr>'
+            "<th>FUND</th><th class=\"right\">VINTAGE</th><th>STRATEGY</th><th class=\"right\">SIZE</th>{0}"
+            '<th class="right">NET TVPI</th><th class="right" style="color:#E8571F">NET DPI</th>'
+            '<th class="right">NET IRR</th><th>STATUS</th>'
+            "</tr></thead><tbody>{1}</tbody></table>"
+        ).format(gross_header, rows_html)
     )
 
     if is_gp_disclosed and str(selected_gp).lower() == "a16z":
