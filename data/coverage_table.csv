@@ -1,0 +1,19 @@
+canonical_gp,priority,matching_funds,sources,status
+Accel,high,6,"CalPERS, Florida SBA, UC Regents, WSIB",Covered
+Andreessen Horowitz,high,104,"CalPERS, CalSTRS, Florida SBA, Louisiana TRSL, Massachusetts PRIM, Oregon Treasury, WSIB",Covered
+B Capital,medium,27,"CalPERS, CalSTRS, Florida SBA, Louisiana TRSL, Oregon Treasury, UC Regents, WSIB",Covered
+Bessemer,high,11,"CalPERS, CalSTRS, Florida SBA, Louisiana TRSL, Oregon Treasury, UC Regents",Covered
+Canaan,medium,15,"CalPERS, CalSTRS, Florida SBA, Louisiana TRSL, Massachusetts PRIM, Oregon Treasury",Covered
+Founders Fund,high,6,"CalSTRS, Florida SBA, Massachusetts PRIM, Oregon Treasury",Covered
+General Catalyst,high,6,"CalPERS, WSIB",Covered
+HongShan,high,24,"CalPERS, Louisiana TRSL, UC Regents",Covered
+Index Ventures,high,5,"CalPERS, Massachusetts PRIM, UC Regents",Covered
+Khosla Ventures,high,3,UC Regents,Covered
+Lightspeed,high,1193,"CalPERS, CalSTRS, Florida SBA, Louisiana TRSL, Massachusetts PRIM, Oregon Treasury, UC Regents, WSIB",Covered
+Mayfield,medium,8,"CalSTRS, Oregon Treasury",Covered
+Sequoia,high,12,"CalSTRS, Louisiana TRSL, UC Regents",Covered
+Redpoint,medium,1,CalPERS,Partial
+Balderton,medium,0,,Missing
+Base10,medium,0,,Missing
+Hedosophia,medium,0,,Missing
+Thrive Capital,high,0,,Missing

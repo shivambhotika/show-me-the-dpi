@@ -18,6 +18,19 @@ Provide an analyst-focused Streamlit research tool for exploring LP-disclosed ve
 ## Data Pipeline
 `scrapers/*.py` → source CSVs in `data/` → `normalize.py` → `data/unified_funds.csv` → `app.py`
 
+### LP Source Coverage (Current)
+- Existing: CalPERS, CalSTRS, Oregon Treasury, WSIB, UTIMCO, PSERS
+- Newly integrated: Florida SBA, Louisiana TRSL, Massachusetts PRIM, UC Regents
+- Normalization now rebuilds:
+  - `data/unified_funds.csv`
+  - `data/coverage_snapshot.csv`
+  - `data/coverage_table.csv`
+  - `data/vc_fund_master.csv`
+  - `data/source_metadata.csv`
+
+### Expected Row Scale
+- Expected unified dataset size after current integrations: roughly `2,500+` rows (depends on latest source files present).
+
 ## Current App State
 - Sidebar navigation uses non-radio section selection: `OVERVIEW`, `FUND DATABASE`, `FIRMS & FUND FAMILIES`, `SOURCES`, `ABOUT`.
 - `OVERVIEW` provides only summary metrics: total funds, funds with DPI available, target firms covered, and data source count.
@@ -28,7 +41,10 @@ Provide an analyst-focused Streamlit research tool for exploring LP-disclosed ve
 - `ABOUT` contains the canonical explanatory copy under a single heading.
 
 ## Immediate Next Step
-Add a maintained `data/source_metadata.csv` process so the Sources page can be fully data-driven and consistently updated with reporting periods.
+Priorities:
+1. Improve VC-family coverage quality (matching precision/recall against target firms).
+2. Expand UTIMCO and PSERS parsing quality.
+3. Improve insight narratives while preserving analyst-neutral tone and source transparency.
 
 ## Development Principles
 - Keep UI minimal, clean, and analyst-oriented.

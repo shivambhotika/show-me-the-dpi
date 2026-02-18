@@ -1,40 +1,1704 @@
 canonical_gp,fund_name,vintage_year,source,reporting_period,tvpi,dpi,net_irr
-Accel,Accel-KKR Company LLC,2000.0,WSIB,ir093024,2.3,2.32140974,0.0815
+Accel,"Accel-KKR Structured Capital Partners II, LP",2014.0,Florida SBA,2020-Q2,1.39,0.6753914656860096,0.178
+Accel,Accel-KKR Capital Partners V,2015.0,Florida SBA,2020-Q2,1.36,0.4801981533428371,0.2189999999999999
+Accel,"Accel-KKR Capital Partners VI, LP",2019.0,Florida SBA,2020-Q2,,,
+Accel,MSA Acceleration Fund,2022.0,UC Regents,2024-Q2,1.0682121113834668,0.0395407266404708,
 Accel,"Accel-KKR Capital Partners VII, LP",2025.0,CalPERS,unknown,1.0,0.0,1.0
-B Capital,"B Capital Global Growth III, L.P.",2023.0,CalPERS,unknown,1.0,0.045443390717086,1.0
-B Capital,"B Capital Ascent Fund III, L.P.",2024.0,CalPERS,unknown,1.0,0.0004359703128265,1.0
-B Capital,"B Capital Opportunities Fund II, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
-Balderton,"Balderton Capital Growth II, S.L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
-Balderton,"Balderton Capital IX, S.L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
-Base10,"Base10 Partners III, L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.0040999999999999
-Base10,"Base10 Series B I, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
-Bessemer,BVP Forge Institutional L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
-Bessemer,Bessemer Venture Partners XII Institutional L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
-Canaan,Canaan Gold Coast L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
-Canaan,Canaan XIII Healthcare Fund L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
-Canaan,Canaan XIII L.P.,2024.0,CalPERS,unknown,1.0,0.0066822586034079,1.0
+Accel,Accel-KKR Company LLC,,WSIB,ir093024,2.3,2.32140974,0.0815
+Andreessen Horowitz,Penman Private Equity and Mezzanine Fund,1994.0,Oregon Treasury,2025-Q3,0.89,0.8910891089108911,-0.025
+Andreessen Horowitz,"New Enterprise Associates VIII-A, L.P.",2001.0,Massachusetts PRIM,2020-Q1,0.7865077528,0.6933068528,-0.0262386191881292
+Andreessen Horowitz,"Summit Ventures VI-A, L.P.",2001.0,Massachusetts PRIM,2020-Q1,2.1616331605180443,2.147466643712281,0.1537392282274527
+Andreessen Horowitz,"ING Realty Partners Starwood Global Opportunity Fund VI- A, L.P.",2002.0,Louisiana TRSL,2019-Q4,1.02,1.0356486,0.0037
+Andreessen Horowitz,"Clearstone Venture Partners III-A, L.P.",2004.0,CalSTRS,"FYE June 30, 2025",2.78956265095729,2.0687293961708395,8.16
+Andreessen Horowitz,"Apax Europe VI - A, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",2.0292060445596847,1.9937653381780984,12.68
+Andreessen Horowitz,"Pharos Capital Partners II-A, L.P.",2005.0,Louisiana TRSL,2019-Q4,1.17,0.6389414,0.0217
+Andreessen Horowitz,"Summit Partners Private Equity Fund VII-A, L.P.",2006.0,CalSTRS,"FYE June 30, 2025",1.87469529,1.83326962,10.18
+Andreessen Horowitz,"Summit Partners Private Equity Fund VII-A, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.8033886745526304,1.619203296449809,0.1017077882670159
+Andreessen Horowitz,"Summit Partners Venture Capital Fund II-A, L.P.",2006.0,Massachusetts PRIM,2020-Q1,2.1185825832699834,2.067519284433683,0.19297899544007
+Andreessen Horowitz,AACP India Venture Investors A,2007.0,CalPERS,unknown,1.1296713714007758,1.1160899853440978,0.019
+Andreessen Horowitz,Oregon Investment Fund (Series 1-A),2007.0,Oregon Treasury,2025-Q3,2.07,2.0743099787685777,0.153
+Andreessen Horowitz,Advent International GPE VI A,2008.0,Oregon Treasury,2025-Q3,2.09,2.008,0.163
+Andreessen Horowitz,"Advent International GPE VI-A, L.P.",2008.0,CalPERS,unknown,2.0807278880433655,2.003509030917723,0.163
+Andreessen Horowitz,"Riverstone/Carlyle Renewable and Alternative Energy Fund II, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",1.1343361192496613,1.124156542063025,1.97
+Andreessen Horowitz,Fortress Credit Opportunities Fund II(A),2010.0,CalSTRS,"FYE June 30, 2025",2.145278458405233,2.0647478256406075,14.63
+Andreessen Horowitz,"Silicon Valley Bank SIF V-A Opportunity, L.P.",2011.0,Florida SBA,2020-Q2,3.42,0.7183216315613508,0.226
+Andreessen Horowitz,Summit Partners Growth Equity Fund VIII-A LP,2011.0,Louisiana TRSL,2019-Q4,2.31,1.810359377823511,0.2648999999999999
+Andreessen Horowitz,"Summit Partners Growth Equity Fund VIII-A, L.P.",2011.0,Florida SBA,2020-Q2,1.52,1.517766806410173,0.32
+Andreessen Horowitz,A&M Capital Partners,2012.0,Oregon Treasury,2025-Q3,2.17,1.7944297082228118,0.248
+Andreessen Horowitz,"Riverstone Global Energy and Power Fund V, L.P.",2012.0,CalPERS,unknown,0.8233766005368273,0.8051513107924111,-0.043
+Andreessen Horowitz,Summit Partners Growth Equity VIII-A,2012.0,CalSTRS,"FYE June 30, 2025",2.670076504424559,2.549469116580582,25.35
+Andreessen Horowitz,Summit Partners Venture Capital III-A,2012.0,CalSTRS,"FYE June 30, 2025",2.491279803026139,2.119207844397625,17.79
+Andreessen Horowitz,DCPF VI Oil and Gas Coinvestment Fund LP,2013.0,Florida SBA,2020-Q2,1.58,1.48347121972398,0.157
+Andreessen Horowitz,Silicon Valley Bank SIF VI-A,2013.0,Florida SBA,2020-Q2,2.25,0.3166286637787,0.1889999999999999
+Andreessen Horowitz,Strategic Investors VI-A,2013.0,CalSTRS,"FYE June 30, 2025",4.04913517302541,1.9611353709485344,19.58
+Andreessen Horowitz,"Energy Capital Partners III-A, LP",2014.0,CalSTRS,"FYE June 30, 2025",1.704217012291672,1.3770323615143254,13.25
+Andreessen Horowitz,"Sixth Street Opportunities Partners III (A), L.P.",2014.0,CalSTRS,"FYE June 30, 2025",1.5683172694432863,1.2705307473240186,8.86
+Andreessen Horowitz,CVI Credit Value Fund A III,2015.0,CalSTRS,"FYE June 30, 2025",1.351495242105263,1.2978676631578947,7.87
+Andreessen Horowitz,ECI 10 A LP,2015.0,CalSTRS,"FYE June 30, 2025",2.269262737341903,2.203637546739535,19.42
+Andreessen Horowitz,Madison Dearborn Capital VII-A/B,2015.0,CalSTRS,"FYE June 30, 2025",1.863596051779069,1.036968123464433,13.27
+Andreessen Horowitz,Strategic Investors VII-A,2015.0,CalSTRS,"FYE June 30, 2025",3.5459009431424633,1.4629993873486455,20.42
+Andreessen Horowitz,"Riverstone Global Energy and Power Fund VI, L.P.",2016.0,CalPERS,unknown,1.0243168169427426,0.7709273319664317,0.006
+Andreessen Horowitz,"Summit Partners Venture Capital Fund IV-A, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",2.728079736600313,1.0698064558163882,34.25
+Andreessen Horowitz,"TPG Growth III (A), L.P.",2016.0,CalSTRS,"FYE June 30, 2025",1.6608087478055085,1.19802385203142,15.21
+Andreessen Horowitz,CVC Capital Partners VII (A) LP,2017.0,Louisiana TRSL,2019-Q4,1.09,0.0090947934927393,0.2092
+Andreessen Horowitz,"CVI Credit Value Fund A IV, L.P.",2017.0,Florida SBA,2020-Q2,0.98,0.0002276518518518,-0.0139999999999999
+Andreessen Horowitz,"Summit Partners Growth Eqty Fd IX-A,L.P.",2017.0,CalSTRS,"FYE June 30, 2025",2.159805304586023,1.3405968247269138,23.61
+Andreessen Horowitz,A&M Capital Partners Europe I,2018.0,Oregon Treasury,2025-Q3,1.71,0.0536858974358974,0.161
+Andreessen Horowitz,A&M Capital Partners II,2018.0,Oregon Treasury,2025-Q3,2.14,1.3189102564102566,0.3389999999999999
+Andreessen Horowitz,CVC Capital Partners VII (A) L.P.,2018.0,CalPERS,unknown,2.0777891875307204,1.0191895781873777,0.204
+Andreessen Horowitz,"CVC Capital Partners VII (A), LP",2018.0,CalSTRS,"FYE June 30, 2025",2.124831083977083,0.8250627419261802,20.87
+Andreessen Horowitz,HgCapital 8 A L.P.,2018.0,CalSTRS,"FYE June 30, 2025",2.6334606071116244,1.776980414075645,34.76
+Andreessen Horowitz,"Spectrum Equity VIII-A, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",2.299399178141625,1.4503099726054784,29.59
+Andreessen Horowitz,"The Rise Fund (A), L.P.",2018.0,CalPERS,unknown,1.4381337742058142,0.6146556519460668,0.094
+Andreessen Horowitz,CVC Capital Partners VIII (A) L.P.,2019.0,Florida SBA,2020-Q2,,,
+Andreessen Horowitz,"JMI Equity Fund IX-A, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",2.134138575373048,0.9221608116772332,22.54
+Andreessen Horowitz,"KPS Special Situations Fund V (A), LP",2019.0,Florida SBA,2020-Q2,,,
+Andreessen Horowitz,Pathway Private Equity Fund III-Co Series A,2019.0,Oregon Treasury,2025-Q3,1.74,0.5111452728670254,0.1159999999999999
+Andreessen Horowitz,Sixth Street Cap Solutions (A),2019.0,CalSTRS,"FYE June 30, 2025",1.474057002798844,0.7803319288802362,10.49
+Andreessen Horowitz,"Sixth Street Opportunities Partners IV (A), L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.486331255819987,0.5971771800944836,10.93
+Andreessen Horowitz,Spectrum VIII-A Discretionary Overage Program,2019.0,CalSTRS,"FYE June 30, 2025",2.979750896999148,2.3979505679795605,91.26
+Andreessen Horowitz,"TA XIII-A, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.8978479231922365,0.7515591346799304,22.36
+Andreessen Horowitz,"TPG Asia VII (A), L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.4597221817614854,0.6414275723209564,11.22
+Andreessen Horowitz,CVI Credit Value Fund A V LP,2020.0,Florida SBA,2020-Q2,1.0,0.0,
+Andreessen Horowitz,Hg Saturn 2 A LP,2020.0,CalSTRS,"FYE June 30, 2025",1.4769275222538796,0.2949789926883486,15.74
+Andreessen Horowitz,"Spectrum Equity IX - A, L.P.",2020.0,CalSTRS,"FYE June 30, 2025",1.146161830927835,0.1090019134020618,4.5
+Andreessen Horowitz,Summit Partners Growth Equity Fund X-A,2020.0,CalSTRS,"FYE June 30, 2025",1.480546291178065,0.3265909014436113,12.79
+Andreessen Horowitz,"Summit Partners Growth Equity Fund X-A, L.P.",2020.0,CalPERS,unknown,1.4733575751381571,0.336664739339883,0.128
+Andreessen Horowitz,"TA Select Opps Fund-A, L.P.",2020.0,CalSTRS,"FYE June 30, 2025",1.4778384568527918,0.0126903553299492,9.31
+Andreessen Horowitz,A&M Capital Partners III,2021.0,Oregon Treasury,2025-Q3,1.37,0.0599369085173501,
+Andreessen Horowitz,CVC Capital Partners VIII (A) L.P.,2021.0,CalSTRS,"FYE June 30, 2025",1.240289621521899,0.0174082240499496,9.79
+Andreessen Horowitz,CVC Capital Partners VIII (A) L.P.,2021.0,CalPERS,unknown,1.0,0.4380700996479554,0.0891
+Andreessen Horowitz,Hg Genesis 9 A L.P.,2021.0,CalSTRS,"FYE June 30, 2025",1.552349821699169,0.4065542847443955,16.32
+Andreessen Horowitz,Hg Mercury 3 A L.P.,2021.0,CalSTRS,"FYE June 30, 2025",1.65567692384938,0.5189885095597577,23.67
+Andreessen Horowitz,JMI Equity Fund X A L.P.,2021.0,CalSTRS,"FYE June 30, 2025",1.4566556467097225,0.0993942514691336,13.74
+Andreessen Horowitz,"SPRINGBLUE A, L.P.",2021.0,CalPERS,unknown,1.0,0.0,-0.0971
+Andreessen Horowitz,Summit Partners VC Fd V-A L.P.,2021.0,CalSTRS,"FYE June 30, 2025",1.1221009375829007,0.0484797150111797,5.27
+Andreessen Horowitz,"TA Select Opportunities Fund II-A, L.P.",2021.0,CalPERS,unknown,1.0,0.0,0.0250999999999999
+Andreessen Horowitz,"TA XIV A, LP",2021.0,CalSTRS,"FYE June 30, 2025",1.1965157565306503,0.0818414345732955,7.86
+Andreessen Horowitz,TA XIV-A,2021.0,Oregon Treasury,2025-Q3,1.21,0.1533742331288343,0.075
+Andreessen Horowitz,"TA XIV-A, L.P.",2021.0,CalPERS,unknown,1.0,0.0818414322250639,0.0791
+Andreessen Horowitz,CVC Capital Partners Asia VI (A),2022.0,Oregon Treasury,2025-Q3,1.1,0.1422222222222222,
+Andreessen Horowitz,"Healthcare and Fintech, L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.3390999999999999
+Andreessen Horowitz,"Lightspeed Venture Partners XIV-A (Inception), L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.1691
+Andreessen Horowitz,"Summit Partners Growth Equity Fund XI-A, L.P.",2022.0,CalPERS,unknown,1.0,0.0085335574080871,0.0200999999999999
+Andreessen Horowitz,Summit Prtnrs Growth Eqty XI A,2022.0,CalSTRS,"FYE June 30, 2025",1.0302258171635714,0.0085335634734592,1.98
+Andreessen Horowitz,Biogeneration Capital Fund V Cooperatief U.A.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,Forbion Growth Opportunities Fund II Cooperatief U.A.,2023.0,CalPERS,unknown,1.0,1.0125921555964692,1.0
+Andreessen Horowitz,Forbion Ventures Fund VI Cooperatief U.A.,2023.0,CalPERS,unknown,1.0,0.3407687912682812,1.0
+Andreessen Horowitz,"Grain Communications Opportunity Fund IV-A, L.P.",2023.0,CalPERS,unknown,1.0,0.0211576568629693,1.0
+Andreessen Horowitz,Hg Genesis 10 A L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,Hg Mercury 4 A L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,Hg Saturn 3 A L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"SR One Capital Fund II-A, LP",2023.0,CalPERS,unknown,1.0,0.0638188270545593,1.0
+Andreessen Horowitz,CVC Capital Partners Asia VI (A) L.P.,2024.0,CalPERS,unknown,1.0,0.0744972449468384,1.0
+Andreessen Horowitz,CVC Capital Partners IX (A) L.P.,2024.0,CalPERS,unknown,1.0,0.0012071297506022,1.0
+Andreessen Horowitz,CVC Capital Partners IX A LP,2024.0,CalSTRS,"FYE June 30, 2025",1.142233776578949,0.0211378546294735,13.52
+Andreessen Horowitz,Forbion BioEconomy Fund I Co?peratief U.A.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,Forbion Growth Opportunities Fund III Co?peratief U.A.,2024.0,CalPERS,unknown,1.0,0.0315042688730677,1.0
+Andreessen Horowitz,Forbion Ventures Fund VII Co?peratief U.A.,2024.0,CalPERS,unknown,1.0,0.005265727711144,1.0
+Andreessen Horowitz,"Mayfield XVII, a Delaware Limited Partnership",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"Springblue A-V, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"TPG Asia VIII (A), L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"TPG GP Solutions (A), L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"Generation IM Sustainable Private Equity Fund II (A), ILP",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"Lightspeed Venture Partners XV-A (Inception), L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"Mayfield Select III, a Delaware Limited Partnership",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"Otro Capital Fund I-A, LP",2025.0,CalPERS,unknown,1.0,0.0063530433490307,1.0
+Andreessen Horowitz,"Strategic Partners (A), L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"TA XV-A, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Andreessen Horowitz,"TPG NEXT (A), L.P.",2025.0,CalPERS,unknown,1.0,0.1616481089955991,1.0
+Andreessen Horowitz,"Apax Europe IV-A, L.P.",,WSIB,ir093024,1.3,1.346881012914865,0.0716
+Andreessen Horowitz,"Apax Europe V-A, L.P.",,WSIB,ir093024,2.1,2.1036699973003854,0.3619
+Andreessen Horowitz,"Apax Europe VII-A, L.P.",,WSIB,ir093024,1.2,1.2277545419627045,0.0431
+Andreessen Horowitz,DCPF VI Oil and Gas Coinvestment Fund LP,,WSIB,ir093024,1.6,1.6075889562621393,0.1583
+Andreessen Horowitz,"GTCR Fund VII-A, L.P.",,WSIB,ir093024,2.8,2.7926884850808023,0.83
+Andreessen Horowitz,"HIPEP V-Asia Pacific and Rest of World Fund, L.P.",,WSIB,ir093024,1.4,1.391442101176109,0.0557
+B Capital,Blackstone Capital Partners IV,2003.0,UC Regents,2024-Q2,2.4,2.3986632341416274,0.361
+B Capital,Pine Brook Capital Partners,2007.0,Oregon Treasury,2025-Q3,1.27,1.265432098765432,0.065
+B Capital,"Bain Capital Fund X, LP",2008.0,CalSTRS,"FYE June 30, 2025",1.6001287788335472,1.5069412124448178,8.8
+B Capital,Gilde Buy-Out Fund IV C.V.,2010.0,Louisiana TRSL,2019-Q4,1.47,1.3344286246462862,0.0907
+B Capital,BC European Capital IX,2011.0,CalSTRS,"FYE June 30, 2025",1.6548958003951428,1.338685421431885,10.09
+B Capital,BC European Capital IX,2011.0,Louisiana TRSL,2019-Q4,1.68,1.070553137234026,0.1308
+B Capital,Blackstone Capital Partners VI,2011.0,Oregon Treasury,2025-Q3,1.81,1.6408256880733945,0.121
+B Capital,"Bain Capital Asia Fund II, LP",2012.0,CalSTRS,"FYE June 30, 2025",2.084987311821092,1.8583334060307684,16.55
+B Capital,Pine Brook Capital Partners II,2012.0,Oregon Treasury,2025-Q3,0.7,0.7013610888710968,-0.108
+B Capital,BlackRock Carbon Capital V,2013.0,Florida SBA,2020-Q2,1.2,1.1925443471739252,0.061
+B Capital,Pine Brook Capital Partners II,2013.0,UC Regents,2024-Q2,1.41,0.9873485484496548,0.065
+B Capital,Blackstone Strategic Capital Holdings,2014.0,UC Regents,2024-Q2,1.63,0.6513791090402229,0.13
+B Capital,Blackstone Capital Partners VII LP,2015.0,Louisiana TRSL,2019-Q4,1.28,0.1012254680170144,0.2016
+B Capital,Mission Bay Capital II,2015.0,UC Regents,2024-Q2,2.32,0.982,0.158
+B Capital,BC European Capital Fund X,2016.0,Louisiana TRSL,2019-Q4,1.25,0.0211364848187292,0.188
+B Capital,BlackRock Carbon Capital VI,2016.0,Florida SBA,2020-Q2,1.09,0.3603089443666498,0.05
+B Capital,Blackstone Capital Partners VII,2016.0,Oregon Treasury,2025-Q3,1.72,0.989973398813178,0.128
+B Capital,Bridgepoint Development Capital III,2016.0,Louisiana TRSL,2019-Q4,1.64,0.2646235197423808,0.4293
+B Capital,BC European Capital X-8 LP,2017.0,CalSTRS,"FYE June 30, 2025",1.738939344160357,0.9370827293393156,10.88
+B Capital,BDC III C LP,2017.0,CalPERS,unknown,3.5673305983135113,2.4722676504068173,0.384
+B Capital,Blackstone Capital Partners Asia I,2017.0,UC Regents,2024-Q2,1.85,0.9368307387530572,0.264
+B Capital,Silicon Valley Bank Capital Partners IV,2017.0,Florida SBA,2020-Q2,1.0,0.0,0.001
+B Capital,Mission Bay Capital III,2018.0,UC Regents,2024-Q2,1.21,0.1291304347826087,0.07
+B Capital,Blackstone Capital Partners VIII,2019.0,UC Regents,2024-Q2,1.17,0.1007884092816807,0.091
+B Capital,Blackstone Capital Partners VIII,2020.0,Oregon Treasury,2025-Q3,1.26,0.6897923110914714,0.099
+B Capital,Blackstone Capital Partners Asia II,2022.0,CalSTRS,"FYE June 30, 2025",1.7539978009653443,0.2829400112800846,39.95
+B Capital,Bain Capital Asia Fund V,2023.0,CalSTRS,"FYE June 30, 2025",1.325048735884161,0.1192013831325512,36.36
+B Capital,"Bain Capital Europe Fund VI, SCSp",2023.0,CalPERS,unknown,1.0,0.0,1.0
+B Capital,"Blackwell Capital Partners, LP",2023.0,CalPERS,unknown,1.0,0.0270724165077826,1.0
+B Capital,BGH Capital Fund II,,WSIB,ir093024,0.6,,-0.3904999999999999
+Bessemer,AACP India Investors B,2007.0,CalPERS,unknown,3.976435688435606,3.966358672708074,0.128
+Bessemer,Pathway Private Equity Fund III-B,2008.0,Oregon Treasury,2025-Q3,2.13,1.837987421383648,0.153
+Bessemer,"Energy Capital Partners II-B, LP",2010.0,Louisiana TRSL,2019-Q4,1.35,1.4545081618554845,0.0738
+Bessemer,Khosla Ventures Seed B,2012.0,UC Regents,2024-Q2,3.63,2.875100551654965,0.184
+Bessemer,Neoma Global Growth Markets Strategic Fund (B) Patria-Brazilian Private Equity Fund V LP,2014.0,Louisiana TRSL,2019-Q4,1.32,0.0011140186427625,0.2171999999999999
+Bessemer,Advent International GPE VIII-B Limited Partnership,2016.0,CalPERS,unknown,2.09615845,1.43136688,0.158
+Bessemer,GOF II Feeder B,2017.0,Florida SBA,2020-Q2,0.98,0.0,
+Bessemer,Onex Partners V-B LP,2018.0,CalPERS,unknown,1.483019286739252,0.2804406568671002,0.104
+Bessemer,Pathway Private Equity Fund III-Co Series B,2019.0,Oregon Treasury,2025-Q3,1.31,0.2865612648221344,0.063
+Bessemer,Sixth Street TAO Partners (B) LP,2020.0,CalSTRS,"FYE June 30, 2025",1.3607166522528569,0.0877636066843339,11.24
+Bessemer,"Ember Infrastructure Fund II-B, LP",2024.0,CalPERS,unknown,1.0,0.0393738505507945,1.0
+Canaan,J.C. Flowers Fund II,2006.0,Oregon Treasury,2025-Q3,0.45,0.4499540863177226,-0.102
+Canaan,AACP India Investors C,2009.0,CalPERS,unknown,0.8903167433741154,0.8754978716878095,-0.015
+Canaan,Advent International GPE VII C,2012.0,Oregon Treasury,2025-Q3,1.81,1.7234927234927235,0.132
+Canaan,GSO Energy Partners-C LP,2013.0,CalPERS,unknown,0.8784690835785824,0.8491695809201378,-0.031
+Canaan,CVC Capital Partners VI (C) LP,2014.0,Louisiana TRSL,2019-Q4,1.54,0.4816459093507326,0.1718
+Canaan,Advent Latin American Private Equity Fund VI C,2015.0,Oregon Treasury,2025-Q3,1.78,1.0415472779369628,0.122
+Canaan,GSO Energy Partners-C II LP,2016.0,CalPERS,unknown,1.2999415254070144,1.2707951841172838,0.0819999999999999
+Canaan,The Varde Fund XII-C,2016.0,Florida SBA,2020-Q2,1.09,0.0,0.0279999999999999
+Canaan,Waterland Private Equity Fund VII C.V.,2017.0,Florida SBA,2020-Q2,1.0,0.0,0.006
+Canaan,"Waterland Private Equity Fund VII, C.V.",2018.0,Massachusetts PRIM,2020-Q1,0.8731270718429753,,-0.1635175252149238
+Canaan,Pathway Private Equity Fund III-Co Series C,2020.0,Oregon Treasury,2025-Q3,1.68,0.3785291042174974,0.139
+Canaan,AlpInvest C Fund II LP,2021.0,CalSTRS,"FYE June 30, 2025",1.468693655281916,0.0680687265964422,17.65
+Canaan,DS Opportunities (C) LP,2021.0,CalPERS,unknown,1.0,0.0,0.3240999999999999
+Canaan,CA Co-Investment Limited Partnership,2022.0,CalPERS,unknown,1.0,0.0010832552547713,0.2041
+Canaan,"EII-C SPV, LP",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Founders Fund,Equistone Partners Europe Fund IV F L.P.,2012.0,CalSTRS,"FYE June 30, 2025",1.7503789039430506,1.7070997026769985,14.83
+Founders Fund,TrueBridge Special Purpose II (F),2013.0,Florida SBA,2020-Q2,2.36,0.1174071801956279,0.212
+Founders Fund,"H&F Spock 1, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.8234774264543707,,0.3554683001093066
+Founders Fund,"H&F Samson Hockey 1, LP (Hub)",2020.0,CalSTRS,"FYE June 30, 2025",2.6597133544084928,0.9960984281044238,33.68
+Founders Fund,Lexington CIP V-F-O,2020.0,Florida SBA,2020-Q2,,,
+Founders Fund,Pathway Private Equity Fund III-Co Series F,2024.0,Oregon Treasury,2025-Q3,1.26,0.0090546903295907,
 General Catalyst,"General Catalyst Group XI - Health Assurance, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
 General Catalyst,"General Catalyst Group XII - Creation, L.P.",2024.0,CalPERS,unknown,1.0,0.0019345729795737,1.0
 General Catalyst,"General Catalyst Group XII - Endurance, L.P.",2024.0,CalPERS,unknown,1.0,0.0001649818451282,1.0
 General Catalyst,"General Catalyst Group XII - Health Assurance, L.P.",2024.0,CalPERS,unknown,1.0,0.0001032553928078,1.0
 General Catalyst,"General Catalyst Group XII - Ignition, L.P.",2024.0,CalPERS,unknown,1.0,0.0014111556350162,1.0
-General Catalyst,"General Catalyst Group XII, L.P.",2024.0,WSIB,ir093024,1.1,,0.138
-Hedosophia,Hedosophia Partners VI L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
-Hedosophia,Hedosophia Strategic Partners L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
-HongShan,"HongShan Capital Seed Fund III, L.P.",2022.0,CalPERS,unknown,1.0,0.0,-0.0960999999999999
-HongShan,"HongShan Capital Venture Fund IX, L.P.",2022.0,CalPERS,unknown,1.0,0.0,-0.0851
-HongShan,"HongShan Capital Growth Fund VII, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
-HongShan,"HongShan Capital Expansion Fund I, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
-Khosla Ventures,"Khosla Ventures III, L.P.",2009.0,CalPERS,unknown,1.849507005,1.814230595,0.0969999999999999
-Khosla Ventures,"Khosla Ventures Seed, L.P.",2009.0,CalPERS,unknown,1.177716633333333,0.20807215,0.0139999999999999
+General Catalyst,"General Catalyst Group XII, L.P.",,WSIB,ir093024,1.1,,0.138
+HongShan,H.I.G. Bayside II,2008.0,UC Regents,2024-Q2,1.56,1.5065980113429325,0.136
+HongShan,H.I.G. Capital Partners IV,2009.0,UC Regents,2024-Q2,2.21,2.160615805204112,0.327
+HongShan,HongShan Capital Growth 2010 Fund LP,2010.0,UC Regents,2024-Q2,3.05,2.711944716213939,0.2
+HongShan,HongShan Capital Venture 2010 Fund LP,2010.0,UC Regents,2024-Q2,5.72,4.7170059066998125,0.32
+HongShan,H.I.G. Bayside Loan Opportunity Fund IV LP,2014.0,Louisiana TRSL,2019-Q4,1.12,0.6021251832490387,0.0819999999999999
+HongShan,H.I.G. Europe Capital Partners II,2014.0,UC Regents,2024-Q2,1.28,0.8837680947193954,0.104
+HongShan,H.I.G. Middle Market LBO Fund II,2014.0,UC Regents,2024-Q2,1.54,1.2668149529702406,0.264
+HongShan,Thomas H. Lee Equity Fund VII LP,2015.0,Louisiana TRSL,2019-Q4,1.56,0.2917156444124433,0.2437
+HongShan,HongShan China Venture Fund VII,2018.0,UC Regents,2024-Q2,1.17,0.2197901572374688,0.033
+HongShan,Thomas H. Lee Equity Fund VIII LP,2018.0,Louisiana TRSL,2019-Q4,1.26,0.0924152331195391,1.1737
+HongShan,"Carlyle Europe Partners V, S.C.Sp.",2019.0,CalPERS,unknown,1.107933968260144,0.6939744563342446,0.046
+HongShan,H.I.G. Middle Market LBO Fund III,2019.0,UC Regents,2024-Q2,1.22,0.0577949747551724,0.095
+HongShan,H.I.G. Capital Partners VI,2020.0,UC Regents,2024-Q2,1.1,0.1678631056903888,0.092
+HongShan,H.I.G. Europe Capital Partners III,2020.0,UC Regents,2024-Q2,2.44,0.2956764116024912,0.564
+HongShan,H.I.G. Europe Middle Market LBO Fund,2020.0,UC Regents,2024-Q2,1.29,0.0085107535731514,0.276
+HongShan,HongShan China Growth VI,2020.0,UC Regents,2024-Q2,0.97,0.0047016865481408,-0.011
+HongShan,HongShan China Seed II,2020.0,UC Regents,2024-Q2,1.02,0.0,0.008
+HongShan,HongShan China Venture VIII,2020.0,UC Regents,2024-Q2,0.96,0.0,-0.016
+HongShan,HongShan GGF III China Annex,2020.0,UC Regents,2024-Q2,0.93,0.0251862712630789,-0.036
+HongShan,HongShan China Expansion I,2022.0,UC Regents,2024-Q2,0.973229074074074,0.0,
+HongShan,HongShan China Growth VII,2022.0,UC Regents,2024-Q2,0.748054,0.0,
+HongShan,HongShan China Seed III,2022.0,UC Regents,2024-Q2,0.8456129127850778,0.0,
+HongShan,HongShan China Venture IX,2022.0,UC Regents,2024-Q2,0.8382011585829676,0.0,
+HongShan,VIP V S.C.Sp.,2023.0,CalPERS,unknown,1.0,0.0245040501065747,1.0
+Index Ventures,H.I.G. Capital Partners V,2013.0,UC Regents,2024-Q2,1.6,1.3629376072226067,0.2289999999999999
+Index Ventures,Bow Ventures Fund I,2016.0,UC Regents,2024-Q2,1.17,0.0002845315949077,0.036
+Index Ventures,"Flagship Ventures Opportunities Fund I, L.P.",2016.0,Massachusetts PRIM,2020-Q1,0.9344029585798818,,-0.0390493679054
+Index Ventures,NeoTribe Ventures I,2017.0,UC Regents,2024-Q2,2.51,0.7203826708427203,0.2239999999999999
+Index Ventures,ForCal I Investment Fund C.V.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Khosla Ventures,Khosla Ventures Seed,2009.0,UC Regents,2024-Q2,1.53,0.2079339962013696,0.038
+Khosla Ventures,Khosla Ventures IV,2011.0,UC Regents,2024-Q2,4.43,3.039029646619096,0.231
+Khosla Ventures,Khosla Ventures V,2014.0,UC Regents,2024-Q2,2.91,1.4220140759930917,0.19
+Lightspeed,"Corporate Partners, L.P.",1988.0,Florida SBA,2020-Q2,2.13,2.1321453189838975,0.124
+Lightspeed,"Carlyle Partners II, L.P.",1994.0,Florida SBA,2020-Q2,2.3,2.298961646051872,0.201
+Lightspeed,"Centre Capital Investors II, L.P.",1995.0,Florida SBA,2020-Q2,0.81,0.8090554406631786,-0.0409999999999999
+Lightspeed,"Commonwealth Capital Ventures, L.P.",1995.0,Massachusetts PRIM,2020-Q1,1.0101070268148,1.0042337468148002,0.0023888462428826
+Lightspeed,"Ripplewood Partners, L.P.",1995.0,Florida SBA,2020-Q2,1.74,1.7444063939539254,0.136
+Lightspeed,"Hicks, Muse, Tate & Furst Equity Fund III, L.P.",1996.0,Florida SBA,2020-Q2,0.89,0.8860714056626,-0.018
+Lightspeed,"Apollo Investment Fund IV, L.P.",1997.0,Florida SBA,2020-Q2,1.52,1.5154651986170649,0.068
+Lightspeed,"Thomas H. Lee Equity Fund IV, L.P.",1997.0,Florida SBA,2020-Q2,0.87,0.8685400569399346,-0.026
+Lightspeed,"Vestar Capital Partners III, L.P.",1997.0,Massachusetts PRIM,2020-Q1,1.1391409226635565,1.1385538651918536,0.0258453153095267
+Lightspeed,"Apollo Investment Fund IV, L.P.",1998.0,Massachusetts PRIM,2020-Q1,1.6543344039557226,1.6532406996875355,0.0847652227617681
+Lightspeed,"Apollo Investment Fund IV, L.P.",1998.0,CalPERS,unknown,1.650550449924446,1.6503130814250533,0.085
+Lightspeed,"Chartwell Capital Investors II, L.P.",1998.0,Florida SBA,2020-Q2,1.34,1.3423362795502878,0.047
+Lightspeed,"FS Equity Partners IV, L.P.",1998.0,Massachusetts PRIM,2020-Q1,1.7016315063201914,1.701180980745672,0.1284743095936415
+Lightspeed,"Green Equity Investors III, L.P.",1998.0,Florida SBA,2020-Q2,2.31,2.305005067919088,0.2189999999999999
+Lightspeed,"Hicks, Muse, Tate & Furst Equity Fund IV, L.P.",1998.0,Florida SBA,2020-Q2,0.63,0.6288464679622433,-0.088
+Lightspeed,"Lexington Co-Investment Partners (Pools I & II), L.P.",1998.0,Florida SBA,2020-Q2,1.35,1.351290536304446,0.063
+Lightspeed,"Lexington Co-Investment Partners II (Pools III & IV), L.P.",1998.0,Florida SBA,2020-Q2,2.18,2.164648999739242,0.2339999999999999
+Lightspeed,"New Enterprise Associates VIII, L.P.",1998.0,Massachusetts PRIM,2020-Q1,1.6585872996452669,1.5786581663119337,0.3053295870231433
+Lightspeed,"New Enterprises Associates VIII, L.P.",1998.0,CalSTRS,"FYE June 30, 2025",1.65919422,1.63620214,30.6
+Lightspeed,"TSG Capital Fund III, L.P.",1998.0,Florida SBA,2020-Q2,0.54,0.5409462799537154,-0.1369999999999999
+Lightspeed,"Warburg, Pincus Equity Partners, L.P.",1998.0,Louisiana TRSL,2019-Q4,1.67,1.661617535,0.1041
+Lightspeed,"Willis Stein & Partners II, L.P.",1998.0,Florida SBA,2020-Q2,0.58,0.5844917461938433,-0.0969999999999999
+Lightspeed,"Austin Ventures VII, L.P.",1999.0,Massachusetts PRIM,2020-Q1,0.8073892153329395,0.8056764577571819,-0.028062310314172
+Lightspeed,"Carlyle Partners III, L.P.",1999.0,Florida SBA,2020-Q2,2.3,2.302466379047354,0.228
+Lightspeed,"New Enterprise Associates 9, L.P.",1999.0,Massachusetts PRIM,2020-Q1,0.4727528374375,0.4198076333558673,-0.0604606795490886
+Lightspeed,"Pharos Capital Partners, L.P.",1999.0,Louisiana TRSL,2019-Q4,0.96,0.8391470342607034,-0.0054
+Lightspeed,"Apollo Investment Fund V, L.P.",2000.0,Florida SBA,2020-Q2,2.66,2.6606103502413148,0.3879999999999999
+Lightspeed,"BC Partners VII, L.P.",2000.0,CalSTRS,"FYE June 30, 2025",2.550649275926544,2.5439579558108876,23.92
+Lightspeed,Blackstone Communications Partners I L.P.,2000.0,CalPERS,unknown,1.2235818683510566,1.2233100376092605,0.065
+Lightspeed,"Hicks, Muse, Tate & Furst Equity Fund V, L.P.",2000.0,Florida SBA,2020-Q2,1.77,1.773266299254698,0.21
+Lightspeed,"Horsley Bridge VII, L.P.",2000.0,Louisiana TRSL,2019-Q4,1.22,1.166371963650266,0.0256
+Lightspeed,"InterWest Partners VIII, L.P.",2000.0,Massachusetts PRIM,2020-Q1,0.64831283649985,0.5181506574998499,-0.0504454076295934
+Lightspeed,"Lexington Capital Partners IV, L.P.",2000.0,Florida SBA,2020-Q2,1.78,1.7754790833071423,0.2019999999999999
+Lightspeed,"M/C Venture Partners V, L.P.",2000.0,Massachusetts PRIM,2020-Q1,1.619211643088602,1.6158372427554242,0.0833761650514445
+Lightspeed,"Madison Dearborn Capital Partners IV, L.P.",2000.0,Massachusetts PRIM,2020-Q1,1.8911828637314851,1.8687968311938032,0.1408596229285775
+Lightspeed,"Nautic Partners V, L.P.",2000.0,CalSTRS,"FYE June 30, 2025",2.0932852665940693,2.093073284709893,16.76
+Lightspeed,"Nautic Partners V, L.P.",2000.0,Massachusetts PRIM,2020-Q1,2.1139524747919376,2.0679610797284904,0.1689158903405172
+Lightspeed,"New Enterprise Associates 10, L.P.",2000.0,Massachusetts PRIM,2020-Q1,1.0995621675293663,0.9716049675293664,0.0158172364573391
+Lightspeed,"New Enterprise Associates 10, L.P.",2000.0,CalSTRS,"FYE June 30, 2025",1.16750434,1.1228335,2.25
+Lightspeed,"Permira Europe II, L.P. 2",2000.0,Massachusetts PRIM,2020-Q1,1.97417096396413,1.968761354553599,0.2377209860570881
+Lightspeed,"Polaris Venture Partners III, L.P.",2000.0,Massachusetts PRIM,2020-Q1,0.7529246128973746,0.7366173952021277,-0.032842892203183
+Lightspeed,"Ripplewood Partners II, L.P.",2000.0,Florida SBA,2020-Q2,1.19,1.1934141486948062,0.062
+Lightspeed,"TPG Partners III, L.P.",2000.0,Massachusetts PRIM,2020-Q1,2.482408953194489,2.4809643236544523,0.2452955842676255
+Lightspeed,"Thomas H. Lee Equity Fund V, L.P.",2000.0,Florida SBA,2020-Q2,1.63,1.634530828212843,0.134
+Lightspeed,"Vestar Capital Partners IV, L.P.",2000.0,Massachusetts PRIM,2020-Q1,1.7727636748826407,1.766447979228378,0.134485748279851
+Lightspeed,"Warburg, Pincus International Partners, L.P.",2000.0,Louisiana TRSL,2019-Q4,1.74,1.7251643733333333,0.0873
+Lightspeed,"Willis Stein & Partners III, L.P.",2000.0,Florida SBA,2020-Q2,1.01,1.0052929335983398,0.001
+Lightspeed,"Apollo Investment Fund V, L.P.",2001.0,Louisiana TRSL,2019-Q4,2.58,2.5880484179156045,0.3616
+Lightspeed,"Austin Ventures VIII, L.P.",2001.0,Massachusetts PRIM,2020-Q1,1.6157365295860786,1.5824522638863,0.0685143208978389
+Lightspeed,CVC European Equity Partners III L.P.,2001.0,CalSTRS,"FYE June 30, 2025",2.904079002878259,2.8232767578199844,40.59
+Lightspeed,"CVC European Equity Partners III, L.P. - Euro",2001.0,Massachusetts PRIM,2020-Q1,2.8752613601514465,2.8064990471938893,0.4097805080791544
+Lightspeed,"Highland Capital Partners VI-B, L.P.",2001.0,Massachusetts PRIM,2020-Q1,1.60318749999912,1.5883276199991203,0.1139068322929866
+Lightspeed,"Lexington Capital Partners V, L.P.",2001.0,Florida SBA,2020-Q2,1.68,1.6756060331968965,0.1889999999999999
+Lightspeed,"Menlo Ventures IX, L.P.",2001.0,Massachusetts PRIM,2020-Q1,1.031423087591247,1.0127214640618352,0.0050539869622841
+Lightspeed,"Paul Capital Top Tier Investments II, L.P.",2001.0,Florida SBA,2020-Q2,1.34,1.34480136553232,0.043
+Lightspeed,"Providence Equity Partners IV, L.P.",2001.0,Massachusetts PRIM,2020-Q1,1.9828362421593688,1.9825009706652943,0.2385479279817586
+Lightspeed,"Thoma Cressey Fund VII, L.P.",2001.0,CalSTRS,"FYE June 30, 2025",,2.128725370590203,24.02
+Lightspeed,"Thoma Cressey Fund VII, L.P.",2001.0,Massachusetts PRIM,2020-Q1,2.140114527485611,2.1336006697626244,0.2421947291168737
+Lightspeed,"Yucaipa Corporate Initiatives Fund I, L.P.",2001.0,CalPERS,unknown,0.7809529704172096,0.7702100125188245,-0.037
+Lightspeed,"Berkshire Fund VI, L.P.",2002.0,Massachusetts PRIM,2020-Q1,2.989059494114972,2.8206698966232153,0.2496456649477559
+Lightspeed,"FS Equity Partners V, L.P.",2002.0,Florida SBA,2020-Q2,2.1,2.0972258815669855,0.161
+Lightspeed,"Fairview Ventures Fund II, L.P.",2002.0,Florida SBA,2020-Q2,1.34,1.34131914,0.039
+Lightspeed,"GS Distressed Opportunities Fund I, L.P.",2002.0,Florida SBA,2020-Q2,1.0,0.995306884195644,-0.001
+Lightspeed,"Green Equity Investors IV, L.P.",2002.0,Florida SBA,2020-Q2,1.78,1.7835725150081376,0.107
+Lightspeed,"Polaris Venture Partners IV, L.P.",2002.0,Massachusetts PRIM,2020-Q1,1.2077627027887237,1.1168787630902313,0.0233034066842549
+Lightspeed,"Wellspring Capital Partners III, L.P.",2002.0,Florida SBA,2020-Q2,2.19,2.1896727274264935,0.271
+Lightspeed,"Alta Communications IX, L.P.",2003.0,Massachusetts PRIM,2020-Q1,0.8023828842105263,0.7742762315789473,-0.029945216186524
+Lightspeed,"Blackstone Capital Partners IV, L.P.",2003.0,Massachusetts PRIM,2020-Q1,2.4351240549078534,2.41401534133327,0.36298180260344
+Lightspeed,"Blackstone Capital Partners IV, L.P.",2003.0,CalSTRS,"FYE June 30, 2025",2.8107303240069528,2.7898860157674092,35.95
+Lightspeed,"Carlyle Europe Partners II, L.P.",2003.0,CalPERS,unknown,1.5999954993277483,1.5990488235909142,0.1969999999999999
+Lightspeed,"FS Equity Partners V, L.P.",2003.0,CalSTRS,"FYE June 30, 2025",,2.0939060585504436,15.18
+Lightspeed,"GTCR Fund VIII, L.P.",2003.0,Massachusetts PRIM,2020-Q1,1.75709058002988,1.7433878747849203,0.2241928329534784
+Lightspeed,"Gores Capital Partners, L.P.",2003.0,Florida SBA,2020-Q2,1.3,1.295376902031114,0.084
+Lightspeed,"Kelso Investment Associates VII, L.P.",2003.0,Florida SBA,2020-Q2,1.73,1.7254129856378342,0.122
+Lightspeed,"Nordic Capital V, L.P.",2003.0,Massachusetts PRIM,2020-Q1,2.7361287666198963,2.7293892402457876,0.206520095496774
+Lightspeed,"PCG Special Situation Fund, L.P.",2003.0,Florida SBA,2020-Q2,1.57,1.5715753725779875,0.066
+Lightspeed,"Permira Europe III, L.P.",2003.0,Massachusetts PRIM,2020-Q1,1.6078181123871096,1.6057385465922915,0.2578857457841904
+Lightspeed,"Platinum Equity Capital Partners, L.P.",2003.0,Florida SBA,2020-Q2,2.91,2.9126613803889434,0.602
+Lightspeed,"TPG Partners IV, L.P.",2003.0,Florida SBA,2020-Q2,1.89,1.8932527111385051,0.143
+Lightspeed,"TPG Partners IV, L.P.",2003.0,Massachusetts PRIM,2020-Q1,1.9254244703762,1.9143870539976329,0.1525082968574481
+Lightspeed,"TPG Partners IV, L.P.",2003.0,CalSTRS,"FYE June 30, 2025",2.0965269147618075,2.0941899686056784,15.15
+Lightspeed,"TPG Partners IV, L.P.",2003.0,CalPERS,unknown,1.9012528631105547,1.8993361241871385,0.153
+Lightspeed,"ARCH Venture Fund VI, L.P.",2004.0,CalSTRS,"FYE June 30, 2025",,1.2447145674100246,2.42
+Lightspeed,"Carlyle Partners IV, L.P.",2004.0,Florida SBA,2020-Q2,2.03,2.0323261355943227,0.131
+Lightspeed,"Flagship Ventures Fund 2004, L.P.",2004.0,Massachusetts PRIM,2020-Q1,1.029956807100002,1.0289195664775497,0.002765649750079
+Lightspeed,"Grove Street Partners Ventures, L.P.",2004.0,Florida SBA,2020-Q2,1.56,1.5599314730317746,0.072
+Lightspeed,"Hellman & Friedman Capital Partners V, L.P.",2004.0,Florida SBA,2020-Q2,2.74,2.73709970602308,0.294
+Lightspeed,"Kelso Investment Associates VII, L.P.",2004.0,Massachusetts PRIM,2020-Q1,1.5727778756613726,1.5712751303673305,0.1127509496477905
+Lightspeed,"Kohlberg Investors V, L.P.",2004.0,Florida SBA,2020-Q2,1.06,1.0645772358483618,0.012
+Lightspeed,"New Enterprise Associates 11, L.P.",2004.0,Massachusetts PRIM,2020-Q1,2.64218067723928,2.53542651723928,0.1554204747832375
+Lightspeed,"New Enterprise Associates XI, L.P.",2004.0,CalSTRS,"FYE June 30, 2025",2.6478122666666666,2.56569888,15.34
+Lightspeed,"New Mountain Partners II, L.P.",2004.0,Florida SBA,2020-Q2,2.05,2.0284214146476627,0.136
+Lightspeed,"Onex Partners I, L.P.",2004.0,CalSTRS,"FYE June 30, 2025",3.0690197758856077,3.0639860040896316,37.99
+Lightspeed,"Pantheon Venture Partners II, L.P.",2004.0,Florida SBA,2020-Q2,1.52,1.5243829206850048,0.068
+Lightspeed,"Paul Capital Top Tier Investments III, L.P.",2004.0,Florida SBA,2020-Q2,1.4,1.2446676232289198,0.053
+Lightspeed,"Paul Capital VIII-B, L.P.",2004.0,CalSTRS,"FYE June 30, 2025",1.3432878948144429,1.332101592636295,7.61
+Lightspeed,"Pomona Capital VI (Combined), L.P.",2004.0,Florida SBA,2020-Q2,1.31,1.2609613486786917,0.046
+Lightspeed,"Summit Subordinated Debt Fund III, L.P.",2004.0,CalSTRS,"FYE June 30, 2025",1.4614352376275734,1.4431421618562617,8.58
+Lightspeed,"Advent International GPE V-D, L.P.",2005.0,CalPERS,unknown,2.415560645638583,2.415560645638583,0.427
+Lightspeed,"Advent International GPE V-H, L.P.",2005.0,Massachusetts PRIM,2020-Q1,2.4593358975304387,2.411534497804922,0.4859821821800163
+Lightspeed,Apollo Investment Fund VI L.P.,2005.0,Florida SBA,2020-Q2,1.7,1.7008984622929846,0.095
+Lightspeed,"Apollo Investment Fund VI, L.P.",2005.0,Louisiana TRSL,2019-Q4,1.57,1.5651477750759757,0.0867
+Lightspeed,"BC European Capital VIII, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",1.2377716423527672,1.2372716169490163,4.5
+Lightspeed,"Blackstone Capital Partners V, L.P.",2005.0,Florida SBA,2020-Q2,1.6,1.6033850408373045,0.071
+Lightspeed,"Blue Run Ventures, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",1.4230082619629227,1.3339247510059868,5.5
+Lightspeed,"CHS Private Equity V, L.P.",2005.0,Massachusetts PRIM,2020-Q1,1.6975970045822053,1.6959741687329744,0.0981306720267346
+Lightspeed,CVC European Equity Partners IV (D) L.P.,2005.0,CalPERS,unknown,1.7873066425900423,1.7862948191531387,0.172
+Lightspeed,"CVC European Equity Partners IV, L.P.",2005.0,Massachusetts PRIM,2020-Q1,1.9523223162066363,1.9513493212424216,0.1678703252802147
+Lightspeed,"CVC European Equity Partners IV, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",2.0079842753509767,2.007077141303003,16.76
+Lightspeed,"Candover 2005 Fund, L.P.",2005.0,Massachusetts PRIM,2020-Q1,0.4728137801858442,0.4728137668012274,-0.1226554347300122
+Lightspeed,"Carlyle Asia Growth Partners III, L.P.",2005.0,CalPERS,unknown,0.9222649476412772,0.9222649476412772,-0.0139999999999999
+Lightspeed,"Carlyle Partners IV, L.P.",2005.0,Louisiana TRSL,2019-Q4,2.0,2.0910430388131105,0.131
+Lightspeed,"Charlesbank Equity Fund VI, L.P.",2005.0,Massachusetts PRIM,2020-Q1,1.6261927311045197,1.556019364986187,0.1047885948688662
+Lightspeed,"Falcon Mezzanine Partners II, L.P.",2005.0,Louisiana TRSL,2019-Q4,1.47,1.5726446205716091,0.0718
+Lightspeed,"Frazier Healthcare Ventures V, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",,2.2750888436850367,14.73
+Lightspeed,"InterWest Partners IX, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",,1.3203124,4.52
+Lightspeed,"J.H. Whitney VI, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",1.7186754505552415,1.0052595735283176,5.89
+Lightspeed,"Lexington Capital Partners VI, L.P.",2005.0,Florida SBA,2020-Q2,1.36,1.2997423987884291,0.064
+Lightspeed,"Lexington Co-Investment Partners 2005 (Pools I & II), L.P.",2005.0,Florida SBA,2020-Q2,1.42,1.2923654441064405,0.052
+Lightspeed,"Providence Equity Partners V, L.P.",2005.0,Massachusetts PRIM,2020-Q1,1.2070984157683904,1.1941399653999538,0.0303956562677099
+Lightspeed,"Providence Equity Partners V, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",,1.2379761095474555,3.04
+Lightspeed,"Quadrangle Capital Partners II, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",1.5107383924304534,1.50510733478281,6.85
+Lightspeed,"Rockpoint Real Estate Fund II, L.P.",2005.0,Louisiana TRSL,2019-Q4,0.84,0.8889785487679538,-0.0276
+Lightspeed,"Sankaty Credit Opportunities II, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",1.2879073333333333,1.2876555733333332,3.94
+Lightspeed,"Spark Capital, L.P.",2005.0,Massachusetts PRIM,2020-Q1,1.4063718436527155,1.353405569007264,0.083951176780588
+Lightspeed,"Starwood Opportunity Fund VII, L.P.",2005.0,Louisiana TRSL,2019-Q4,0.81,0.78028066,-0.023
+Lightspeed,"Thoma Cressey Fund VIII, L.P.",2005.0,Florida SBA,2020-Q2,2.93,2.9262034378159756,0.183
+Lightspeed,"TowerBrook Investors II, L.P.",2005.0,Florida SBA,2020-Q2,1.8,1.7815069651272897,0.094
+Lightspeed,"Vestar Capital Partners V, L.P.",2005.0,CalSTRS,"FYE June 30, 2025",,1.3239555780050296,3.88
+Lightspeed,"Warburg Pincus Private Equity IX, L.P.",2005.0,Florida SBA,2020-Q2,1.72,1.69090516,0.0969999999999999
+Lightspeed,"Warburg, Pincus Private Equity IX, L.P.",2005.0,Louisiana TRSL,2019-Q4,1.76,1.7143101705426356,0.0973
+Lightspeed,"Wellspring Capital Partners IV, L.P.",2005.0,Florida SBA,2020-Q2,1.4,1.4013198575604575,0.066
+Lightspeed,"Weston Presidio V, L.P.",2005.0,Massachusetts PRIM,2020-Q1,2.3151600675808504,2.245218372112628,0.1528983548828055
+Lightspeed,"Apollo Investment Fund VI, L.P.",2006.0,CalSTRS,"FYE June 30, 2025",1.6845520094280797,1.6667603548507497,8.57
+Lightspeed,"Apollo Investment Fund VI, L.P.",2006.0,CalPERS,unknown,1.4166023443646831,1.406368848328427,0.0819999999999999
+Lightspeed,"ArcLight Energy Partners Fund III, L.P.",2006.0,CalPERS,unknown,1.4835721294934656,1.4835721294934656,0.086
+Lightspeed,"Austin Ventures IX, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.3194275941542934,1.2277032389733942,0.0464942451577882
+Lightspeed,Blackstone Capital Partners V L.P.,2006.0,CalSTRS,"FYE June 30, 2025",1.7086747006457814,1.706343075851628,8.37
+Lightspeed,Blackstone Capital Partners V L.P.,2006.0,CalPERS,unknown,1.5383769032497376,1.5383769032497376,0.078
+Lightspeed,"Blackstone Capital Partners V, L.P.",2006.0,UC Regents,2024-Q2,1.57,1.57404062199504,0.077
+Lightspeed,"Blackstone Capital Partners V, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.6258271749872537,1.5830301431669047,0.0755066408749112
+Lightspeed,"Blackstone Real Estate Partners V, L.P.",2006.0,Louisiana TRSL,2019-Q4,2.08,2.2161949111101724,0.1079
+Lightspeed,"CVI Global Value Fund, L.P.",2006.0,Florida SBA,2020-Q2,2.31,2.278644252631579,0.212
+Lightspeed,"Carlyle Europe Partners III, L.P.",2006.0,Florida SBA,2020-Q2,1.61,1.6122322237495523,0.129
+Lightspeed,"China Privatization Fund (Del), L.P.",2006.0,CalPERS,unknown,1.9246944750782249,1.9246944750782249,0.1369999999999999
+Lightspeed,"Clearwater Capital Partners Fund III, L.P.",2006.0,CalPERS,unknown,1.0916119866666667,1.046879033333333,0.013
+Lightspeed,"Drum Capital Management Special Situation Partners II, L.P.",2006.0,Florida SBA,2020-Q2,1.52,1.2238685946231886,0.065
+Lightspeed,"Fairview Ventures III, L.P.",2006.0,Florida SBA,2020-Q2,1.83,1.8284277371273712,0.118
+Lightspeed,"First Reserve Fund XI, L.P.",2006.0,Massachusetts PRIM,2020-Q1,0.6557396611171582,0.6546586264458315,-0.1009289194232063
+Lightspeed,"First Reserve Fund XI, L.P.",2006.0,CalPERS,unknown,0.6853752341694594,0.6853752341694594,-0.095
+Lightspeed,"First Reserve Fund XI, L.P.",2006.0,Louisiana TRSL,2019-Q4,0.69,0.6693347902642895,-0.0817
+Lightspeed,"First Reserve Fund XI, L.P.",2006.0,Florida SBA,2020-Q2,0.63,0.63007054,-0.102
+Lightspeed,"Francisco Partners II, L.P.",2006.0,CalPERS,unknown,1.652784704521754,1.648696092779633,0.104
+Lightspeed,"Gleacher Mezzanine Fund II, L.P.",2006.0,Louisiana TRSL,2019-Q4,1.33,1.4454606613262164,0.1058
+Lightspeed,"Green Equity Investors V, L.P.",2006.0,Florida SBA,2020-Q2,1.94,1.940140924319818,0.174
+Lightspeed,"Grove Street Partners Buyout, L.P.",2006.0,Florida SBA,2020-Q2,1.61,1.4644043691100292,0.102
+Lightspeed,"Hellman & Friedman Capital Partners VI, L.P.",2006.0,Florida SBA,2020-Q2,1.79,1.7873823366170776,0.126
+Lightspeed,"Highland Capital Partners VII, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.4838006484836224,1.1728752945771093,0.0585827489590757
+Lightspeed,KKR 2006 Fund L.P.,2006.0,CalPERS,unknown,1.5799324958459626,1.5799324958459626,0.0819999999999999
+Lightspeed,"KKR 2006 Fund, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.733565297800177,1.4944068257555023,0.0892336294517604
+Lightspeed,"Lindsay Goldberg & Bessemer II, L.P.",2006.0,Louisiana TRSL,2019-Q4,1.43,1.532342925705759,0.0711
+Lightspeed,"Lindsay, Goldberg & Bessemer II, L.P.",2006.0,Florida SBA,2020-Q2,1.48,1.4821702230188851,0.08
+Lightspeed,"M/C Venture Partners VI, L.P.",2006.0,Massachusetts PRIM,2020-Q1,2.121507226953037,2.1177650657330043,0.1335113851743751
+Lightspeed,"Madison Dearborn Capital Partners V, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.6014548784752207,1.5870540015937862,0.0710842400326183
+Lightspeed,"Madison Dearborn Capital Partners V, L.P.",2006.0,CalPERS,unknown,1.54979019626055,1.54979019626055,0.075
+Lightspeed,"Menlo Ventures X, L.P.",2006.0,Massachusetts PRIM,2020-Q1,2.093596451175794,2.0440800394110883,0.1064866651904473
+Lightspeed,"New Enterprise Associates 12, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.4143357563214416,1.3062162842402236,0.0655271957611374
+Lightspeed,"Nordic Capital Fund VI, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.5279275724693566,1.5253949985120314,0.0687600628143987
+Lightspeed,"Onex Partners II, L.P.",2006.0,CalSTRS,"FYE June 30, 2025",1.815091437854016,1.8116342734506523,12.66
+Lightspeed,"Permira European Fund IV, L.P.",2006.0,Florida SBA,2020-Q2,1.56,1.5625544633393864,0.083
+Lightspeed,Permira IV L.P.2,2006.0,CalPERS,unknown,1.5861098267246825,1.4156006113605135,0.0819999999999999
+Lightspeed,"Permira IV, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.5700344714323078,1.4509722595558927,0.0870131853995206
+Lightspeed,"Polaris Venture Partners V, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.721701147755102,1.129207331428571,0.0813613154940453
+Lightspeed,"Pond Ventures III, L.P.",2006.0,CalSTRS,"FYE June 30, 2025",,1.8838712963864617,12.36
+Lightspeed,"Providence Equity Partners VI, L.P.",2006.0,Florida SBA,2020-Q2,1.46,1.4631562011347892,0.073
+Lightspeed,"Quad-C Partners VII, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.559096677828159,1.557333818419482,0.1079997067680388
+Lightspeed,"RCP Advisors Fund IV, L.P.",2006.0,Florida SBA,2020-Q2,1.88,1.802788332021668,0.131
+Lightspeed,"Sacramento Private Equity Partners, L.P.",2006.0,CalPERS,unknown,1.9879550483607753,1.90640595512708,0.1159999999999999
+Lightspeed,"Spectrum Equity Investors V, L.P.",2006.0,Massachusetts PRIM,2020-Q1,2.4382076440439215,2.4302776354535993,0.179741198542057
+Lightspeed,"Sterling American Property V, L.P.",2006.0,Louisiana TRSL,2019-Q4,0.92,0.8906974715488336,-0.0091
+Lightspeed,"TA X, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.2847909370111346,1.284388912917921,0.0497152645368237
+Lightspeed,"TCV VI, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.5998404430155062,1.463519802672561,0.1265318403201893
+Lightspeed,"TPG Biotechnology Partners II, L.P.",2006.0,CalPERS,unknown,1.2079328577473805,1.2079328577473805,0.0289999999999999
+Lightspeed,"TPG Partners V, L.P.",2006.0,CalSTRS,"FYE June 30, 2025",,1.4356546129295311,4.8
+Lightspeed,"TPG Partners V, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.3577080837152629,1.3398139389758668,0.0480307829491084
+Lightspeed,"TPG Partners V, L.P.",2006.0,Florida SBA,2020-Q2,1.18,1.1785343474753232,0.026
+Lightspeed,"TPG Partners V, L.P.",2006.0,CalPERS,unknown,1.2414888406307971,1.2414888406307971,0.037
+Lightspeed,"TPG Partners V, L.P.",2006.0,Louisiana TRSL,2019-Q4,1.38,1.352491496137263,0.0496
+Lightspeed,Thomas H. Lee Equity Fund VI L.P.,2006.0,Florida SBA,2020-Q2,1.89,1.8931966248896075,0.123
+Lightspeed,"Thomas H. Lee Equity Fund VI, L.P",2006.0,CalPERS,unknown,1.3807203093060418,1.3807203093060418,0.07
+Lightspeed,"Thomas H. Lee Equity Fund VI, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.5976922029371288,1.559775229297134,0.0775377778986476
+Lightspeed,Triton Fund II L.P.,2006.0,CalSTRS,"FYE June 30, 2025",2.290577676394596,2.2857162202617136,18.57
+Lightspeed,"Vestar Capital Partners V, L.P.",2006.0,Massachusetts PRIM,2020-Q1,1.3048637859535783,1.2002595452158151,0.0376251950820713
+Lightspeed,"AACP AP Investors, L.P.",2007.0,CalPERS,unknown,1.1312510890602214,1.1312510890602214,0.02
+Lightspeed,"Affinity Asia Pacific Fund III, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",1.4412227625366505,1.4303257561867768,8.96
+Lightspeed,"Apollo Credit Liquidity Fund, L.P.",2007.0,Florida SBA,2020-Q2,1.46,1.4573985546092498,0.061
+Lightspeed,"Apollo Investment Fund VII, L.P.",2007.0,Florida SBA,2020-Q2,1.94,1.9439977009267344,0.23
+Lightspeed,"Apollo Investment Fund VII, L.P.",2007.0,Louisiana TRSL,2019-Q4,1.87,1.8254311591707268,0.2246
+Lightspeed,"Apollo Special Opportunities Managed Account, L.P.",2007.0,CalPERS,unknown,1.37284250125,1.3658440275,0.038
+Lightspeed,"ArcLight Energy Partners Fund IV, L.P.",2007.0,CalPERS,unknown,1.520155003023674,1.5182719307704953,0.126
+Lightspeed,"Ares Corporate Opportunities Fund III, L.P.",2007.0,Florida SBA,2020-Q2,2.61,2.469927192927369,0.217
+Lightspeed,Baring Vostok Private Equity Fund IV L.P. / Supplemental,2007.0,CalPERS,unknown,1.0899096464018962,1.0819472859821937,0.016
+Lightspeed,"BlackRock Carbon Capital III, L.P.",2007.0,Florida SBA,2020-Q2,1.26,1.2566231217497352,0.093
+Lightspeed,"Blackstone Capital Partners VI, L.P.",2007.0,Florida SBA,2020-Q2,1.55,0.9424278746494998,0.106
+Lightspeed,"Blackstone Credit Liquidity Partners, L.P.",2007.0,Florida SBA,2020-Q2,1.24,1.2421643867272858,0.089
+Lightspeed,"CVC European Equity Partners V, L.P.",2007.0,Florida SBA,2020-Q2,2.07,1.9422294124971835,0.1669999999999999
+Lightspeed,"Carlyle Europe Partners III, L.P.",2007.0,CalPERS,unknown,1.6130882912586608,1.6111498140369316,0.111
+Lightspeed,"Carlyle Europe Partners III, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",1.6847257610314472,1.6803884890018888,11.08
+Lightspeed,"Carlyle Partners V, L.P.",2007.0,CalPERS,unknown,1.6366011007931804,1.616786771836622,0.128
+Lightspeed,"Carlyle Partners V, L.P.",2007.0,Massachusetts PRIM,2020-Q1,1.7675084752641332,1.649044929844278,0.1352129212433658
+Lightspeed,"Carlyle Partners V, L.P.",2007.0,Florida SBA,2020-Q2,1.81,1.810500201515519,0.135
+Lightspeed,"Carlyle Partners V, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",1.950678368298581,1.920923429981696,13.51
+Lightspeed,"Carlyle Realty Partners V, L.P.",2007.0,Louisiana TRSL,2019-Q4,1.69,1.7174576111039443,0.0859
+Lightspeed,"Cressey & Company Fund IV, L.P.",2007.0,Florida SBA,2020-Q2,2.21,2.18727448131991,0.221
+Lightspeed,"EMAlternatives Investments, L.P.",2007.0,CalPERS,unknown,1.1768187812734785,1.0883617473367322,0.031
+Lightspeed,"EnCap Energy Capital Fund VII, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",,1.362748598557085,14.35
+Lightspeed,"Flagship Ventures Fund 2007, L.P.",2007.0,Massachusetts PRIM,2020-Q1,1.816597253481883,1.581248483197638,0.1114603083187237
+Lightspeed,"GI Partners Fund III, L.P.",2007.0,Florida SBA,2020-Q2,1.62,1.6115710734526285,0.132
+Lightspeed,"GSO Capital Opportunities Fund, L.P.",2007.0,Florida SBA,2020-Q2,1.71,1.6943646309915668,0.183
+Lightspeed,"Genstar Capital Partners V, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",,2.411035500893267,15.53
+Lightspeed,"Gores Capital Partners II, L.P.",2007.0,Massachusetts PRIM,2020-Q1,1.3058149690538972,1.2731138529184745,0.072657785023329
+Lightspeed,"Gores Capital Partners II, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",1.3540541256615335,1.3488546195518014,7.2
+Lightspeed,"Gores Capital Partners II, L.P.",2007.0,Florida SBA,2020-Q2,1.14,1.138663327970988,0.038
+Lightspeed,"Gores Capital Partners II, L.P.",2007.0,Louisiana TRSL,2019-Q4,1.33,1.3568355727632224,0.0728
+Lightspeed,"Green Credit Investors, L.P.",2007.0,Florida SBA,2020-Q2,1.14,1.135220324,0.083
+Lightspeed,"Green Equity Investors V, L.P.",2007.0,CalPERS,unknown,2.298005666530444,2.2965271369983244,0.184
+Lightspeed,"Green Equity Investors V, L.P.",2007.0,Louisiana TRSL,2019-Q4,2.27,1.9793473682639755,0.1844
+Lightspeed,"Hellman & Friedman Capital Partners VI, L.P.",2007.0,Massachusetts PRIM,2020-Q1,1.8488382171691,1.8096730176596407,0.1286469080512252
+Lightspeed,"Insight Venture Partners VI, L.P.",2007.0,Massachusetts PRIM,2020-Q1,2.489687612853178,2.4825035190257405,0.1924805273585453
+Lightspeed,KKR 2006 Fund L.P.,2007.0,CalSTRS,"FYE June 30, 2025",,1.7772455368421858,8.35
+Lightspeed,KKR Asian Fund L.P.,2007.0,CalPERS,unknown,1.6905339729149962,1.6902912498378488,0.136
+Lightspeed,"KKR European Fund III, L.P.",2007.0,Florida SBA,2020-Q2,1.05,1.0523810397180802,0.018
+Lightspeed,"Kelso Investment Associates VIII, L.P.",2007.0,Massachusetts PRIM,2020-Q1,1.3157555961845286,1.1594521377168032,0.0584510113284161
+Lightspeed,"Kelso Investment Associates VIII, L.P.",2007.0,Florida SBA,2020-Q2,1.58,1.577576848636481,0.138
+Lightspeed,"Kohlberg Investors VI, L.P.",2007.0,Florida SBA,2020-Q2,1.67,1.6740272247064327,0.158
+Lightspeed,"Kohlberg Investors VI, L.P.",2007.0,Louisiana TRSL,2019-Q4,1.77,1.8803171096529268,0.1654
+Lightspeed,"Montreux Equity Partners IV, L.P.",2007.0,Massachusetts PRIM,2020-Q1,1.3332690417896291,0.5508914497369268,0.0427566017084651
+Lightspeed,"Morgan Stanley Real Estate Mezzanine Fund, L.P.",2007.0,Florida SBA,2020-Q2,0.44,0.4365107073749003,-0.258
+Lightspeed,"Navis Asia Fund V, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",1.5564778782280635,1.4427842837848162,6.53
+Lightspeed,"New Mountain Partners III, L.P.",2007.0,CalPERS,unknown,2.2724246135857062,2.2392743357708005,0.146
+Lightspeed,"New Mountain Partners III, L.P.",2007.0,Florida SBA,2020-Q2,2.23,1.4172342058952574,0.134
+Lightspeed,"OCM Opportunities Fund VII, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",,1.3838352127291595,7.3
+Lightspeed,"OCM Opportunities Fund VIIb, L.P.",2007.0,Florida SBA,2020-Q2,1.73,1.7295192888888888,0.1639999999999999
+Lightspeed,"PAI Europe V, L.P.",2007.0,Florida SBA,2020-Q2,1.3,1.300982813968247,0.07
+Lightspeed,"Paul Capital Top Tier Investments IV, L.P.",2007.0,Florida SBA,2020-Q2,2.0,1.9981374402919776,0.139
+Lightspeed,"Platinum Equity Capital Partners II, L.P.",2007.0,Florida SBA,2020-Q2,1.6,1.5563982455018546,0.121
+Lightspeed,"Platinum Equity Capital Partners II, L.P.",2007.0,Louisiana TRSL,2019-Q4,1.64,1.6153362463594678,0.1245
+Lightspeed,"Pomona Capital VII (Combined), L.P.",2007.0,Florida SBA,2020-Q2,1.31,1.3076795050652867,0.079
+Lightspeed,"Providence Equity Partners VI, L.P.",2007.0,Massachusetts PRIM,2020-Q1,1.2663313699259438,1.0755420138624538,0.0456507107945344
+Lightspeed,"Providence Equity Partners VI, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",1.4895924268048404,1.4858645149545968,5.91
+Lightspeed,"Providence Equity Partners VI, L.P.",2007.0,Louisiana TRSL,2019-Q4,1.32,1.1467962223589503,0.0487999999999999
+Lightspeed,"RCP Advisors Fund V, L.P.",2007.0,Florida SBA,2020-Q2,1.8,1.6369738977170514,0.143
+Lightspeed,"Rockpoint Real Estate Fund III, L.P.",2007.0,Louisiana TRSL,2019-Q4,1.4,1.4743809440673328,0.1372
+Lightspeed,SAIF Partners III L.P.,2007.0,CalPERS,unknown,1.8168586872071055,1.2386833203921583,0.063
+Lightspeed,"SCP Vitalife Partners II, L.P.",2007.0,Massachusetts PRIM,2020-Q1,0.3944880050532889,,-0.0995163186316346
+Lightspeed,"Sherbrooke Capital Health & Wellness II, L.P.",2007.0,Massachusetts PRIM,2020-Q1,1.301734269954735,0.8769244161983318,0.1190843212850584
+Lightspeed,"Silver Lake Partners III, L.P.",2007.0,CalPERS,unknown,1.9434745199870955,1.8913113331667015,0.185
+Lightspeed,"TCW/Crescent Mezzanine Partners V, L.P.",2007.0,Florida SBA,2020-Q2,1.35,1.3058095249141926,0.1009999999999999
+Lightspeed,"TPG - TAC 2007, L.P.",2007.0,Florida SBA,2020-Q2,1.06,1.0614796767587995,0.021
+Lightspeed,"TPG Asia V, L.P.",2007.0,CalPERS,unknown,1.4327515307639094,1.3945385169731863,0.063
+Lightspeed,"TPG Asia V, L.P.",2007.0,CalSTRS,"FYE June 30, 2025",1.4961502974962515,1.4519569899873486,6.27
+Lightspeed,"TPG Partners VI, L.P.",2007.0,Florida SBA,2020-Q2,1.42,1.424870583644835,0.113
+Lightspeed,"TPG STAR, L.P.",2007.0,CalPERS,unknown,1.2790558824731522,1.2772851312136544,0.062
+Lightspeed,"TowerBrook Investors III, L.P.",2007.0,Florida SBA,2020-Q2,1.42,1.4057220682334604,0.088
+Lightspeed,"Tricon IX, L.P.",2007.0,Florida SBA,2020-Q2,1.64,1.4661632391198771,0.096
+Lightspeed,"Vicente Capital Partners Growth Equity Fund, L.P.",2007.0,CalPERS,unknown,1.3958552572805356,1.386256296860733,0.057
+Lightspeed,"Vista Equity Partners Fund III, L.P.",2007.0,Massachusetts PRIM,2020-Q1,2.4619323687343986,2.387324669531067,0.2688420789651195
+Lightspeed,"Warburg Pincus Private Equity X, L.P.",2007.0,Florida SBA,2020-Q2,1.73,1.54430356,0.092
+Lightspeed,"Warburg, Pincus Private Equity X, L.P.",2007.0,Louisiana TRSL,2019-Q4,1.67,1.4928558573715172,0.089
+Lightspeed,"Wayzata Opportunities Fund II, L.P. 2",2007.0,Florida SBA,2020-Q2,,,0.165
+Lightspeed,Advent International GPE VI L.P.,2008.0,Massachusetts PRIM,2020-Q1,1.9660597331137348,1.864310976418892,0.1566748112069296
+Lightspeed,"Advent International GPE VI-D, L.P.",2008.0,Florida SBA,2020-Q2,2.09,1.950560620689655,0.1669999999999999
+Lightspeed,"American Securities Partners V, L.P.",2008.0,Massachusetts PRIM,2020-Q1,1.849640299880744,1.8456733900590572,0.2020310477349054
+Lightspeed,"Apollo European Principal Finance Fund, L.P.",2008.0,CalPERS,unknown,1.2153474315942512,1.2147208089211117,0.119
+Lightspeed,"Apollo Investment Fund VII, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",,2.0591384841088405,22.53
+Lightspeed,"Ares Corporate Opportunities Fund III, L.P.",2008.0,CalPERS,unknown,2.071220445466434,2.0688594154724225,0.2019999999999999
+Lightspeed,"Blue Run Ventures IV, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",2.445280658328779,2.360955359929783,22.33
+Lightspeed,"Bridgepoint Europe IV, L.P.",2008.0,Massachusetts PRIM,2020-Q1,1.5289298469238932,1.378695088743311,0.0960965839596964
+Lightspeed,CVC European Equity Partners V (B) L.P.,2008.0,CalPERS,unknown,1.8346324628850563,1.815303663914876,0.1639999999999999
+Lightspeed,"CVC European Equity Partners V, L.P.",2008.0,Louisiana TRSL,2019-Q4,1.88,1.879950397132637,0.1417
+Lightspeed,"CVC European Equity Partners V, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",2.2544472554983424,2.224734178293186,16.47
+Lightspeed,"CVC European Equity Partners V, L.P.",2008.0,Massachusetts PRIM,2020-Q1,1.9928361585078784,1.9083337989145417,0.1636992041363164
+Lightspeed,"California Asia Investors, L.P.",2008.0,CalPERS,unknown,4.23033392612178,4.186180595903811,0.265
+Lightspeed,"Candover 2008 Fund US No. 1, L.P.",2008.0,Massachusetts PRIM,2020-Q1,0.1438208937238084,0.1438208412952251,-0.7176697160441312
+Lightspeed,"Carlyle Asia Growth Partners IV, L.P.",2008.0,Florida SBA,2020-Q2,1.07,0.9234470738505104,0.017
+Lightspeed,"Carlyle Asia Partners III, L.P.",2008.0,CalPERS,unknown,1.572536441952077,1.572536441952077,0.12
+Lightspeed,"Carlyle Mezzanine Partners II, L.P.",2008.0,Florida SBA,2020-Q2,1.25,1.2381295108482375,0.063
+Lightspeed,"Charterhouse Capital Partners IX, L.P.",2008.0,Florida SBA,2020-Q2,1.35,1.3492939412867375,0.1369999999999999
+Lightspeed,"Energy Capital Partners II, L.P.",2008.0,Florida SBA,2020-Q2,1.43,1.3839804255461283,0.083
+Lightspeed,"Exponent Private Equity Partners II, L.P.",2008.0,Massachusetts PRIM,2020-Q1,1.4762000809552491,1.462271385137324,0.0935457415989789
+Lightspeed,"Falcon Strategic Partners III, L.P.",2008.0,Louisiana TRSL,2019-Q4,1.44,1.3424981348424971,0.0902999999999999
+Lightspeed,"Falcon Strategic Partners III, L.P.",2008.0,Florida SBA,2020-Q2,1.54,1.366724550061112,0.094
+Lightspeed,"First Reserve Fund XII, L.P.",2008.0,Louisiana TRSL,2019-Q4,0.64,0.5377709625463274,-0.1001
+Lightspeed,"First Reserve Fund XII, L.P.",2008.0,Florida SBA,2020-Q2,0.56,0.4732948574081669,-0.128
+Lightspeed,"FountainVest China Growth Capital Fund, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",1.4586469671436366,1.456888553294539,6.64
+Lightspeed,"GSO Capital Opportunities Fund, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",1.6743786799034484,1.6468011107342888,17.08
+Lightspeed,"Grove Street Partners Ventures II, L.P.",2008.0,Florida SBA,2020-Q2,2.97,1.7113810207123343,0.21
+Lightspeed,"IFM Global Infrastructure Fund, L.P.",2008.0,Florida SBA,2020-Q2,1.8,0.0,0.11
+Lightspeed,"KKR European Fund III, L.P.",2008.0,CalPERS,unknown,1.4111842940720376,1.4111842940720376,0.095
+Lightspeed,"Liberty Partners Group II, L.P.",2008.0,Florida SBA,2020-Q2,0.0,0.0,-1.0
+Lightspeed,"Lindsay Goldberg III, L.P.",2008.0,Louisiana TRSL,2019-Q4,1.36,1.5267150570443837,0.0813
+Lightspeed,"Lindsay, Goldberg & Bessemer III, L.P.",2008.0,Florida SBA,2020-Q2,1.18,1.1802562937057683,0.068
+Lightspeed,"Nordic Capital Fund VII, L.P.",2008.0,Massachusetts PRIM,2020-Q1,1.3564998399832238,1.35182158043622,0.0543024883097175
+Lightspeed,"OCM Opportunities Fund VIIb, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",,1.856248994026089,16.4
+Lightspeed,"Olympus Growth Fund V, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",,2.207541480366495,15.73
+Lightspeed,"Onex Partners III, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",1.823965045433879,1.6643312743794296,11.23
+Lightspeed,"Pantheon Global Secondary Fund IV, L.P.",2008.0,Florida SBA,2020-Q2,1.56,1.346440015060241,0.13
+Lightspeed,"Providence TMT Special Situations Fund, L.P.",2008.0,Florida SBA,2020-Q2,1.77,1.7638843885923423,0.144
+Lightspeed,"RCP Advisors Fund VI, L.P.",2008.0,Florida SBA,2020-Q2,1.98,1.6267156373129503,0.158
+Lightspeed,"Riverside Capital Appreciation Fund 2008, L.P.",2008.0,Florida SBA,2020-Q2,1.32,1.3215545352533138,0.0819999999999999
+Lightspeed,"Riverside Europe Fund IV, L.P.",2008.0,Florida SBA,2020-Q2,1.04,1.041005270321836,0.015
+Lightspeed,"Sankaty Credit Opportunities IV, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",1.4876205010526315,1.480655187368421,11.58
+Lightspeed,"Shasta Ventures II, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",4.223613703703704,4.148546666666666,20.0
+Lightspeed,"Spark Capital II, L.P.",2008.0,Massachusetts PRIM,2020-Q1,4.2249982536,3.6021243336,0.5139592118886982
+Lightspeed,"Square Mile Partners III, L.P.",2008.0,Florida SBA,2020-Q2,1.35,1.3476542415765622,0.105
+Lightspeed,"TCV VII, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",3.1641579166666665,3.144138912601626,23.17
+Lightspeed,"TCV VII, L.P.",2008.0,Massachusetts PRIM,2020-Q1,2.9098394371277805,2.1977635980465955,0.2287522964471096
+Lightspeed,"TCW Crescent Mezzanine Partners V, L.P.",2008.0,Louisiana TRSL,2019-Q4,1.34,1.321693744147165,0.0957
+Lightspeed,"TPG Biotechnology Partners III, L.P.",2008.0,CalPERS,unknown,2.1715463379298243,2.121236076224182,0.11
+Lightspeed,"TPG Partners VI, L.P.",2008.0,Louisiana TRSL,2019-Q4,1.55,1.428606142151542,0.0977
+Lightspeed,"TPG Partners VI, L.P.",2008.0,Massachusetts PRIM,2020-Q1,1.49952986979305,1.323506989769398,0.1003962354400513
+Lightspeed,"TPG Partners VI, L.P.",2008.0,CalSTRS,"FYE June 30, 2025",1.5563209769575224,1.5472104669803766,9.38
+Lightspeed,"Thoma Bravo Fund IX, L.P.",2008.0,Massachusetts PRIM,2020-Q1,3.315636473078349,3.30697223921581,0.4399824426133661
+Lightspeed,"Thoma Bravo Fund IX, L.P.",2008.0,Florida SBA,2020-Q2,4.08,4.069153026989673,0.481
+Lightspeed,"Towerbrook Investors III, L.P.",2008.0,Massachusetts PRIM,2020-Q1,1.3007315154771617,1.2240209669790554,0.0854595056435298
+Lightspeed,"Trident V, L.P.",2008.0,Florida SBA,2020-Q2,1.79,1.184230870100259,0.118
+Lightspeed,"Union Square Ventures 2008, L.P.",2008.0,Massachusetts PRIM,2020-Q1,3.5896143894736845,2.473025021052631,0.200938949308203
+Lightspeed,"VSS Structured Capital II, L.P.",2008.0,Florida SBA,2020-Q2,2.01,1.909401280496235,0.247
+Lightspeed,"Walton Street Real Estate Fund VI, L.P.",2008.0,Louisiana TRSL,2019-Q4,1.57,1.153210200247013,0.0853999999999999
+Lightspeed,"Yucaipa American Alliance Fund II, L.P.",2008.0,CalPERS,unknown,1.701151329990555,1.093301211239148,0.076
+Lightspeed,"Yucaipa Corporate Initiatives Fund II, L.P.",2008.0,CalPERS,unknown,0.905710246760796,0.8937310283701464,-0.013
+Lightspeed,"Apollo European Principal Finance Fund, L.P.",2009.0,Louisiana TRSL,2019-Q4,1.38,1.4498588575991065,0.1637
+Lightspeed,"Blackstone / GSO Capital Solutions Fund, L.P.",2009.0,Florida SBA,2020-Q2,1.34,1.3263747230740033,0.096
+Lightspeed,"Charlesbank Equity Fund VII, L.P.",2009.0,Massachusetts PRIM,2020-Q1,1.979195889937408,1.715996584223958,0.2327205890522453
+Lightspeed,"Charlesbank Equity Fund VII, L.P.",2009.0,Florida SBA,2020-Q2,2.21,1.8557241839561691,0.2339999999999999
+Lightspeed,"Charterhouse Capital Partners IX, L.P.",2009.0,Massachusetts PRIM,2020-Q1,1.2704957346929435,1.1472352494131726,0.0866614521096131
+Lightspeed,"FS Equity Partners VI, L.P.",2009.0,Florida SBA,2020-Q2,2.94,2.457092009301177,0.2289999999999999
+Lightspeed,"Gores Capital Partners III, L.P.",2009.0,Florida SBA,2020-Q2,1.0,0.9972904138014816,-0.001
+Lightspeed,"Hellman & Friedman Capital Partners VII, L.P.",2009.0,Florida SBA,2020-Q2,2.91,1.4983626495885891,0.241
+Lightspeed,"KPS Special Situations Supplemental Fund III, L.P.",2009.0,Florida SBA,2020-Q2,2.67,2.655993286290084,0.226
+Lightspeed,"Khosla Ventures III, L.P.",2009.0,CalPERS,unknown,1.849507005,1.814230595,0.0969999999999999
+Lightspeed,"Khosla Ventures Seed, L.P.",2009.0,CalPERS,unknown,1.177716633333333,0.20807215,0.0139999999999999
+Lightspeed,"Lexington Capital Partners VII, L.P.",2009.0,Florida SBA,2020-Q2,1.57,1.3403873175472731,0.135
+Lightspeed,"Oaktree Opportunities Fund VIII, L.P.",2009.0,Florida SBA,2020-Q2,1.44,1.42025917,0.09
+Lightspeed,"Paul Capital Top Tier Special Opportunities Fund, L.P.",2009.0,Florida SBA,2020-Q2,0.77,0.59676726614144,-0.035
+Lightspeed,"RCP Advisors Fund VII, L.P.",2009.0,Florida SBA,2020-Q2,1.9,1.3042110605524997,0.1689999999999999
+Lightspeed,"SV Life Sciences Fund V, L.P.",2009.0,Massachusetts PRIM,2020-Q1,1.1564300322943186,0.767629629887079,0.048148606762783
+Lightspeed,"Snow Phipps II, L.P.",2009.0,Florida SBA,2020-Q2,1.37,1.365529322309595,0.146
+Lightspeed,"Summit Subordinated Debt Fund IV, L.P.",2009.0,CalSTRS,"FYE June 30, 2025",1.6377580325481684,1.624927327175521,9.68
+Lightspeed,"TA Associates XI, L.P.",2009.0,Florida SBA,2020-Q2,1.55,1.5501635407854986,0.1969999999999999
+Lightspeed,"Varde Partners Fund X, L.P.",2009.0,Florida SBA,2020-Q2,1.8,1.65460155,0.106
+Lightspeed,"Wayzata Opportunities Fund III, L.P.",2009.0,Florida SBA,2020-Q2,0.94,0.5690543448074252,-0.016
+Lightspeed,"Wellspring Capital Partners V, L.P.",2009.0,Florida SBA,2020-Q2,1.57,1.5715640224132483,0.163
+Lightspeed,"Welsh, Carson, Anderson & Stowe XI, L.P.",2009.0,CalPERS,unknown,1.663115672,1.661207464,0.115
+Lightspeed,"Welsh, Carson, Anderson & Stowe XI, L.P.",2009.0,CalSTRS,"FYE June 30, 2025",1.6584767393711304,1.656581876678798,11.45
+Lightspeed,"Westview Capital Partners II, L.P.",2009.0,Massachusetts PRIM,2020-Q1,2.6247012822519724,2.4345047232008934,0.2463230064976062
+Lightspeed,"ABRY Senior Equity Partners III, L.P.",2010.0,Florida SBA,2020-Q2,1.67,1.6350864418325763,0.1639999999999999
+Lightspeed,"AXA Secondary Fund V, L.P.",2010.0,Florida SBA,2020-Q2,1.6,1.5923903855599733,0.163
+Lightspeed,"BC European Capital IX, L.P.",2010.0,Florida SBA,2020-Q2,1.09,1.0934210121830397,0.0579999999999999
+Lightspeed,"Bayview Opportunity Master Fund II-B, L.P.",2010.0,Florida SBA,2020-Q2,1.51,1.50785311,0.181
+Lightspeed,Blackstone Real Estate Special Situation Fd II L.P.,2010.0,Louisiana TRSL,2019-Q4,1.2,1.2372910701861135,0.0892
+Lightspeed,"CVE-Kauffman Fellows Endowment Fund II, L.P.",2010.0,Florida SBA,2020-Q2,2.8,0.7567303323259141,0.16
+Lightspeed,"CVI Credit Value Fund, L.P.",2010.0,Florida SBA,2020-Q2,2.25,2.209177147368421,0.1969999999999999
+Lightspeed,"Castlelake II, L.P.",2010.0,Florida SBA,2020-Q2,1.65,1.545084763935131,0.131
+Lightspeed,"Cortec Group Fund V, L.P.",2010.0,Florida SBA,2020-Q2,4.15,3.76399581517898,0.309
+Lightspeed,"EnCap Energy Capital Fund VIII, L.P.",2010.0,Florida SBA,2020-Q2,0.71,0.5493844683881475,-0.104
+Lightspeed,"EnCap Energy Capital Fund VIII, L.P.",2010.0,CalSTRS,"FYE June 30, 2025",1.0794948509632474,0.7237413063605955,1.23
+Lightspeed,"Flagship Ventures Fund IV, L.P.",2010.0,Massachusetts PRIM,2020-Q1,10.1871768685,1.4193292185,0.4540327404930637
+Lightspeed,"GSO Capital Opportunities Fund II, L.P.",2010.0,Florida SBA,2020-Q2,1.3,1.016121587859703,0.088
+Lightspeed,"Global Infrastructure Partners II, L.P.",2010.0,Florida SBA,2020-Q2,1.7,0.7234794559423631,0.162
+Lightspeed,"Gores Capital Partners III, L.P.",2010.0,Louisiana TRSL,2019-Q4,1.1,1.0821306964155082,0.0282
+Lightspeed,"Gores Capital Partners III, L.P.",2010.0,Massachusetts PRIM,2020-Q1,1.053529015417921,1.0127108763023882,0.0171870004059734
+Lightspeed,"Grove Street Partners Buyout II, L.P.",2010.0,Florida SBA,2020-Q2,1.42,0.642126614955668,0.11
+Lightspeed,"Highland Capital Partners VIII, L.P.",2010.0,Massachusetts PRIM,2020-Q1,1.2098434033333334,0.3641542033333333,0.0308506157177749
+Lightspeed,"Institutional Venture Partners XIII, L.P.",2010.0,Massachusetts PRIM,2020-Q1,1.71457251999704,1.2466418799970398,0.1117753131653116
+Lightspeed,"J.H. Whitney VII, L.P.",2010.0,Florida SBA,2020-Q2,1.76,0.7765141412809717,0.128
+Lightspeed,"Montagu Private Equity IV, L.P.",2010.0,Florida SBA,2020-Q2,1.57,1.389874580153364,0.133
+Lightspeed,"OCM Opportunities Fund VIIIb, L.P.",2010.0,Florida SBA,2020-Q2,1.28,1.02001022,0.049
+Lightspeed,"OrbiMed Private Investments IV, L.P.",2010.0,CalSTRS,"FYE June 30, 2025",3.1215443449026368,3.052679979777068,31.75
+Lightspeed,"Pharos Capital Partners III, L.P.",2010.0,Louisiana TRSL,2019-Q4,1.4,0.1608282288634496,0.106
+Lightspeed,"Providence TMT Debt Opportunity Fund II, L.P.",2010.0,Florida SBA,2020-Q2,1.5,1.4953656850592434,0.107
+Lightspeed,"Rembrandt Venture Partners II, L.P.",2010.0,Massachusetts PRIM,2020-Q1,1.0972050163399962,0.6664290204843659,0.0199788169829523
+Lightspeed,SAIF Partners IV L.P.,2010.0,CalPERS,unknown,1.5312270547167244,0.8330597834129303,0.051
+Lightspeed,"SAIF Partners IV, L.P.",2010.0,Massachusetts PRIM,2020-Q1,1.5763891199657594,0.4180558029437344,0.0796489905853425
+Lightspeed,"Spectrum Equity Investors VI, L.P.",2010.0,CalSTRS,"FYE June 30, 2025",2.7513270896715785,2.7237323334950307,21.83
+Lightspeed,"TA Subordinated Debt Fund III, L.P.",2010.0,CalSTRS,"FYE June 30, 2025",1.9973911794871797,1.9831933846153849,16.61
+Lightspeed,"TA XI, L.P.",2010.0,CalSTRS,"FYE June 30, 2025",3.790104657360406,3.665408794416244,26.59
+Lightspeed,"TA XI, L.P.",2010.0,Massachusetts PRIM,2020-Q1,2.351158914635652,1.8421768918819776,0.2265581153045422
+Lightspeed,"Union Square Ventures Opportunity Fund, L.P.",2010.0,Massachusetts PRIM,2020-Q1,3.6337321662100455,2.8543792894977167,0.5850603460935249
+Lightspeed,"ABRY Advanced Securities Fund II, L.P.",2011.0,Florida SBA,2020-Q2,1.84,1.7154927159657034,0.131
+Lightspeed,"ABRY Partners VII, L.P.",2011.0,Florida SBA,2020-Q2,1.78,1.7761658786385617,0.148
+Lightspeed,"American Securities Partners VI, L.P.",2011.0,Louisiana TRSL,2019-Q4,2.18,1.6955287044092415,0.2155999999999999
+Lightspeed,"American Securities Partners VI, L.P.",2011.0,Massachusetts PRIM,2020-Q1,1.914813143126782,1.5036552833263686,0.2052217089312839
+Lightspeed,"Bayview Opportunity Master Fund IIIb, L.P.",2011.0,Florida SBA,2020-Q2,1.43,1.4067244139845754,0.1009999999999999
+Lightspeed,"Berkshire Fund VIII, L.P.",2011.0,Massachusetts PRIM,2020-Q1,1.5389128999454542,0.9520841468722206,0.1259178957160417
+Lightspeed,"Berkshire Fund VIII, L.P.",2011.0,Florida SBA,2020-Q2,1.7,1.7044524221116226,0.161
+Lightspeed,Blackstone Capital Partners VI L.P.,2011.0,CalPERS,unknown,1.8005477312703535,1.6420415334064191,0.124
+Lightspeed,"Blackstone Capital Partners VI, L.P.",2011.0,CalSTRS,"FYE June 30, 2025",1.930223820711302,1.692292248615843,12.43
+Lightspeed,"Blackstone Capital Partners VI, L.P.",2011.0,Massachusetts PRIM,2020-Q1,1.402661752639621,0.8930075360915157,0.0918000707481255
+Lightspeed,"CalPERS Wellspring V, L.P.",2011.0,CalPERS,unknown,1.9828051863353473,1.774774617646058,0.214
+Lightspeed,"Carlyle Realty Partners VI, L.P.",2011.0,Louisiana TRSL,2019-Q4,1.88,2.009988333657014,0.1714999999999999
+Lightspeed,"Centerbridge Capital Partners II, L.P.",2011.0,Massachusetts PRIM,2020-Q1,0.8603731594135602,0.7316191549638142,-0.0545279681361261
+Lightspeed,"Colony Distressed Credit Fund II, L.P.",2011.0,Florida SBA,2020-Q2,1.32,1.165233359648767,0.075
+Lightspeed,"Cortec Group Fund V, L.P.",2011.0,CalSTRS,"FYE June 30, 2025",,4.348224342237718,30.85
+Lightspeed,"Denham Commodity Partners Fund VI, L.P.",2011.0,Massachusetts PRIM,2020-Q1,1.0160374450649508,0.5561335294500321,0.0057950094450767
+Lightspeed,"Denham Commodity Partners Fund VI, L.P.",2011.0,Florida SBA,2020-Q2,1.01,0.5844780985614267,0.003
+Lightspeed,Encap Energy Capital Fund VIII L.P.,2011.0,Louisiana TRSL,2019-Q4,0.75,0.5716305037872147,-0.0814
+Lightspeed,"Energy Spectrum Partners VI, L.P.",2011.0,CalSTRS,"FYE June 30, 2025",1.2720835340403158,1.2521433593915852,6.7
+Lightspeed,"Fairview Special Opportunities Fund, L.P.",2011.0,Florida SBA,2020-Q2,2.52,0.7756931337268193,0.206
+Lightspeed,"Francisco Partners III, L.P.",2011.0,CalPERS,unknown,3.435547932829442,3.0901599872374006,0.23
+Lightspeed,"Francisco Partners III, L.P.",2011.0,CalSTRS,"FYE June 30, 2025",3.4619743526377373,3.1132164016855586,22.95
+Lightspeed,"GGV Capital IV, L.P.",2011.0,CalSTRS,"FYE June 30, 2025",1.6877301346232192,1.6433072948956131,8.32
+Lightspeed,"GTCR Fund X, L.P.",2011.0,Massachusetts PRIM,2020-Q1,1.962865371817388,1.9316412447094815,0.2092968764311991
+Lightspeed,Gilde Buyout Fund IV L.P.,2011.0,Massachusetts PRIM,2020-Q1,1.4103247746186,1.2125581393387497,0.082871426127902
+Lightspeed,"Green Equity Investors VI, L.P.",2011.0,Florida SBA,2020-Q2,1.25,1.253985958756419,0.123
+Lightspeed,"Hellman & Friedman Capital Partners VII, L.P.",2011.0,CalSTRS,"FYE June 30, 2025",3.381861424362525,3.2972876097142025,24.53
+Lightspeed,"Hellman & Friedman Capital Partners VII, L.P.",2011.0,Massachusetts PRIM,2020-Q1,2.690416878742006,1.396443834734473,0.2303093586459614
+Lightspeed,"Insight Venture Partners Co-Investment II, L.P.",2011.0,Massachusetts PRIM,2020-Q1,2.9748601007075455,2.325784793038477,0.2245065209939573
+Lightspeed,"Insight Venture Partners VII, L.P.",2011.0,Massachusetts PRIM,2020-Q1,2.6656211927352023,2.025765060935761,0.2084943838045874
+Lightspeed,"JMI Equity Fund VII, L.P.",2011.0,CalSTRS,"FYE June 30, 2025",,2.515961040171475,17.73
+Lightspeed,"KKR Asian Fund II, L.P.",2011.0,Florida SBA,2020-Q2,1.37,0.5664065609781734,0.0969999999999999
+Lightspeed,"Keytone Ventures II, L.P.",2011.0,Massachusetts PRIM,2020-Q1,1.6204862382653062,0.2101550647959183,0.0783409962013715
+Lightspeed,"Oaktree Opportunities Fund IX, L.P.",2011.0,Florida SBA,2020-Q2,1.11,0.47895431,0.021
+Lightspeed,"Oaktree Opportunities Fund VIIIb, L.P.",2011.0,CalPERS,unknown,1.677741635,1.64010728,0.081
+Lightspeed,"Polaris Venture Partners VI, L.P.",2011.0,Massachusetts PRIM,2020-Q1,2.3819189394285716,0.7151564822857143,0.1871313760389771
+Lightspeed,"Providence Equity Partners VII, L.P.",2011.0,Florida SBA,2020-Q2,1.61,1.612940622646824,0.212
+Lightspeed,"RCP Advisors Fund VIII, L.P.",2011.0,Florida SBA,2020-Q2,1.6,0.761343395208528,0.161
+Lightspeed,"Silicon Valley Bank SIF V, L.P.",2011.0,Florida SBA,2020-Q2,2.8,0.8682118861296184,0.192
+Lightspeed,"Sofinnova Venture Partners VIII, L.P.",2011.0,Massachusetts PRIM,2020-Q1,1.5759144735,1.2712575235,0.2122847325231085
+Lightspeed,"Sofinnova Venture Partners VIII, L.P.",2011.0,CalSTRS,"FYE June 30, 2025",,1.730943033333333,21.89
+Lightspeed,"Spark Capital III, L.P.",2011.0,Massachusetts PRIM,2020-Q1,3.3881006322,1.3458935322,0.3189654335931334
+Lightspeed,"TCW/Crescent Mezzanine Partners VI, L.P.",2011.0,Florida SBA,2020-Q2,1.3,0.9964804219256714,0.0819999999999999
+Lightspeed,"TPG Growth Fund II, L.P.",2011.0,Florida SBA,2020-Q2,1.83,1.3073497591654344,0.144
+Lightspeed,"Thoma Bravo Fund X, L.P.",2011.0,Florida SBA,2020-Q2,3.8,3.0522378493441713,0.3939999999999999
+Lightspeed,"Union Square Ventures 2012 Fund, L.P.",2011.0,Massachusetts PRIM,2020-Q1,3.8880416399286992,0.5218903386809269,0.2589112493556941
+Lightspeed,"Vista Equity Partners IV, L.P.",2011.0,Massachusetts PRIM,2020-Q1,1.8640281795043423,1.2915628165204445,0.1554451829670352
+Lightspeed,"W Capital Partners III, L.P.",2011.0,Florida SBA,2020-Q2,1.31,0.669133768040496,0.08
+Lightspeed,"Warburg Pincus Private Equity Fund XI, L.P.",2011.0,Florida SBA,2020-Q2,1.57,1.02727483,0.114
+Lightspeed,"ABRY Senior Equity Partners IV, L.P.",2012.0,Florida SBA,2020-Q2,1.64,1.3448897998131937,0.142
+Lightspeed,"AXA LBO Fund V, L.P.",2012.0,Florida SBA,2020-Q2,1.55,1.151966255581071,0.115
+Lightspeed,"Advent International GPE VII, L.P.",2012.0,Massachusetts PRIM,2020-Q1,1.596331539746953,0.9983405195904872,0.1212180126820129
+Lightspeed,"Advent International GPE VII-C, L.P.",2012.0,CalPERS,unknown,1.810293820955336,1.726841583604167,0.132
+Lightspeed,"Advent International GPE VII-D, L.P.",2012.0,Florida SBA,2020-Q2,1.67,0.92485952665102,0.127
+Lightspeed,"Apax VIII-B, L.P.",2012.0,Florida SBA,2020-Q2,1.5,1.5048193390676508,0.1369999999999999
+Lightspeed,"Apollo Investment Fund VIII, L.P.",2012.0,Florida SBA,2020-Q2,1.27,0.5290829692587387,0.083
+Lightspeed,"Ares Corporate Opportunities Fund IV, L.P.",2012.0,Florida SBA,2020-Q2,1.69,0.9138209261872582,0.14
+Lightspeed,"Ares Corporate Opportunities Fund IV, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",1.9817539864101832,1.8278670935591697,13.96
+Lightspeed,"Ascent Venture Partners V, L.P.",2012.0,Massachusetts PRIM,2020-Q1,1.4078260857506353,0.624341628079875,0.0726566225080241
+Lightspeed,Blackstone Tactical Opportunities Fund - C L.P.,2012.0,CalPERS,unknown,1.3603799086110222,1.3372955245147855,0.094
+Lightspeed,"CVI Credit Value Fund II, L.P.",2012.0,Florida SBA,2020-Q2,1.4,1.362325394736842,0.083
+Lightspeed,"Carlyle Partners VI, L.P.",2012.0,Florida SBA,2020-Q2,1.5,0.8079895229391003,0.142
+Lightspeed,"Castlelake II, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",1.4124512260344344,1.2463217938340154,5.76
+Lightspeed,"Catalyst Investors III, L.P.",2012.0,Massachusetts PRIM,2020-Q1,1.3895963475635151,0.5655631188317887,0.0803719709190748
+Lightspeed,"Centerbridge Special Credit Partners II, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",1.0550746622222222,1.0540586088888888,1.28
+Lightspeed,"Cerberus Institutional Partners V, L.P.",2012.0,CalPERS,unknown,1.9517261043936545,1.6013754977012615,0.138
+Lightspeed,"Coller International Partners VI, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",1.6850666506433885,1.6253196913459738,14.74
+Lightspeed,"Crow Holdings Realty Partners VI, L.P.",2012.0,Louisiana TRSL,2019-Q4,1.41,1.167968626474422,0.1106
+Lightspeed,"EnCap Energy Capital Fund IX, L.P.",2012.0,Florida SBA,2020-Q2,1.01,0.748084911628245,0.002
+Lightspeed,"Energy Capital Partners Mezzanine Opportunities Fund, L.P.",2012.0,Louisiana TRSL,2019-Q4,0.77,0.6215029650182797,-0.1101999999999999
+Lightspeed,"FCO MA III, L.P. PE",2012.0,CalSTRS,"FYE June 30, 2025",1.4542095313707346,1.4038074978577626,9.41
+Lightspeed,"Falcon Strategic Partners IV, L.P.",2012.0,Louisiana TRSL,2019-Q4,1.39,0.5899970119472844,0.0896
+Lightspeed,"Falcon Strategic Partners IV, L.P.",2012.0,Florida SBA,2020-Q2,1.37,0.5733899828670187,0.081
+Lightspeed,"GCM Grosvenor DEM, L.P.",2012.0,CalPERS,unknown,1.3718982892090654,1.1308419173609945,0.085
+Lightspeed,"GI Partners Fund IV, L.P.",2012.0,Florida SBA,2020-Q2,1.83,0.6366670243705309,0.18
+Lightspeed,"GSO Capital Solutions Fund II, L.P.",2012.0,Florida SBA,2020-Q2,0.96,0.8165115341795386,-0.022
+Lightspeed,"Gores Small Capitalization Partners, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",1.6887006207542694,1.687422134897036,16.36
+Lightspeed,"Green Equity Investors VI, L.P.",2012.0,Louisiana TRSL,2019-Q4,1.77,0.7341095923714497,0.1612
+Lightspeed,"Grove Street Partners Ventures III, L.P.",2012.0,Florida SBA,2020-Q2,1.93,0.3030471659334885,0.171
+Lightspeed,"KKR North America Fund XI, L.P.",2012.0,Massachusetts PRIM,2020-Q1,1.718444577951415,1.0315993386502926,0.1698288685790662
+Lightspeed,"Kepha Partners II, L.P.",2012.0,Massachusetts PRIM,2020-Q1,0.7168055102222223,0.0744980435555555,-0.0857798999670894
+Lightspeed,"Levine Leichtman Capital Partners V, L.P.",2012.0,Florida SBA,2020-Q2,1.48,0.644681763422171,0.121
+Lightspeed,"Lexington Co-Investment Partners 2005 (Pool III), L.P.",2012.0,Florida SBA,2020-Q2,1.83,1.1758460171193517,0.168
+Lightspeed,"Lexington Middle Market Investors III, L.P.",2012.0,Florida SBA,2020-Q2,1.43,0.8075567879222442,0.143
+Lightspeed,"New Enterprise Associates 14, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",2.936851237244898,1.5000351084183674,14.9
+Lightspeed,"New Enterprise Associates 14, L.P.",2012.0,Louisiana TRSL,2019-Q4,2.26,0.9481474764397906,0.1775
+Lightspeed,"New Mountain Partners IV, L.P.",2012.0,Florida SBA,2020-Q2,1.59,1.5910986374343852,0.221
+Lightspeed,"Orion Fund I, L.P.",2012.0,Florida SBA,2020-Q2,0.99,0.6171650752601329,-0.003
+Lightspeed,"Palladium Equity Partners IV, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",1.7421176363072617,0.9310108213116256,10.24
+Lightspeed,"Providence Equity Partners VII, L.P.",2012.0,Massachusetts PRIM,2020-Q1,1.6433491385387389,0.9303995669392772,0.1931889164738372
+Lightspeed,"Quad-C Partners VIII, L.P.",2012.0,Massachusetts PRIM,2020-Q1,2.3336571187730493,2.081192805781402,0.2892543934390454
+Lightspeed,"Rembrandt Venture Partners III, L.P.",2012.0,Massachusetts PRIM,2020-Q1,1.6278205128205128,0.2235516842634489,0.1119460751400449
+Lightspeed,"Riverside Capital Appreciation Fund VI, L.P.",2012.0,Florida SBA,2020-Q2,1.43,1.432426525485197,0.144
+Lightspeed,"Shasta Ventures III, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",1.8795795759579847,1.3557131297412954,7.48
+Lightspeed,"Silver Lake Partners IV, L.P.",2012.0,Florida SBA,2020-Q2,1.94,0.7623623721785597,0.235
+Lightspeed,"Sixth Street Opportunities Partners II, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",1.9158176767267765,1.9080418915488713,18.84
+Lightspeed,"Strategic Investors V-B, L.P.",2012.0,CalSTRS,"FYE June 30, 2025",5.589431651088561,4.166471581187866,25.29
+Lightspeed,"Thoma Bravo Fund X, L.P.",2012.0,Massachusetts PRIM,2020-Q1,2.8083597365227324,2.3325074892803688,0.3808287758803766
+Lightspeed,"TowerBrook Investors IV, L.P.",2012.0,Florida SBA,2020-Q2,1.41,0.4349816259782901,0.179
+Lightspeed,"TriGate Property Partners II, L.P.",2012.0,Florida SBA,2020-Q2,1.54,1.0910944695426792,0.1159999999999999
+Lightspeed,Tricon XI L.P.,2012.0,Florida SBA,2020-Q2,1.04,0.9052377639448448,0.01
+Lightspeed,"ACON Equity Partners III, L.P.",2013.0,Massachusetts PRIM,2020-Q1,1.0297029562779334,0.3975608230117793,0.0075735376826056
+Lightspeed,"Apollo Investment Fund VIII, L.P.",2013.0,CalPERS,unknown,1.429917650612682,1.2483007699821378,0.088
+Lightspeed,"Ardian Secondary Fund VI, L.P.",2013.0,Florida SBA,2020-Q2,1.36,1.104908774520084,0.108
+Lightspeed,"CVC Capital Partners VI, L.P.",2013.0,Florida SBA,2020-Q2,1.44,0.5195108010544144,0.138
+Lightspeed,"Carlyle Partners VI, L.P.",2013.0,CalSTRS,"FYE June 30, 2025",1.868945614678172,1.662266205626835,13.36
+Lightspeed,"Carlyle Partners VI, L.P.",2013.0,CalPERS,unknown,1.9851417110576552,1.8789945629988936,0.159
+Lightspeed,"Castlelake III, L.P.",2013.0,Florida SBA,2020-Q2,1.37,0.6236440165965309,0.07
+Lightspeed,"EIG Energy Fund XVI, L.P.",2013.0,Florida SBA,2020-Q2,1.14,0.4382933883030001,0.042
+Lightspeed,"EnCap Energy Capital Fund IX, L.P.",2013.0,CalSTRS,"FYE June 30, 2025",1.6322459837342815,1.3898070743922175,10.87
+Lightspeed,"Encap Energy Capital Fund IX, L.P.",2013.0,Louisiana TRSL,2019-Q4,1.24,0.7803009320708657,0.0806
+Lightspeed,"Energy Capital Partners III, L.P.",2013.0,Florida SBA,2020-Q2,1.21,0.3925796092855262,0.076
+Lightspeed,"HealthCare Royalty Partners III, L.P.",2013.0,Florida SBA,2020-Q2,1.15,0.4778113425500775,0.109
+Lightspeed,HgCapital 7 C L.P.,2013.0,CalSTRS,"FYE June 30, 2025",2.2772743196436793,2.1605169706777176,17.69
+Lightspeed,"Insight Venture Partners VIII, L.P.",2013.0,Massachusetts PRIM,2020-Q1,2.3001926507827504,1.3096480260893482,0.1869441811996777
+Lightspeed,"Insight Venture Partners VIII, L.P.",2013.0,Florida SBA,2020-Q2,2.57,1.3913148566245492,0.205
+Lightspeed,"Insight Venture Partners VIII, L.P.",2013.0,Louisiana TRSL,2019-Q4,2.34,1.3940067556534868,0.1859
+Lightspeed,"Institutional Venture Partners XIV, L.P.",2013.0,Massachusetts PRIM,2020-Q1,1.4748901728086354,0.5956451078949342,0.0970360619818412
+Lightspeed,KKR Asian Fund II L.P.,2013.0,CalPERS,unknown,1.0418242384159635,0.933341091035831,0.012
+Lightspeed,"KPS Special Situations Fund IV, L.P.",2013.0,Florida SBA,2020-Q2,1.18,0.2573625616598191,0.12
+Lightspeed,"Lexington Capital Partners VIII, L.P.",2013.0,Florida SBA,2020-Q2,1.29,0.5796855218901668,0.138
+Lightspeed,"Nordic Capital Fund VIII, L.P.",2013.0,Massachusetts PRIM,2020-Q1,1.3568274391123594,0.7357657815611552,0.104782366582126
+Lightspeed,Providence Debt Fund III L.P.,2013.0,Florida SBA,2020-Q2,1.22,0.7017630090375302,0.057
+Lightspeed,"RCP Advisors Fund IX, L.P.",2013.0,Florida SBA,2020-Q2,1.39,0.3346216438771497,0.13
+Lightspeed,Rubicon Technology Partners L.P.,2013.0,Florida SBA,2020-Q2,1.5,1.133451133956854,0.147
+Lightspeed,"Silicon Valley Bank Capital Partners III, L.P.",2013.0,Florida SBA,2020-Q2,2.16,0.7277596837024213,0.206
+Lightspeed,"Silver Lake Partners IV, L.P.",2013.0,CalPERS,unknown,2.726487392423246,1.795634514640284,0.209
+Lightspeed,"Spark Capital IV, L.P.",2013.0,Massachusetts PRIM,2020-Q1,1.7715725692462312,0.301229936080402,0.1533178072425938
+Lightspeed,"The Energy & Minerals Group Fund III, L.P.",2013.0,Florida SBA,2020-Q2,0.58,0.100129833884856,-0.1119999999999999
+Lightspeed,"Thoma Bravo Overage Fund, L.P.",2013.0,Florida SBA,2020-Q2,3.68,2.513936588158397,0.354
+Lightspeed,"Thoma Bravo Special Opportunities Fund I, L.P.",2013.0,Massachusetts PRIM,2020-Q1,2.562121884476705,1.8026626265663417,0.3399702963774215
+Lightspeed,"Thoma Bravo Special Opps Fund I, L.P.",2013.0,CalSTRS,"FYE June 30, 2025",,3.97507052557549,34.07
+Lightspeed,"TowerBrook Investors IV (Onshore), L.P.",2013.0,CalPERS,unknown,2.037724303154312,1.4184203602152088,0.17
+Lightspeed,"Towerbrook Investors IV, L.P.",2013.0,Massachusetts PRIM,2020-Q1,1.3915363728122918,0.3538828586445193,0.1705442956045978
+Lightspeed,"Trident VI Fund, L.P.",2013.0,Florida SBA,2020-Q2,1.82,0.9061831282246806,0.211
+Lightspeed,Triton Fund IV L.P.,2013.0,CalPERS,unknown,1.738577757233163,1.0535372957246962,0.122
+Lightspeed,"Triton Fund IV, L.P.",2013.0,CalSTRS,"FYE June 30, 2025",1.9686580869882355,1.0733819031487344,12.22
+Lightspeed,"TrueBridge-Kauffman Fellows Fund III, L.P.",2013.0,Florida SBA,2020-Q2,2.1,0.287277052173913,0.163
+Lightspeed,"Varde Fund XI, L.P.",2013.0,Florida SBA,2020-Q2,1.39,0.77727438,0.06
+Lightspeed,"Vine Media Opportunities - Fund III, L.P.",2013.0,Florida SBA,2020-Q2,0.94,0.2919567017429078,-0.017
+Lightspeed,"ABRY Partners VIII, L.P.",2014.0,Florida SBA,2020-Q2,1.26,1.261840646702118,0.108
+Lightspeed,"Bayview Opportunity Master Fund IV-B, L.P",2014.0,Florida SBA,2020-Q2,1.4,1.164132564707553,0.125
+Lightspeed,"Blackstone Capital Partners VII, L.P.",2014.0,Florida SBA,2020-Q2,1.15,0.1026985096070512,0.098
+Lightspeed,"CDH Fund V, L.P.",2014.0,CalPERS,unknown,1.468283360737803,1.2253123275258757,0.081
+Lightspeed,"CVC Capital Partners VI, L.P.",2014.0,Massachusetts PRIM,2020-Q1,1.4984728574177877,0.4898906834721575,0.1541696688698967
+Lightspeed,"CVC Capital Partners VI, L.P.",2014.0,CalPERS,unknown,2.0013970624944797,1.3659198637188403,0.156
+Lightspeed,"CVI Credit Value Fund III, L.P.",2014.0,Florida SBA,2020-Q2,1.26,0.7753854842105263,0.079
+Lightspeed,"CalSTRS Lower Middle Market Fund V, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",2.3085419104394163,1.6976161905428904,17.63
+Lightspeed,"Capital Partners III, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",2.259923532838147,1.7713385444063654,14.4
+Lightspeed,"Castlelake III, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",1.4515944967635437,1.146977117940789,5.99
+Lightspeed,"Centerbridge Capital Partners III, L.P.",2014.0,Florida SBA,2020-Q2,1.5,0.4187215909191264,0.19
+Lightspeed,"Charlesbank Equity Fund VIII, L.P.",2014.0,Florida SBA,2020-Q2,1.38,0.7016385518945423,0.139
+Lightspeed,"Clayton, Dubilier & Rice Fund IX, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",2.3573305015370027,1.8021267500449851,18.86
+Lightspeed,"Energy Spectrum Partners VII, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",1.3563365101324376,1.0943760347132865,7.62
+Lightspeed,"FS Equity Partners VII, L.P.",2014.0,Florida SBA,2020-Q2,1.19,0.2270667145409926,0.061
+Lightspeed,"GCM Grosvenor DEM II, L.P.",2014.0,CalPERS,unknown,1.7309788651212774,1.0078118848578457,0.147
+Lightspeed,GGV Capital V L.P.,2014.0,CalSTRS,"FYE June 30, 2025",4.71638873678289,2.6936275284708544,24.13
+Lightspeed,"GSO Capital Solutions Fund II, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",1.0139495453377574,0.9564281327097102,0.71
+Lightspeed,"GTCR Fund XI, L.P.",2014.0,Massachusetts PRIM,2020-Q1,1.821670807356001,0.9393562667435644,0.2384244168087827
+Lightspeed,"Hellman & Friedman Capital Partners VIII, L.P.",2014.0,Florida SBA,2020-Q2,1.29,0.0977348472384257,0.133
+Lightspeed,"Inflexion Buyout Fund IV, L.P.",2014.0,Florida SBA,2020-Q2,1.09,0.2613615205685231,0.039
+Lightspeed,"Inflexion Partnership Capital Fund I, L.P.",2014.0,Florida SBA,2020-Q2,1.2,0.4829116044430971,0.095
+Lightspeed,"Insight Venture Partners Coinvestment Fund III, L.P.",2014.0,Massachusetts PRIM,2020-Q1,2.6660256504545456,2.3248028568181813,0.2637148410072962
+Lightspeed,"Insight Venture Partners Growth-Buyout Coinvestment Fund, L.P.",2014.0,Florida SBA,2020-Q2,2.49,0.4478501875,0.307
+Lightspeed,"Insight Venture Partners IX, L.P.",2014.0,Florida SBA,2020-Q2,2.32,0.2391387682992605,0.265
+Lightspeed,"Littlejohn Fund V, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",1.361293640557745,1.0118460985929176,5.93
+Lightspeed,"Lone Star Fund IX, (U.S.), L.P.",2014.0,Louisiana TRSL,2019-Q4,1.24,0.6603268214342038,0.1022
+Lightspeed,"M2 Private Equity Fund-of-Funds II, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",1.5401527727412794,1.2107294393210482,10.99
+Lightspeed,"Oaktree Opportunities Fund Xb, L.P.",2014.0,Florida SBA,2020-Q2,0.98,0.0,-0.023
+Lightspeed,"Olympus Growth Fund VI, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",2.074004063306688,1.9071232841038888,16.09
+Lightspeed,"Onex Partners IV, L.P.",2014.0,CalPERS,unknown,1.3880948316582988,1.1012163459811308,0.069
+Lightspeed,"Onex Partners IV, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",1.3999134404844096,1.065592185679054,6.92
+Lightspeed,"OpenView Venture Partners IV, L.P.",2014.0,Florida SBA,2020-Q2,1.51,0.02734464,0.13
+Lightspeed,"Permira V, L.P.",2014.0,CalPERS,unknown,2.8174349681628534,2.3917403592918864,0.207
+Lightspeed,"Permira V, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",2.7604453581004855,2.499844361333872,20.63
+Lightspeed,"Quantum Energy Partners VI, L.P.",2014.0,Massachusetts PRIM,2020-Q1,1.4391433381777772,0.5974915988217542,0.2028361286758045
+Lightspeed,"Sciens Aviation Special Opportunities Fund III, L.P.",2014.0,Florida SBA,2020-Q2,1.2,1.084609602120036,0.145
+Lightspeed,"Silicon Valley Bank SIF VII, L.P.",2014.0,Florida SBA,2020-Q2,1.95,0.0874802972303535,0.2189999999999999
+Lightspeed,"Sofinnova Venture Partners IX, L.P.",2014.0,Massachusetts PRIM,2020-Q1,1.340485119587629,0.3315317518900343,0.1070075052787855
+Lightspeed,"Spark Capital Growth Fund, L.P.",2014.0,Massachusetts PRIM,2020-Q1,1.960372375,,0.1724120264812578
+Lightspeed,"Spectrum Equity VII, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",3.7339209986784385,2.8184949133703943,37.22
+Lightspeed,"Summit Partners Credit Fund B-2, L.P.",2014.0,CalSTRS,"FYE June 30, 2025",1.0803538018522816,0.9234241020738846,2.55
+Lightspeed,"TCV VIII, L.P.",2014.0,Massachusetts PRIM,2020-Q1,1.6718161932126725,0.1543591653680692,0.1262687466071203
+Lightspeed,"Thoma Bravo Fund XI, L.P.",2014.0,Florida SBA,2020-Q2,2.81,1.670505905385984,0.299
+Lightspeed,"Thoma Bravo Fund XI, L.P.",2014.0,Massachusetts PRIM,2020-Q1,2.7471245588593645,1.2450858391296633,0.2854318511995338
+Lightspeed,"Union Square Ventures 2014, L.P.",2014.0,Massachusetts PRIM,2020-Q1,2.2664340262843488,0.1077835125448028,0.2380663665061128
+Lightspeed,"Union Square Ventures Opportunity 2014, L.P.",2014.0,Massachusetts PRIM,2020-Q1,1.7514877321156774,0.0782777473363774,0.1595659469547518
+Lightspeed,"Vista Equity Partners Fund V, L.P.",2014.0,Massachusetts PRIM,2020-Q1,1.7981201285843464,0.9851603749468588,0.2023905427038722
+Lightspeed,"Westview Capital Partners III, L.P.",2014.0,Massachusetts PRIM,2020-Q1,1.7205201168762911,0.7471942475682314,0.2196715177082915
+Lightspeed,ASF VII B L.P.,2015.0,CalSTRS,"FYE June 30, 2025",1.5441383381178733,1.0717487664140557,13.05
+Lightspeed,"ASF VII, L.P.",2015.0,Florida SBA,2020-Q2,1.16,0.2661557655395291,0.09
+Lightspeed,"American Industrial Partners Capital Fund VI, L.P.",2015.0,Florida SBA,2020-Q2,1.2,0.2323333405802295,0.083
+Lightspeed,"Ascent Venture Partners VI, L.P.",2015.0,Massachusetts PRIM,2020-Q1,1.0567109918645738,,0.0217670512360991
+Lightspeed,"Atalaya Special Opportunities Fund VI, L.P.",2015.0,Florida SBA,2020-Q2,1.31,0.7565828409586056,0.114
+Lightspeed,"Audax Mezzanine Fund IV, L.P.",2015.0,Florida SBA,2020-Q2,1.11,0.5360360002418287,0.0819999999999999
+Lightspeed,"Berkshire Fund IX, L.P.",2015.0,Florida SBA,2020-Q2,1.24,1.2407978158349515,0.223
+Lightspeed,Blackstone Energy Partners II L.P.,2015.0,CalSTRS,"FYE June 30, 2025",1.4984543072060807,0.8458571811678042,8.07
+Lightspeed,Blackstone Tactical Opportunities Fund II - C L.P.,2015.0,CalPERS,unknown,1.5042632787961898,1.319160347480291,0.127
+Lightspeed,Bridgepoint Europe III 'C' L.P.,2015.0,CalPERS,unknown,1.1928400978291531,1.130938135566119,0.042
+Lightspeed,Bridgepoint Europe IV 'B' L.P.,2015.0,CalPERS,unknown,1.3984221815120743,1.2448602146632783,0.12
+Lightspeed,"Carlyle Europe Partners IV, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",1.580439184243564,1.2955769152123853,11.42
+Lightspeed,"Carlyle U.S. Equity Opportunities II, L.P.",2015.0,CalPERS,unknown,1.8601443020325816,1.4044655052497634,0.155
+Lightspeed,"Carlyle U.S. Equity Opportunity Fund II, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",1.8889669371848947,1.4127651012799138,15.28
+Lightspeed,"Castlelake IV, L.P.",2015.0,Florida SBA,2020-Q2,1.3,0.3053467916489204,0.084
+Lightspeed,"Castlelake IV, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",1.5064067445097749,1.0156196243564954,6.69
+Lightspeed,"Catalyst Investors IV, L.P.",2015.0,Massachusetts PRIM,2020-Q1,1.6534528947697884,0.2220773086388306,0.1852148393417636
+Lightspeed,"Centerbridge Capital Partners III, L.P.",2015.0,CalPERS,unknown,1.578662969424844,1.113272435920791,0.136
+Lightspeed,"Centerbridge Capital Partners III, L.P.",2015.0,Massachusetts PRIM,2020-Q1,1.3398129698752743,0.428003749453796,0.1411812113440141
+Lightspeed,"Centerbridge Capital Partners III, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",1.5802848240094358,1.114969891915952,14.12
+Lightspeed,"Charlesbank Equity Fund VIII, L.P.",2015.0,Massachusetts PRIM,2020-Q1,1.3893687277904854,0.7046863685236329,0.1462719330960059
+Lightspeed,"Clearlake Capital Partners IV, L.P.",2015.0,CalPERS,unknown,2.03294171145603,1.6640166293789516,0.275
+Lightspeed,"Clearlake Opportunities Partners (P), L.P.",2015.0,CalPERS,unknown,1.2975354579230003,0.7572476278778378,0.075
+Lightspeed,"Coastline Fund, L.P.",2015.0,Florida SBA,2020-Q2,1.22,0.6401880396609309,0.074
+Lightspeed,"Coastline Fund, L.P. (Tranche II)",2015.0,Florida SBA,2020-Q2,1.04,0.2632617164263059,0.034
+Lightspeed,"Cortec Group Fund VI, L.P.",2015.0,Florida SBA,2020-Q2,0.97,0.2263089079352744,-0.019
+Lightspeed,"Cortec Group Fund VI, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",1.99059799566155,1.3110253387478572,13.67
+Lightspeed,"EnCap Energy Capital Fund X, L.P.",2015.0,Florida SBA,2020-Q2,0.9,0.2151190913199178,-0.0409999999999999
+Lightspeed,"EnCap Energy Capital Fund X, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",2.164907910925176,1.6762860296316309,16.18
+Lightspeed,"Equistone Partners Europe Fund V ""D"" L.P",2015.0,CalSTRS,"FYE June 30, 2025",1.396057721356203,1.1269552477819942,6.62
+Lightspeed,FCO MA IV L.P. PE,2015.0,CalSTRS,"FYE June 30, 2025",1.2958266280008406,0.9854173471613332,7.01
+Lightspeed,"Flagship Ventures Fund V, L.P.",2015.0,Massachusetts PRIM,2020-Q1,3.0996657769304403,0.0512733899750198,0.3882653624336636
+Lightspeed,"Francisco Partners IV, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",3.0560647834406653,2.3788601267682026,25.85
+Lightspeed,"GGV Capital Select, L.P",2015.0,CalSTRS,"FYE June 30, 2025",1.1994337591623037,0.952117612565445,2.9
+Lightspeed,"Global Infrastructure Partners III, L.P.",2015.0,Florida SBA,2020-Q2,1.05,0.2656690624715007,0.023
+Lightspeed,"Insight Venture Partners Growth-Buyout Coinvestment Fund (B), L.P.",2015.0,CalPERS,unknown,3.47924410013844,2.1924813844023996,0.258
+Lightspeed,"Insight Venture Partners Growth-Buyout Coinvestment Fund, L.P.",2015.0,Massachusetts PRIM,2020-Q1,2.3001459148756354,0.2891400777440192,0.2999180352703102
+Lightspeed,"Insight Venture Partners IX, L.P.",2015.0,Massachusetts PRIM,2020-Q1,2.1178945396102753,0.1722498027242378,0.2459091428206387
+Lightspeed,"Insight Venture Partners IX, L.P.",2015.0,CalPERS,unknown,3.941861263905581,2.19726751088878,0.231
+Lightspeed,"Investindustrial VI, L.P.",2015.0,Florida SBA,2020-Q2,0.99,0.0052362790219308,-0.008
+Lightspeed,"JMI Equity Fund VIII, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",2.4490468143563153,1.9519604320319484,26.7
+Lightspeed,"Lindsay Goldberg IV, L.P.",2015.0,CalPERS,unknown,1.9814208978851384,1.7310747840011105,0.289
+Lightspeed,"Lovell Minnick Equity Partners IV, L.P.",2015.0,Massachusetts PRIM,2020-Q1,1.398035352037827,0.7456207743712142,0.1845669826885619
+Lightspeed,"NEA 15 Opportunity Fund, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",3.680980100502513,1.4416762383345298,25.23
+Lightspeed,"Patria Brazilian Private Equity Fund V, L.P.",2015.0,CalPERS,unknown,1.5003987720728569,0.3077924925858716,0.08
+Lightspeed,"Quantum Parallel Partners VI-C, L.P.",2015.0,Massachusetts PRIM,2020-Q1,1.3244239575140566,0.1302330256761888,0.1272277725965385
+Lightspeed,"RRJ Capital Master Fund III, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",1.204992182036988,0.9143336674663648,7.35
+Lightspeed,"Rhone Partners V, L.P.",2015.0,Massachusetts PRIM,2020-Q1,1.1064677562014835,0.2727021729668747,0.0504065772481326
+Lightspeed,"Searchlight Partners II, L.P.",2015.0,Florida SBA,2020-Q2,1.38,0.227652599541467,0.165
+Lightspeed,"TCP II Co-Invest B, L.P.",2015.0,CalPERS,unknown,1.6658003284716931,1.6601306701316312,0.103
+Lightspeed,"TCW/Crescent Mezzanine Partners VII, L.P.",2015.0,Florida SBA,2020-Q2,1.11,0.3716957821312723,0.081
+Lightspeed,"TPG Growth Fund III, L.P.",2015.0,Florida SBA,2020-Q2,1.33,0.5505067695132055,0.153
+Lightspeed,"The Baring Asia Private Equity Fund VI, L.P. 1",2015.0,Oregon Treasury,2025-Q3,1.67,1.6730115567641062,0.156
+Lightspeed,"Thoma Bravo Discover Fund, L.P.",2015.0,Florida SBA,2020-Q2,2.08,0.8066036460855452,0.34
+Lightspeed,"Thoma Bravo Special Opportunities Fund II, L.P.",2015.0,Florida SBA,2020-Q2,2.15,0.8678895594319095,0.217
+Lightspeed,"Thoma Bravo Special Opportunities Fund II, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",2.508853366377986,1.779697925017255,15.94
+Lightspeed,"Thoma Bravo Special Opportunities Fund II, L.P.",2015.0,Massachusetts PRIM,2020-Q1,1.9807467491165471,0.8664173787277903,0.1985791915699983
+Lightspeed,"Thomas H. Lee Equity Fund VII, L.P.",2015.0,Massachusetts PRIM,2020-Q1,1.4486080144210676,0.3362551244159385,0.1970086044314599
+Lightspeed,"TriGate Property Partners III, L.P.",2015.0,Florida SBA,2020-Q2,1.1,0.268570955160917,0.065
+Lightspeed,"Vivo Capital Fund VIII, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",1.964605325,1.510562925,14.95
+Lightspeed,"Vivo Capital Surplus Fund VIII, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",2.0053718333333332,1.5495028333333334,15.87
+Lightspeed,"Warburg Pincus Private Equity Fund XII, L.P.",2015.0,Florida SBA,2020-Q2,1.25,0.1218355023425299,0.1009999999999999
+Lightspeed,"Waterland Private Equity VI, L.P.",2015.0,Florida SBA,2020-Q2,1.58,0.318276244324186,0.205
+Lightspeed,"Welsh, Carson, Anderson & Stowe XII, L.P.",2015.0,CalPERS,unknown,2.5313279180310944,2.0668470726625,0.253
+Lightspeed,"Welsh, Carson, Anderson & Stowe XII, L.P.",2015.0,CalSTRS,"FYE June 30, 2025",2.45036602,1.99320358,24.07
+Lightspeed,"ABRY Senior Equity Partners V, L.P.",2016.0,Florida SBA,2020-Q2,1.09,0.2073340693568728,0.086
+Lightspeed,"Advent International GPE VIII-B, L.P.",2016.0,Massachusetts PRIM,2020-Q1,1.0532562960409624,,0.0266454241981818
+Lightspeed,Advent International GPE VIII-D L.P.,2016.0,CalSTRS,"FYE June 30, 2025",2.0921281466666666,1.4058026666666668,15.76
+Lightspeed,"American Securities Partners VII, L.P.",2016.0,Massachusetts PRIM,2020-Q1,0.7810063926648012,0.1507094762269119,-0.1197855039439285
+Lightspeed,"Apollo Investment Fund IX, L.P.",2016.0,Florida SBA,2020-Q2,0.95,0.0936804803881535,-0.084
+Lightspeed,"Ardian LBO Fund VI, L.P",2016.0,Florida SBA,2020-Q2,1.15,0.1780074706458798,0.071
+Lightspeed,"Bain Capital Asia Fund III, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",1.9073342864507845,1.2093399040121675,19.03
+Lightspeed,Benefit Street Partners Debt Fund IV L.P.,2016.0,Florida SBA,2020-Q2,1.1,0.3536806898796952,0.054
+Lightspeed,Blackstone Capital Partners VII L.P.,2016.0,CalSTRS,"FYE June 30, 2025",1.7321860105005191,0.9568072883951336,13.1
+Lightspeed,"Blackstone Capital Partners VII, L.P.",2016.0,Massachusetts PRIM,2020-Q1,1.1182286226624134,0.104288284325291,0.0861938911834452
+Lightspeed,"Blackstone Capital Partners VII, L.P.",2016.0,CalPERS,unknown,1.7960002557645562,1.2082060088623807,0.156
+Lightspeed,"Carlyle Strategic Partners IV, L.P.",2016.0,CalPERS,unknown,1.1282011190537202,0.6304022857843475,0.048
+Lightspeed,"Castlelake Aviation III Stable Yield, L.P.",2016.0,Florida SBA,2020-Q2,1.44,0.1701592132383506,0.321
+Lightspeed,"Centerbridge Special Credit Partners III, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",1.3296981420765028,1.261740043715847,9.64
+Lightspeed,"Charterhouse Capital Partners X, L.P.",2016.0,Massachusetts PRIM,2020-Q1,1.3634118801192083,0.2983414595400309,0.1731783436483596
+Lightspeed,"Coller International Partners VII, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",1.6431376913254918,1.2557265574882954,12.54
+Lightspeed,"EnCap Energy Capital Fund XI, L.P.",2016.0,Florida SBA,2020-Q2,0.59,0.0,-0.3429999999999999
+Lightspeed,"European Private Equity Opportunities I, L.P.",2016.0,Florida SBA,2020-Q2,0.7,0.1105588516532094,-0.247
+Lightspeed,"GGV Capital VI, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",1.6513475869809202,0.6054317845117845,8.43
+Lightspeed,"Hellman & Friedman Capital Partners VIII, L.P.",2016.0,Massachusetts PRIM,2020-Q1,1.038161428836019,0.0939159359248675,0.0211453073344779
+Lightspeed,"Hellman & Friedman Capital Partners VIII, L.P.",2016.0,CalPERS,unknown,1.721882006866975,0.6647569862666454,0.105
+Lightspeed,"Hellman & Friedman Capital Partners VIII, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",1.7253152527049955,0.6631626360694595,10.54
+Lightspeed,"KKR Asian Fund III, L.P.",2016.0,Florida SBA,2020-Q2,1.27,0.2132525023011568,0.2339999999999999
+Lightspeed,"Levine Leichtman Capital Partners VI, L.P.",2016.0,Florida SBA,2020-Q2,1.03,0.4627456364049512,0.027
+Lightspeed,"NovaQuest Pharma Opportunities Fund V, L.P.",2016.0,Florida SBA,2020-Q2,1.07,0.0294778054201468,
+Lightspeed,"Peak Rock Capital Fund II, L.P.",2016.0,Florida SBA,2020-Q2,1.49,0.5542955987810325,0.3979999999999999
+Lightspeed,"Permira VI, L.P.1",2016.0,CalSTRS,"FYE June 30, 2025",2.0003824432155173,1.0583360400542772,14.87
+Lightspeed,"Silver Lake Partners V, L.P.",2016.0,Florida SBA,2020-Q2,1.14,0.0244380616325173,0.119
+Lightspeed,"Strategic Investors Fund VIII-B, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",3.148871788974708,0.5607855777624067,20.51
+Lightspeed,"Strategic Partners Fund VII, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",1.7358276041860552,1.3352707862838336,16.72
+Lightspeed,"TA XII, L.P.",2016.0,Massachusetts PRIM,2020-Q1,1.6929700940312742,0.5279423712581086,0.3265111925904345
+Lightspeed,"TA XII, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",3.3208222334455666,2.3610664983164984,34.52
+Lightspeed,"TCV IX, L.P.",2016.0,Massachusetts PRIM,2020-Q1,1.2167211581426114,0.0726977264717555,0.1168847552455213
+Lightspeed,"Tenex Capital Partners II, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",2.1882688585597885,1.539906095885726,22.21
+Lightspeed,"The Rise Fund I, L.P.",2016.0,Florida SBA,2020-Q2,1.13,0.0354819127669586,0.081
+Lightspeed,"Thoma Bravo Discover Fund, L.P.",2016.0,Massachusetts PRIM,2020-Q1,1.8921167525656784,0.806603586020662,0.3150905938544556
+Lightspeed,"Thoma Bravo Fund XII, L.P.",2016.0,Massachusetts PRIM,2020-Q1,1.3485825773961435,0.068024845104791,0.1338295016969887
+Lightspeed,"Thoma Bravo Fund XII, L.P.",2016.0,CalSTRS,"FYE June 30, 2025",2.175459543984193,1.6770244212863368,15.07
+Lightspeed,"Tiger Iron Special Opportunities Fund, L.P.",2016.0,Florida SBA,2020-Q2,1.14,0.0274317117041638,0.09
+Lightspeed,"Towerbrook Structured Opportunities Fund (Onshore), L.P.",2016.0,CalPERS,unknown,1.2593758009252043,0.8540868554687342,0.069
+Lightspeed,"Trident VII, L.P.",2016.0,Florida SBA,2020-Q2,1.24,0.1488200061017839,0.142
+Lightspeed,"USV 2016, L.P.",2016.0,Massachusetts PRIM,2020-Q1,1.1737795813204508,,0.0917170999804588
+Lightspeed,"AlpInvest Co-Investment Fund (Onshore) VII, L.P.",2017.0,CalSTRS,"FYE June 30, 2025",1.770201962743607,0.6399915172692949,13.55
+Lightspeed,Apax IX USD L.P.,2017.0,CalSTRS,"FYE June 30, 2025",1.909147523075745,1.339284730516726,17.83
+Lightspeed,"Ares Corporate Opportunities Fund V, L.P.",2017.0,CalSTRS,"FYE June 30, 2025",1.2988257310040885,0.5212815598648408,5.97
+Lightspeed,"Ares Corporate Opportunities Fund V, L.P.",2017.0,CalPERS,unknown,1.2974231246515469,0.5235283275364598,0.06
+Lightspeed,"BRV VI, L.P.",2017.0,CalSTRS,"FYE June 30, 2025",1.9315180928147035,0.0520130523179649,12.89
+Lightspeed,"Berkshire Fund IX, L.P.",2017.0,Massachusetts PRIM,2020-Q1,1.052262946769218,0.1576426400348465,0.0302367088874852
+Lightspeed,Blackstone Core Equity Partners CA - L.P.,2017.0,CalSTRS,"FYE June 30, 2025",2.151080423973947,0.5816854378293091,15.87
+Lightspeed,Blackstone Tactical Opportunities Fund - S L.P.,2017.0,CalSTRS,"FYE June 30, 2025",1.3969228032530296,1.3345446108329175,9.76
+Lightspeed,"Blackstone Tactical Opportunities Fund – HL, L.P. (BTO III)",2017.0,Louisiana TRSL,2019-Q4,0.97,0.0208562436610049,-0.0535
+Lightspeed,CVC Capital Partners Strategic Opportunities Compounding Capital L.P.,2017.0,CalPERS,unknown,1.9439932084600544,0.5859352735816301,0.124
+Lightspeed,"CalSTRS New&Next Generation Manager Fund IV, L.P.",2017.0,CalSTRS,"FYE June 30, 2025",1.965615848526451,0.1944922582578556,15.93
+Lightspeed,"Cerberus CAL II Partners, L.P.",2017.0,CalPERS,unknown,2.8511085184211824,1.7764845645475615,0.23
+Lightspeed,"Charlesbank Equity Fund IX, L.P.",2017.0,Florida SBA,2020-Q2,1.09,0.0376052364582957,0.086
+Lightspeed,"Flagship Pioneering Fund VI, L.P.",2017.0,Massachusetts PRIM,2020-Q1,1.9501686896551724,,0.7105396229181771
+Lightspeed,"Francisco Partners Agility, L.P.",2017.0,CalSTRS,"FYE June 30, 2025",4.96290484300567,3.8548979093675864,82.5
+Lightspeed,"Francisco Partners V, L.P.",2017.0,Florida SBA,2020-Q2,1.13,0.0,0.081
+Lightspeed,KKR Americas Fund XII L.P.,2017.0,CalSTRS,"FYE June 30, 2025",2.161061829422716,0.9099721272849476,19.4
+Lightspeed,"LAV Biosciences Fund IV, L.P.",2017.0,CalSTRS,"FYE June 30, 2025",1.882859874476473,0.8464757907174032,14.85
+Lightspeed,"Lake Jackson, L.P.",2017.0,Florida SBA,2020-Q2,1.18,0.9714285714285714,
+Lightspeed,"OpenView Venture Partners V, L.P.",2017.0,Florida SBA,2020-Q2,1.48,0.1946385764799817,0.31
+Lightspeed,"Patria Infrastructure Fund IV, L.P.",2017.0,Florida SBA,2020-Q2,0.0,0.0,
+Lightspeed,Peak Rock Capital Credit Fund II L.P.,2017.0,CalSTRS,"FYE June 30, 2025",1.116883189397652,1.0271927624268815,14.02
+Lightspeed,Peak Rock Capital Fund II L.P.,2017.0,CalSTRS,"FYE June 30, 2025",2.0846101975316382,1.7887205836595743,34.56
+Lightspeed,Permira VI L.P. 1,2017.0,CalPERS,unknown,2.0060453216285845,1.062958857475397,0.152
+Lightspeed,"Quad-C Partners IX, L.P.",2017.0,Massachusetts PRIM,2020-Q1,1.007351550112518,0.0364855659487308,0.0045010465350162
+Lightspeed,"Quantum Energy Partners VII Co-Investment Fund, L.P.",2017.0,Massachusetts PRIM,2020-Q1,0.4840883858255751,0.0008576023867832,-0.3426001598646444
+Lightspeed,"Quantum Energy Partners VII, L.P.",2017.0,Massachusetts PRIM,2020-Q1,0.7343700485460499,0.0694148946257527,-0.1857514519680187
+Lightspeed,"SL SPV-1, L.P.",2017.0,CalPERS,unknown,1.251137019491494,1.178290608917681,0.032
+Lightspeed,"Sciens Aviation Special Opportunities Fund IV, L.P.",2017.0,Florida SBA,2020-Q2,0.93,0.3382078451768633,-0.071
+Lightspeed,"Shasta Ventures V, L.P.",2017.0,CalSTRS,"FYE June 30, 2025",2.4369715555555556,0.3853628571428571,14.79
+Lightspeed,"Siris Partners IV, L.P.",2017.0,Florida SBA,2020-Q2,0.88,0.0,-0.146
+Lightspeed,"Sofinnova Venture Partners X, L.P.",2017.0,Massachusetts PRIM,2020-Q1,1.2531134915789477,0.0826529126315789,0.1836265024960489
+Lightspeed,"Spark Capital Growth Fund II, L.P.",2017.0,Massachusetts PRIM,2020-Q1,1.1337287570621468,,0.094547893912567
+Lightspeed,"Spark Capital V, L.P.",2017.0,Massachusetts PRIM,2020-Q1,1.0732481437125747,,0.0488513339629223
+Lightspeed,"TPG Growth IV, L.P.",2017.0,Florida SBA,2020-Q2,1.0,0.0099259187865514,0.004
+Lightspeed,Thoma Bravo Discover Fund II L..P.,2017.0,Florida SBA,2020-Q2,1.18,0.0,0.1939999999999999
+Lightspeed,"Trident VII, L.P.",2017.0,CalPERS,unknown,2.24933086924523,0.9617462365670316,0.186
+Lightspeed,"Trident VII, L.P.",2017.0,Massachusetts PRIM,2020-Q1,1.146484483537095,0.1291354360455736,0.1021603809294321
+Lightspeed,"Trident VII, L.P.",2017.0,CalSTRS,"FYE June 30, 2025",2.2493308869606876,0.9617462555663138,18.6
+Lightspeed,"TrueBridge Capital Partners Fund V, L.P.",2017.0,Florida SBA,2020-Q2,1.09,0.0,0.0969999999999999
+Lightspeed,Valor Equity Partners IV L.P.,2017.0,CalPERS,unknown,3.1736379410391304,0.2168126622144472,0.2019999999999999
+Lightspeed,"Vine Media Opportunities Fund IV, L.P.",2017.0,Florida SBA,2020-Q2,1.02,0.8663640757260943,0.059
+Lightspeed,ASF VIII B L.P.,2018.0,CalSTRS,"FYE June 30, 2025",1.4113851659752543,0.3930103449316945,13.67
+Lightspeed,ASF VIII B L.P.,2018.0,Florida SBA,2020-Q2,1.06,0.242726604107833,0.1969999999999999
+Lightspeed,Affinity Asia Pacific Fund V (NO.2) L.P.,2018.0,CalSTRS,"FYE June 30, 2025",1.1876225729766572,0.2897998719957028,6.71
+Lightspeed,"AlpInvest C Fund, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.833927881151657,0.6021038507564217,14.88
+Lightspeed,"Atlas Capital Resources III, L.P.",2018.0,Florida SBA,2020-Q2,1.17,0.3760937144172447,0.26
+Lightspeed,"Berkshire Fund IX Co-Investment Fund, L.P.",2018.0,Massachusetts PRIM,2020-Q1,0.6839636137197482,,-0.4249772911846455
+Lightspeed,Blackstone Capital Partners VIII L.P.,2018.0,Florida SBA,2020-Q2,,,
+Lightspeed,Blackstone Tactical Opportunities Fund - FD L.P.,2018.0,Florida SBA,2020-Q2,1.03,0.0123338471473297,0.044
+Lightspeed,Blackstone Tactical Opportunities Fund II-S L.P.,2018.0,CalSTRS,"FYE June 30, 2025",1.481415682752639,0.7469837291897868,14.19
+Lightspeed,Blackstone Tactical Opportunities Fund III-C L.P.,2018.0,CalPERS,unknown,1.3255130750928767,0.9318652477133212,0.118
+Lightspeed,"CVC Capital Partners VII, L.P.",2018.0,Massachusetts PRIM,2020-Q1,0.9819558530057306,0.0085097570305141,-0.0273530285973506
+Lightspeed,"CalSTRS Lower Middle Market Fund VI, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.7671217425742574,0.244039603960396,16.41
+Lightspeed,"CalSTRS-M2 Private Equity Fund-of-Funds III, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.3717117765950029,0.2963682627798569,10.92
+Lightspeed,"Carlyle Asia Partners V, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.2124687649159256,0.3906378180687255,8.01
+Lightspeed,"Carlyle Asia Partners V, L.P.",2018.0,CalPERS,unknown,1.3573514003669482,0.8256254088308806,0.1669999999999999
+Lightspeed,"Carlyle Partners VII, L.P.",2018.0,CalPERS,unknown,1.4771537902600218,0.9267272429334062,0.131
+Lightspeed,"Carlyle Partners VII, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.3933251319382975,0.3489890364225104,8.32
+Lightspeed,"Castlelake V, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.458803414513198,1.00007662824682,8.33
+Lightspeed,"Charlesbank Equity Fund IX, L.P.",2018.0,Massachusetts PRIM,2020-Q1,0.7231282840259844,0.0481668066903442,-0.2702816173726187
+Lightspeed,"Charlesbank Equity Fund IX, L.P. - Overage Program",2018.0,Massachusetts PRIM,2020-Q1,1.023903054902304,,0.0180225784639704
+Lightspeed,"Clayton, Dubilier & Rice Fund X, L.P.",2018.0,CalPERS,unknown,2.350237700398786,1.5404716401465774,0.304
+Lightspeed,"Clayton, Dubilier & Rice Fund X, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",2.2662571165238723,1.506855850872506,30.37
+Lightspeed,"Clearlake Capital Partners V, L.P.",2018.0,CalPERS,unknown,2.0284876830017233,1.3807334017809958,0.335
+Lightspeed,"FS Equity Partners VIII, L.P.",2018.0,Florida SBA,2020-Q2,0.87,0.0496504512513366,-0.236
+Lightspeed,Falko Regional Aircraft Opportunities Fund II L.P.,2018.0,Florida SBA,2020-Q2,0.86,0.0478653221453674,-0.32
+Lightspeed,Florida Sunshine State Fund L.P.,2018.0,Florida SBA,2020-Q2,1.11,0.042569979860358,0.156
+Lightspeed,"Francisco Partners V, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",2.234253951571355,0.9143932818134982,18.14
+Lightspeed,"GGV Capital VI Plus, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.8309195061728396,1.2754780952380953,14.67
+Lightspeed,"GI Partners V, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.7466182477612051,0.6569439724281847,15.4
+Lightspeed,GSO Energy Select Opportunities Feeder Fund II L.P.,2018.0,Florida SBA,2020-Q2,1.13,0.1504834143574974,0.121
+Lightspeed,"GTCR Fund XII, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.0177381285878302,0.0448539494833524,0.0196964819430323
+Lightspeed,"Global Infrastructure Partners IV-C, L.P.",2018.0,Florida SBA,2020-Q2,0.0,0.0,-1.0
+Lightspeed,"Grain Communications Opportunity Fund II, L.P.",2018.0,Florida SBA,2020-Q2,0.98,0.0,-0.023
+Lightspeed,"Grandval, L.P.",2018.0,CalPERS,unknown,1.8309350890695777,0.3016120095107955,0.158
+Lightspeed,"Hahn & Company III L.P.,",2018.0,Florida SBA,2020-Q2,0.92,0.0835931255285289,
+Lightspeed,"Hellman & Friedman Capital Partners IX, L.P.",2018.0,Florida SBA,2020-Q2,0.95,0.0,
+Lightspeed,"HongShan China Growth Fund V, L.P.",2018.0,UC Regents,2024-Q2,1.96,0.2298080533377463,0.146
+Lightspeed,"HongShan China Seed Fund I, L.P.",2018.0,UC Regents,2024-Q2,1.08,0.0,0.018
+Lightspeed,"ICV Partners IV, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.3284090099309758,0.6421948723796389,11.42
+Lightspeed,"ILS Property & Casualty Fund II, L.P.",2018.0,Florida SBA,2020-Q2,0.5,0.2076856416911013,-0.471
+Lightspeed,"Insight Venture Partners X, L.P.",2018.0,CalPERS,unknown,2.806177726289466,1.1189065254885822,0.2239999999999999
+Lightspeed,"Insight Venture Partners X, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.1691948915645882,0.0003813478563474,0.147931264393888
+Lightspeed,Investindustrial VII L.P.,2018.0,Florida SBA,2020-Q2,0.8,0.0,
+Lightspeed,"JMI Equity Fund IX, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.0074048565490268,,0.0138312608366712
+Lightspeed,"Lexington Capital Partners IX, L.P.",2018.0,Florida SBA,2020-Q2,1.67,0.2671120738272846,
+Lightspeed,"Mill Road Capital III, L.P.",2018.0,Florida SBA,2020-Q2,1.3,0.0674227548259436,0.985
+Lightspeed,"Nordic Capital CV1 Beta, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.0331469226736874,0.1954861468195567,0.0214590954759592
+Lightspeed,"Nordic Capital Fund IX, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.1648550858622158,,0.3598051803654691
+Lightspeed,"Palladium Equity Partners V, L.P.",2018.0,CalPERS,unknown,1.5955784514365583,0.6552313198383692,0.133
+Lightspeed,"Palladium Equity Partners V, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.676122012216453,0.639956857758999,14.86
+Lightspeed,"Polaris Growth Fund, L.P.",2018.0,Massachusetts PRIM,2020-Q1,0.9395761904761906,,-0.0604238095306329
+Lightspeed,"Providence Strategic Growth III, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.102913973142056,0.2356533936675925,0.1014972800372797
+Lightspeed,"SVB Strategic Investors Fund IX, L.P.",2018.0,Florida SBA,2020-Q2,0.98,0.0,-0.019
+Lightspeed,"Silver Lake Partners V, L.P.",2018.0,CalPERS,unknown,1.6405439318462611,0.6151421573735494,0.12
+Lightspeed,"Silver Lake Technology Investors V, L.P.",2018.0,CalPERS,unknown,1.9465194953285765,0.7468985790238881,0.151
+Lightspeed,"Silver Lake Waterman Fund III, L.P.",2018.0,Florida SBA,2020-Q2,0.94,0.6520230829749881,
+Lightspeed,"Strategic Investors Fund IX-B, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.8404861915367483,0.0350779510022271,13.63
+Lightspeed,"TPG Growth IV, L.P.",2018.0,CalPERS,unknown,1.6809247297384955,0.9853668788855592,0.143
+Lightspeed,"TPG Growth IV, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.6809241202396252,0.9853664456973578,14.34
+Lightspeed,TSG8 L.P.,2018.0,UC Regents,2024-Q2,0.86,0.0348177598911436,-0.059
+Lightspeed,"Tailwind Capital Partners III, L.P.",2018.0,CalPERS,unknown,1.6719859843183396,0.536797081725237,0.178
+Lightspeed,"The Resolute Fund IV, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",2.6299774571386028,0.944288771342894,32.52
+Lightspeed,"Thoma Bravo Discover Fund II, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",2.180359868329722,1.1130716206235125,21.86
+Lightspeed,"Thoma Bravo Discover Fund II, L.P.",2018.0,Massachusetts PRIM,2020-Q1,0.9902761990561249,,-0.0119236172975177
+Lightspeed,"Thoma Bravo Fund XIII, L.P.",2018.0,Florida SBA,2020-Q2,1.51,0.000461923713161,0.626
+Lightspeed,"Thoma Bravo Fund XIII, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.0629779864535545,,0.0967422917405585
+Lightspeed,"Thomas H. Lee Equity Fund VIII, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.1401650313027698,0.2502120898339094,0.4204931373069109
+Lightspeed,"Thompson Street Capital Partners V, L.P.",2018.0,Massachusetts PRIM,2020-Q1,0.9086936319945192,,-0.1649746671729232
+Lightspeed,"TowerBrook Investors V, L.P.",2018.0,Florida SBA,2020-Q2,0.85,0.0,
+Lightspeed,"Trident VIII, L.P.",2018.0,Florida SBA,2020-Q2,0.97,0.0,
+Lightspeed,"Valor Equity Partners IV, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",3.1657910808537615,0.2183181495365967,20.19
+Lightspeed,"Vivo Capital Fund IX, L.P.",2018.0,CalSTRS,"FYE June 30, 2025",1.7305479106938058,0.7012810797026369,18.79
+Lightspeed,"WestView Capital Partners IV, L.P.",2018.0,Massachusetts PRIM,2020-Q1,1.0977064407889354,,0.1269364542733881
+Lightspeed,"WindRose Health Investors V, L.P.",2018.0,Florida SBA,2020-Q2,0.85,0.0,-0.209
+Lightspeed,"Advent International GPE IX, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.895189613552266,,-0.1623507955556786
+Lightspeed,"Advent International GPE IX, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.6593530263066327,0.290898995959109,14.75
+Lightspeed,Alchemy Special Opportunities Fund IV L.P.,2019.0,CalSTRS,"FYE June 30, 2025",1.5627756457675566,0.2461779611425634,15.78
+Lightspeed,"American Industrial Partners Capital Fund VII, L.P.",2019.0,Florida SBA,2020-Q2,0.84,0.0002100939711333,
+Lightspeed,"American Industrial Partners Capital Fund VII, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.1167834725066464,0.0005573323232014,-0.9210945222872128
+Lightspeed,"American Securities Partners VIII, L.P.",2019.0,Massachusetts PRIM,2020-Q1,,,-0.959557322773266
+Lightspeed,"Apollo Investment Fund IX, L.P",2019.0,CalPERS,unknown,1.5102903454563752,0.5897175728838171,0.159
+Lightspeed,"Apollo Investment Fund IX, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.5097313406120605,0.5723613819736135,15.41
+Lightspeed,"Arsenal Capital Partners V, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.3267641178556913,0.3147471241155716,6.77
+Lightspeed,BE VI 'H' L.P.,2019.0,CalPERS,unknown,1.876434274897932,0.5608740508033824,0.178
+Lightspeed,Blackstone Tactical Opportunities Fund II-S (Surge) L.P.,2019.0,CalSTRS,"FYE June 30, 2025",1.3779760174121456,0.4464907200384603,8.97
+Lightspeed,Blackstone Tactical Opportunities Fund III-C (Surge) L.P.,2019.0,CalPERS,unknown,1.552010949092621,0.4033519781034579,0.158
+Lightspeed,"Carnelian Energy Capital III, L.P.",2019.0,Florida SBA,2020-Q2,0.27,0.0,
+Lightspeed,"Cerberus CAL III Partners, L.P.",2019.0,CalPERS,unknown,0.804057656234923,0.0891552161796099,-0.057
+Lightspeed,"Cortec Group Fund VII, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.6827389757591005,0.5952283146631312,18.39
+Lightspeed,"EIG Global Project Fund V, L.P.",2019.0,Florida SBA,2020-Q2,0.98,0.0,
+Lightspeed,FCO MA V L.P.,2019.0,CalSTRS,"FYE June 30, 2025",1.294778198157313,0.8265846984784645,13.08
+Lightspeed,"Flagship Pioneering Special Opportunities Fund II, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.9568260606060608,,-0.0681410651779974
+Lightspeed,"Francisco Partners VI, L.P.",2019.0,Florida SBA,2020-Q2,,,
+Lightspeed,"GCM Grosvenor DEM III, L.P.",2019.0,CalPERS,unknown,1.6952758392016984,0.5478948536801366,0.209
+Lightspeed,GGV Capital VII L.P.,2019.0,CalSTRS,"FYE June 30, 2025",1.107397301381693,0.0532023747841105,2.13
+Lightspeed,GGV Capital VII Plus L.P.,2019.0,CalSTRS,"FYE June 30, 2025",1.2255609401709402,0.1051313675213675,4.15
+Lightspeed,"Grandval II, L.P.",2019.0,CalPERS,unknown,1.5734971956287316,0.1909366310055109,0.14
+Lightspeed,Iconiq Strategic Partners IV L.P.,2019.0,UC Regents,2024-Q2,1.88,0.4533428630316541,0.18
+Lightspeed,"LAV Biosciences Fund V, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.2959962248878467,0.3301099712981239,6.63
+Lightspeed,"Lexington Co-Investment Partners V, L.P.",2019.0,Florida SBA,2020-Q2,,,
+Lightspeed,"Littlejohn Fund VI, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.6973676151449708,0.4354980977594764,21.63
+Lightspeed,"Lone Star Fund XI, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.575283641753958,0.8928130220122864,25.09
+Lightspeed,"Lovell Minnick Equity Partners V, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.8655350541904665,0.0014731116423819,-0.2027776546753263
+Lightspeed,"MBK Partners Fund V, L.P.",2019.0,Florida SBA,2020-Q2,,,
+Lightspeed,Montagu VI L.P.,2019.0,Florida SBA,2020-Q2,,,
+Lightspeed,"NeoTribe Ventures II, L.P.",2019.0,UC Regents,2024-Q2,1.01,0.0129677426013895,0.004
+Lightspeed,"New Enterprise Associates 17, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.1744321953051644,0.1604427618153364,4.54
+Lightspeed,"Olympus Growth Fund VII, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",2.042246549149222,0.9994700455235478,26.4
+Lightspeed,"Onex Partners V, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.5039940535793224,0.1679768759870535,12.0
+Lightspeed,"OpCapita Consumer Opportunities Fund III, L.P.",2019.0,Florida SBA,2020-Q2,0.0,0.0,
+Lightspeed,"OpenView Venture Partners VI, L.P.",2019.0,Florida SBA,2020-Q2,0.63,0.0,
+Lightspeed,PAG Loan Fund IV L.P.,2019.0,Florida SBA,2020-Q2,1.05,0.3721383508591209,
+Lightspeed,Permira Growth Opportunities I L.P. 1,2019.0,CalPERS,unknown,1.3091062003012308,0.2546933318065865,0.08
+Lightspeed,Permira Growth Opportunities I L.P.1,2019.0,CalSTRS,"FYE June 30, 2025",1.3090861089463048,0.2532113614928852,8.0
+Lightspeed,"Providence Strategic Growth IV, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.8916761472604886,0.3066646276495732,-0.1485477405898142
+Lightspeed,Rubicon Technology Partners III L.P.,2019.0,Florida SBA,2020-Q2,,,
+Lightspeed,"SL SPV-2, L.P.",2019.0,CalPERS,unknown,3.887039912715292,2.4979659548539757,0.299
+Lightspeed,"SSG Capital Partners V, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.1531590689627826,1.072792155052574,14.3
+Lightspeed,"Searchlight Capital III, L.P.",2019.0,Florida SBA,2020-Q2,0.94,0.0,
+Lightspeed,"Siris Partners IV, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.3091675405758585,0.3481246548885671,8.0
+Lightspeed,"Siris Partners IV, L.P.",2019.0,CalPERS,unknown,1.3120083842816894,0.342134776495457,0.08
+Lightspeed,"Strategic Investors Fund X, L.P.",2019.0,Florida SBA,2020-Q2,,,
+Lightspeed,"TA XIII, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.8385993866666667,,-0.1614006133008892
+Lightspeed,"TCV X, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.9314013961605584,,-0.1026759709955832
+Lightspeed,"TCV X, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",2.751994628059758,0.5599316546272421,22.85
+Lightspeed,"TCV X, L.P.",2019.0,CalPERS,unknown,2.6600918675421963,0.6989492006811012,0.222
+Lightspeed,"TPG Golden Bear Partners, L.P.",2019.0,CalPERS,unknown,1.7963132973814375,0.3336884044252892,0.163
+Lightspeed,"TPG Healthcare Partners, L.P.",2019.0,CalPERS,unknown,1.3452720462326715,0.2810380291653884,0.115
+Lightspeed,"TPG Partners VIII, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.5605618841193163,0.4100702316391362,17.23
+Lightspeed,"TPG Partners VIII, L.P.",2019.0,CalPERS,unknown,1.3643892186057411,0.9081964790236684,0.1969999999999999
+Lightspeed,"The Rise Fund II, L.P.",2019.0,Florida SBA,2020-Q2,,,
+Lightspeed,"Thoma Bravo Fund XIII, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.9766926625827124,1.0097882851387456,22.62
+Lightspeed,"Tiger Iron Special Opportunities Fund II, L.P.",2019.0,Florida SBA,2020-Q2,1.0,0.0,-0.005
+Lightspeed,"TowerBrook Structured Opportunities Fund II, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.8861530653252147,0.0212237678864183,-0.1163155897384107
+Lightspeed,"Towerbrook Investors V, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.8703175774708604,,-0.1296824225291888
+Lightspeed,"TriGate Property Partners IV, L.P.",2019.0,Florida SBA,2020-Q2,0.07,0.0668576560599343,
+Lightspeed,"Triton Fund V, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.6860936027964122,0.4782126355212934,18.42
+Lightspeed,"TrueBridge Capital Partners Fund VI, L.P.",2019.0,Florida SBA,2020-Q2,0.85,0.0,
+Lightspeed,"USV 2019, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.862277568134172,,-0.3074987511952221
+Lightspeed,"USV Opportunity 2019, L.P.",2019.0,Massachusetts PRIM,2020-Q1,0.9597001343234042,,-0.0563530658226951
+Lightspeed,"Vista Equity Partners Fund VII-Z, L.P.",2019.0,CalPERS,unknown,1.2174315381151513,0.1035443526669868,0.05
+Lightspeed,"WCAS XIII, L.P.",2019.0,CalSTRS,"FYE June 30, 2025",1.6052919292594718,0.6286098598042601,18.73
+Lightspeed,"WCAS XIII, L.P.",2019.0,CalPERS,unknown,1.6852193387529433,0.668097243408073,0.158
+Lightspeed,"Warburg Pincus China-Southeast Asia II, L.P.",2019.0,Florida SBA,2020-Q2,0.85,0.0,-0.148
+Lightspeed,ASF VIII B L.P.,2020.0,CalPERS,unknown,1.407447254979246,0.3915313477868877,0.139
+Lightspeed,Advent Global Technology L.P.,2020.0,CalSTRS,"FYE June 30, 2025",1.4923107204999275,0.1370558431291713,10.03
+Lightspeed,Apax X USD L.P.,2020.0,CalSTRS,"FYE June 30, 2025",1.3063429382702243,0.1732580587350249,9.88
+Lightspeed,"Ares Corporate Opportunities VI, L.P.",2020.0,CalSTRS,"FYE June 30, 2025",1.420624703471126,0.345336540870935,15.58
+Lightspeed,"Ares Special Opportunities Fund, L.P.",2020.0,CalSTRS,"FYE June 30, 2025",1.5410392445671086,0.9724241274508522,14.65
+Lightspeed,Blackstone Energy Partners III L.P.,2020.0,CalSTRS,"FYE June 30, 2025",1.7441499988937477,0.535267897231696,25.48
+Lightspeed,CVC Capital Partners Asia V L.P.,2020.0,CalPERS,unknown,1.385810543924675,0.2116818898971482,0.126
+Lightspeed,CVC Capital Partners Strategic Opportunities II L.P.,2020.0,CalSTRS,"FYE June 30, 2025",1.5498948445630931,0.1965320811330455,19.88
+Lightspeed,"California Partners, L.P.",2020.0,CalPERS,unknown,1.4340659158611575,0.0459640543313747,0.16
+Lightspeed,"Cerberus Institutional Real Estate Partners V, L.P.",2020.0,Florida SBA,2020-Q2,,,
+Lightspeed,"Forecastle, L.P.",2020.0,CalPERS,unknown,1.4656477481767654,0.0117747036598679,0.1689999999999999
+Lightspeed,"Francisco Partners Agility II, L.P.",2020.0,CalPERS,unknown,2.132504138755981,0.8194992105263158,0.287
+Lightspeed,"Green Equity Investors VIII, L.P.",2020.0,CalPERS,unknown,1.4146890228128592,0.5970723552695556,0.107
+Lightspeed,"Hellman & Friedman Capital Partners IX, L.P.",2020.0,CalSTRS,"FYE June 30, 2025",1.716552463133984,0.1394186245047069,14.0
+Lightspeed,"Hellman & Friedman Capital Partners IX, L.P.",2020.0,CalPERS,unknown,1.6671340437292304,0.3102615065934577,0.1369999999999999
+Lightspeed,"Insight Partners XI, L.P.",2020.0,Massachusetts PRIM,2020-Q1,0.9167912241975308,,-0.0832088042519787
+Lightspeed,"Insight Partners XI, L.P.",2020.0,CalPERS,unknown,1.715325488180884,0.0491047790339157,0.129
+Lightspeed,"Jade Equity Investors, L.P.",2020.0,CalPERS,unknown,1.5613813559539869,0.6494717875492396,0.195
+Lightspeed,"LongRange Capital Fund I, L.P.",2020.0,CalPERS,unknown,1.401327955416032,0.4007725789191106,0.139
+Lightspeed,"OHA Black Bear Fund, L.P.",2020.0,CalPERS,unknown,1.524239453846154,0.7054455461538461,0.115
+Lightspeed,"Oaktree Latigo Investment Fund, L.P.",2020.0,CalPERS,unknown,1.382591620833333,0.734375,0.102
+Lightspeed,Permira VII L.P.1,2020.0,CalSTRS,"FYE June 30, 2025",1.3725695818758823,0.1698106564703955,8.8
+Lightspeed,Permira VII L.P.1,2020.0,CalPERS,unknown,1.3385706982811558,0.2738213482620104,0.0819999999999999
+Lightspeed,Rubicon Technology Partners III L.P.,2020.0,CalSTRS,"FYE June 30, 2025",1.2176329123146916,0.2796243644778393,5.64
+Lightspeed,"Samson Partners, L.P.",2020.0,CalPERS,unknown,1.7634840528688651,0.1324108648998055,0.139
+Lightspeed,"Sierra Partners, L.P.",2020.0,CalPERS,unknown,1.07838178993779,0.2596035384249847,0.037
+Lightspeed,"Silver Lake Partners VI, L.P.",2020.0,Florida SBA,2020-Q2,,,
+Lightspeed,"Strategic Investors X-B, L.P.",2020.0,CalSTRS,"FYE June 30, 2025",1.3065460575444765,0.001085760304561,8.67
+Lightspeed,"Top Castle Sidecar VII, L.P.",2020.0,CalPERS,unknown,1.7501123773230198,0.3006612609352218,0.261
+Lightspeed,"Trident VIII, L.P.",2020.0,CalSTRS,"FYE June 30, 2025",1.574025093292353,0.3419766845658735,12.7
+Lightspeed,"Trident VIII, L.P.",2020.0,CalPERS,unknown,1.574025108039503,0.3419766964883957,0.127
+Lightspeed,"AlpInvest Co-Investment Fund (Onshore) VIII, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.3213691547308226,0.0120023900178765,11.05
+Lightspeed,"AlpInvest Secondaries Fund (onshore) VII, L.P.",2021.0,CalPERS,unknown,1.0,1.3616038499250285,0.1510999999999999
+Lightspeed,"Ares Corporate Opportunities Fund VI, L.P.",2021.0,CalPERS,unknown,1.0,0.4213694443778099,0.1571
+Lightspeed,"Bear Technology Fund, L.P.",2021.0,CalPERS,unknown,1.0,0.0,-0.0321
+Lightspeed,"Berkshire Fund X, L.P.",2021.0,CalPERS,unknown,1.0,0.4414860926957413,0.0761
+Lightspeed,Blackstone Capital Partners Asia II L.P.,2021.0,UC Regents,2024-Q2,1.32,1.4763663570662423e-05,0.256
+Lightspeed,Blackstone Capital Partners VIII L.P.,2021.0,CalSTRS,"FYE June 30, 2025",1.2820767924392835,0.207596657309559,10.44
+Lightspeed,"Blackstone Capital Partners VIII, L.P.",2021.0,CalPERS,unknown,1.0,0.6469138417068674,0.1371
+Lightspeed,"Blackstone Core Equity Partners II, L.P.",2021.0,CalPERS,unknown,1.0,0.1244262478530018,0.1401
+Lightspeed,"Clayton, Dubilier & Rice Fund XI, L.P.",2021.0,CalPERS,unknown,1.0,0.7721062361885446,0.0361
+Lightspeed,Fourth Street Partners - CPS L.P.,2021.0,CalPERS,unknown,1.0,0.1620328639452745,0.1501
+Lightspeed,"Francisco Partners VI, L.P.",2021.0,CalPERS,unknown,1.0,0.171634225192802,0.1411
+Lightspeed,"Francisco Partners VI, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.4599372990574122,0.1716341696658097,14.12
+Lightspeed,"Genstar Capital Partners X, L.P.",2021.0,CalPERS,unknown,1.0,0.0397897823748679,0.0351
+Lightspeed,"Genstar X Opportunities Fund I, L.P.",2021.0,CalPERS,unknown,1.0,0.0597002573184554,0.0831
+Lightspeed,GranTain Co-Invest L.P.,2021.0,CalPERS,unknown,1.0,0.0434720484712728,0.0771
+Lightspeed,"Green Equity Investors CF II, L.P.",2021.0,CalPERS,unknown,1.0,0.0,0.1451
+Lightspeed,"Green Equity Investors CF, L.P.",2021.0,CalPERS,unknown,1.0,0.6211801543635161,0.1211
+Lightspeed,"Greenleaf Co-Invest Partners, L.P.",2021.0,CalPERS,unknown,1.0,0.0111506368448715,0.1671
+Lightspeed,"H.I.G. Europe Middle Market LBO Fund, L.P.",2021.0,CalPERS,unknown,1.0,0.2973861954698738,0.2321
+Lightspeed,"Hellman & Friedman Capital Partners X, L.P.",2021.0,CalPERS,unknown,1.0,0.1685469875071062,0.0581
+Lightspeed,"Insight Partners XII Buyout Annex Fund, L.P.",2021.0,CalPERS,unknown,1.0,0.0,0.0881
+Lightspeed,"Insight Partners XII, L.P.",2021.0,CalPERS,unknown,1.0,0.0011799468036537,0.0151
+Lightspeed,"K5 Private Investors, L.P.",2021.0,UC Regents,2024-Q2,1.27,0.0480546283840492,0.129
+Lightspeed,"K5 Private Investors, L.P.",2021.0,CalPERS,unknown,1.0,0.0557386319101056,0.1821
+Lightspeed,"LAV Fund VI Opportunities, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.1058919817724913,0.148169356928839,3.44
+Lightspeed,"LAV Fund VI, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.2771762537772853,0.2975175149066559,9.76
+Lightspeed,"MBK Partners Fund V, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.2633952488177496,0.0336264985257935,10.68
+Lightspeed,"Middlefield Road Private Opportunities Fund, L.P.",2021.0,CalPERS,unknown,1.0,0.0,0.0581
+Lightspeed,"NM Pacific, L.P.",2021.0,CalPERS,unknown,1.0,0.0120701416386861,0.0691
+Lightspeed,"New Mountain CAS Continuation Fund, L.P.",2021.0,CalPERS,unknown,1.0,0.2729688033920169,-0.1131
+Lightspeed,"New Mountain Partners VI, L.P.",2021.0,CalPERS,unknown,1.0,0.6883911777901217,0.1301
+Lightspeed,PSG V L.P.,2021.0,CalPERS,unknown,1.0,0.1423013766601695,0.1041
+Lightspeed,"Q-Street Capital, L.P.",2021.0,CalPERS,unknown,1.0,0.0,0.1011
+Lightspeed,"RRJ Capital Master Fund IV, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.1896228877887307,0.4770433392873849,16.07
+Lightspeed,"SPRINGBLUE B, L.P.",2021.0,CalPERS,unknown,1.0,0.0,0.0291
+Lightspeed,"Silver Lake Partners VI, L.P.",2021.0,CalPERS,unknown,1.0,0.2169244384982645,0.0891
+Lightspeed,Sunrise Boulevard PE Partners L.P.,2021.0,CalPERS,unknown,1.0,0.0020307864775616,0.1251
+Lightspeed,"TCC Opportunities, L.P.",2021.0,CalPERS,unknown,1.0,0.0750040376423839,0.2301
+Lightspeed,"TCV XI, L.P.",2021.0,CalPERS,unknown,1.0,0.0700232805853056,0.0431
+Lightspeed,TPG Growth V L.P.,2021.0,CalSTRS,"FYE June 30, 2025",1.4178741379640354,0.2074564882937969,14.5
+Lightspeed,"TPG Growth V, L.P.",2021.0,CalPERS,unknown,1.0,0.2163508660651955,0.1401
+Lightspeed,"Tenex Capital Partners III, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.645233435373714,0.6159046032574466,56.85
+Lightspeed,"The Resolute Fund V, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.5477356908021012,0.0798798941894672,15.84
+Lightspeed,"Thoma Bravo Discover Fund III, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.4667462469599943,0.0454813046731712,11.38
+Lightspeed,"Thoma Bravo Fund XIV, L.P.",2021.0,CalPERS,unknown,1.0,0.320740334964899,0.0681
+Lightspeed,"Valor Equity Partners V, L.P.",2021.0,CalSTRS,"FYE June 30, 2025",1.8637289862722537,0.0630211664816875,18.02
+Lightspeed,Whitney Global Partners L.P.,2021.0,CalPERS,unknown,1.0,0.0064392158391178,0.0771
+Lightspeed,ASF IX B L.P.,2022.0,CalSTRS,"FYE June 30, 2025",1.2149041611888198,0.0796996871281169,27.0
+Lightspeed,"BRV Lotus Fund III, L.P.",2022.0,CalPERS,unknown,1.0,0.1800330809275672,0.0491
+Lightspeed,"Base10 Partners III, L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.0040999999999999
+Lightspeed,"Bay State Partners, L.P.",2022.0,CalPERS,unknown,1.0,0.0803982906308937,0.1321
+Lightspeed,"Carlyle Partners VIII, L.P.",2022.0,CalPERS,unknown,1.0,0.6904041265635691,0.1191
+Lightspeed,"Clearlake Capital Partners VII, L.P.",2022.0,CalPERS,unknown,1.0,0.0037491700278017,0.0501
+Lightspeed,"HongShan Capital Seed Fund III, L.P.",2022.0,CalPERS,unknown,1.0,0.0,-0.0960999999999999
+Lightspeed,"HongShan Capital Venture Fund IX, L.P.",2022.0,CalPERS,unknown,1.0,0.0,-0.0851
+Lightspeed,L'Attitude Ventures II,2022.0,UC Regents,2024-Q2,0.7403841333333333,0.0,
 Lightspeed,"Lightspeed Opportunity Fund II, LP",2022.0,CalPERS,unknown,1.0,0.0,0.2011
 Lightspeed,"Lightspeed Venture Partners Select V, L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.1081
-Lightspeed,"Lightspeed Venture Partners XIV-A (Inception), L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.1691
 Lightspeed,"Lightspeed Venture Partners XIV-B (Ignite), L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.2281
+Lightspeed,"Oak HC/FT Partners V, L.P.",2022.0,CalPERS,unknown,1.0,0.1355214672582847,0.1641
+Lightspeed,PSG Encore L.P.,2022.0,CalPERS,unknown,1.0,0.0445744441330414,0.0810999999999999
+Lightspeed,"Project Quail Opportunities, L.P.",2022.0,CalPERS,unknown,1.0,0.0016216309965215,0.2261
+Lightspeed,"Redwood Lane Capital, L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.2071
+Lightspeed,Strategic Partners IX L.P.,2022.0,CalSTRS,"FYE June 30, 2025",1.3521936544492446,0.0994168251176969,22.2
+Lightspeed,"The Veritas Capital Fund VIII, L.P.",2022.0,CalPERS,unknown,1.0,0.0003205896974024,0.1181
+Lightspeed,"Thoma Bravo Fund XV, L.P.",2022.0,CalSTRS,"FYE June 30, 2025",1.3750196111815545,0.0391555526512129,15.02
+Lightspeed,"Thoma Bravo Fund XV, L.P.",2022.0,CalPERS,unknown,1.0,0.4899960524685988,0.1261
+Lightspeed,"Tiger Global Private Investment Partners XV, L.P.",2022.0,CalPERS,unknown,1.0,0.0,-0.0781
+Lightspeed,"Trident IX, L.P.",2022.0,CalPERS,unknown,1.0,0.1243333520939916,0.1821
+Lightspeed,"Trident IX, L.P.",2022.0,CalSTRS,"FYE June 30, 2025",1.2993667525298378,0.1243333532192017,18.27
+Lightspeed,"WCAS XIV, L.P.",2022.0,CalPERS,unknown,1.0,0.0,0.0281
+Lightspeed,Apollo Investment Fund X L.P.,2023.0,CalSTRS,"FYE June 30, 2025",1.1898209364007486,0.2013164793117829,19.14
+Lightspeed,"Apollo Investment Fund X, L.P.",2023.0,CalPERS,unknown,1.0,0.2106592424263406,1.0
+Lightspeed,"Arlington Capital Partners VI, L.P.",2023.0,CalPERS,unknown,1.0,0.0506225887314429,1.0
+Lightspeed,"B Capital Global Growth III, L.P.",2023.0,CalPERS,unknown,1.0,0.045443390717086,1.0
+Lightspeed,"BC CLP INVESTORS, L.P.",2023.0,CalPERS,unknown,1.0,0.0111576906480444,1.0
+Lightspeed,BVP Forge Institutional L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Bain Capital Asia Fund V, L.P.",2023.0,CalPERS,unknown,1.0,0.1518530357728934,1.0
+Lightspeed,"Bain Capital Insurance Fund, L.P.",2023.0,CalPERS,unknown,1.0,0.1340819758406442,1.0
+Lightspeed,"Bain Capital Tech Opportunities Fund II, L.P.",2023.0,CalPERS,unknown,1.0,0.0551472470650598,1.0
+Lightspeed,"Bain Capital Venture Coinvestment Fund IV, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Bain Capital Venture Fund 2022, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Base10 Series B I, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"CA1 SPV, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,CV Consortio Fund L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,Canaan Gold Coast L.P.,2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Cerberus Supply Chain Fund, L.P.",2023.0,CalPERS,unknown,1.0,0.0105994799170097,1.0
+Lightspeed,"Coastal Pacific Partners, L.P.",2023.0,CalPERS,unknown,1.0,0.0030110935458104,1.0
+Lightspeed,"Equip Opportunities Fund, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Francisco Partners VII, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"GC Customer Value Fund, L.P.",2023.0,CalPERS,unknown,1.0,0.1028347440063294,1.0
+Lightspeed,"GCM Grosvenor Elevate Fund, L.P.",2023.0,CalPERS,unknown,1.0,0.0790341469827649,1.0
+Lightspeed,"Genstar Capital Partners XI, L.P.",2023.0,CalPERS,unknown,1.0,0.0873622059727227,1.0
+Lightspeed,"Genstar XI Opportunities Fund I, L.P.",2023.0,CalPERS,unknown,1.0,0.0377650994778476,1.0
+Lightspeed,"Green Equity Investors IX, L.P.",2023.0,CalPERS,unknown,1.0,0.0259412482505572,1.0
+Lightspeed,"Greenbriar Equity Fund VI, L.P.",2023.0,CalPERS,unknown,1.0,0.0001390073634068,1.0
+Lightspeed,"HongShan Capital Growth Fund VII, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Innovation Opportunities, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Lux Ventures VIII, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Muir Woods Partners, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Orchard Park, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,PSG Europe II L.P.,2023.0,CalPERS,unknown,1.0,0.2768039847885346,1.0
+Lightspeed,"Phoenix Bear Partners, L.P.",2023.0,CalPERS,unknown,1.0,0.0174408144677756,1.0
+Lightspeed,"Prysm Capital Fund I, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"SignalFire Sage Fund, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Springblue B-III, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"TPG PARTNERS IX, L.P.",2023.0,CalPERS,unknown,1.0,0.0134887083443987,1.0
+Lightspeed,"TPG Partners IX, L.P.",2023.0,CalSTRS,"FYE June 30, 2025",1.2036683883197643,0.0132386474154717,22.67
+Lightspeed,"TPG Tech Adjacencies II, L.P.",2023.0,CalPERS,unknown,1.0,0.1344143127783764,1.0
+Lightspeed,"The Rise Fund III, L.P.",2023.0,CalPERS,unknown,1.0,0.0269627775615971,1.0
+Lightspeed,"Thrive Capital Partners VIII Growth, L.P.",2023.0,CalPERS,unknown,1.0,0.1615299355971991,1.0
+Lightspeed,"Timber Coast Private Opportunities, L.P.",2023.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Triangle Investment Opportunities, L.P.",2023.0,CalPERS,unknown,1.0,0.072566816156921,1.0
+Lightspeed,Valor Equity Partners VI L.P.,2023.0,CalPERS,unknown,1.0,0.0003123703665396,1.0
+Lightspeed,"Valor Equity Partners VI, L.P.",2023.0,CalSTRS,"FYE June 30, 2025",1.491992901051579,0.0001378936601957,34.02
+Lightspeed,"2SP I, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Acrew Capital Fund III, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Acrew Diversify Capital Fund II, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"American Industrial Partners Capital Fund VIII, L.P.",2024.0,CalPERS,unknown,1.0,0.049719140934368,1.0
+Lightspeed,"B Capital Ascent Fund III, L.P.",2024.0,CalPERS,unknown,1.0,0.0004359703128265,1.0
+Lightspeed,"B Capital Opportunities Fund II, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Bain Capital Life Sciences Fund IV, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Balderton Capital Growth II, S.L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Balderton Capital IX, S.L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,Bessemer Venture Partners XII Institutional L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,Canaan XIII Healthcare Fund L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,Canaan XIII L.P.,2024.0,CalPERS,unknown,1.0,0.0066822586034079,1.0
+Lightspeed,"Clayton, Dubilier & Rice Fund XII, L.P.",2024.0,CalPERS,unknown,1.0,0.1015880130887194,1.0
+Lightspeed,"Coalesce Capital Fund I, L.P.",2024.0,CalPERS,unknown,1.0,0.0043438387242782,1.0
+Lightspeed,"Cobalt Investment Fund, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"FSP LR, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,GIM LTE Hazel L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"GSC I, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Gaia Investments, S.L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Gold Hills Partners, L.P.",2024.0,CalPERS,unknown,1.0,0.0297202172152891,1.0
+Lightspeed,"Gorseway Park PE, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"GreatPoint Opportunity Fund I, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,Hedosophia Partners VI L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,Hedosophia Strategic Partners L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"HongShan Capital Expansion Fund I, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Hornet Co-Invest, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Insight Partners XIII Growth Buyout Fund, L.P.",2024.0,CalPERS,unknown,1.0,0.0014984705882352,1.0
+Lightspeed,"Insight Partners XIII, L.P.",2024.0,CalPERS,unknown,1.0,0.0004956015045744,1.0
+Lightspeed,"JSC Capital Partners, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Jade Equity Investors II, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"KOALA PACIFIC PARTNERSHIP, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"LS Investments C, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Lincoln Plaza Fund, L.P.",2024.0,CalPERS,unknown,1.0,0.0140229340156414,1.0
+Lightspeed,"MBK Partners Fund VI, L.P.",2024.0,CalPERS,unknown,1.0,0.0027217545571162,1.0
+Lightspeed,"New Mountain Partners VII, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Pioneer Pier Investments, L.P.",2024.0,CalPERS,unknown,1.0,0.0204501223960957,1.0
+Lightspeed,"Prysm Capital Fund II-C, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Shoreline, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"SignalFire Seed Fund V, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"SignalFire XIR Venture Fund II, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Silver Lake Partners VII, L.P.",2024.0,CalPERS,unknown,1.0,0.0013805806475479,1.0
+Lightspeed,"TPG Growth VI, L.P.",2024.0,CalPERS,unknown,1.0,0.0021254672387702,1.0
+Lightspeed,"TPG Life Sciences Innovations, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"The Veritas Capital Fund IX, L.P.",2024.0,CalPERS,unknown,1.0,0.0008252730472267,1.0
+Lightspeed,"Thrive Capital Partners IX Growth, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Thrive Capital Partners Opportunity Fund, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Towerbrook Investors VI (Onshore), L.P.",2024.0,CalPERS,unknown,1.0,0.0017108260308433,1.0
+Lightspeed,"Triangle Investment Opportunities II, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,Whitney Global Partners II L.P.,2024.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"2024 Golden Bay, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Apollo S3 Equity & Hybrid Solutions Fund, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Bear Coast Partnerships, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Berkshire Fund XI, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,Blackstone Capital Partners IX L.P.,2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Francisco Partners Agility III, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"GA Continuity II (GT) Fund, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"GB Palisade Partners, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Griffin Gaming Partners III, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Highland Citrus Holdings, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Jomo Growth Opportunities Fund, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
 Lightspeed,"Lightspeed Opportunity Fund III, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
 Lightspeed,"Lightspeed Venture Partners Select VI, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
-Lightspeed,"Lightspeed Venture Partners XV-A (Inception), L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
 Lightspeed,"Lightspeed Venture Partners XV-B (Ignite), L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,PSG VI L.P.,2025.0,CalPERS,unknown,1.0,0.0242274536596842,1.0
+Lightspeed,"Parker Capital Partners, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"SignalFire Early Fund IV, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"SignalFire Eureka Fund, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Thoma Bravo Europe Fund, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Thrive Capital Partners IX, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Lightspeed,"Actis Global 4, L.P.",,WSIB,ir093024,1.3,0.9042348668335788,0.0528
+Lightspeed,"Advent International GPE IX, L.P.",,WSIB,ir093024,1.6,0.1977916463511381,0.1677
+Lightspeed,Advent International GPE VI L.P.,,WSIB,ir093024,2.0,1.9127799615150471,0.1548
+Lightspeed,"Advent International GPE VII-B, L.P.",,WSIB,ir093024,1.8,1.6969358105667185,0.1323
+Lightspeed,"Advent International GPE VIII-B, L.P.",,WSIB,ir093024,2.1,1.203301538,0.1663
+Lightspeed,"Advent Latin American Private Equity Fund IV, L.P.",,WSIB,ir093024,1.5,1.422727856954107,0.0873
+Lightspeed,"Advent Latin American Private Equity Fund V, L.P.",,WSIB,ir093024,1.1,0.8731808731808732,0.0102
+Lightspeed,"Advent Latin American Private Equity Fund VI-H, L.P.",,WSIB,ir093024,1.8,0.928965421816228,0.1326
+Lightspeed,"Affinity Asia Pacific Fund III, L.P.",,WSIB,ir093024,1.4,1.372289460380964,0.0901
+Lightspeed,"Affinity Asia Pacific Fund IV, L.P.",,WSIB,ir093024,1.7,1.2135682632324638,0.1505
+Lightspeed,"Affinity Asia Pacific Fund V, L.P.",,WSIB,ir093024,1.3,0.2522966292571858,0.0898
+Lightspeed,"Apax IX USD, L.P.",,WSIB,ir093024,1.9,1.2504764041603098,0.1884
+Lightspeed,"Apax X, L.P.",,WSIB,ir093024,1.3,0.1346994063526267,0.1144
+Lightspeed,"Apax XI, L.P.",,WSIB,ir093024,1.1,,0.3261
+Lightspeed,"Asia Opportunity Fund II, L.P.",,WSIB,ir093024,1.4,1.4036978998441134,0.0736
+Lightspeed,"Asia Opportunity Fund III, L.P.",,WSIB,ir093024,0.9,0.7974990013909686,-0.0158
+Lightspeed,"Astorg II, L.P.",,WSIB,ir093024,3.1,3.0648482459000603,0.2375
+Lightspeed,"Austin Ventures IV, L.P.",,WSIB,ir093024,8.4,8.421518733333333,0.7323000000000001
+Lightspeed,"Austin Ventures VI, L.P.",,WSIB,ir093024,0.6,0.6317814649958419,-0.0789
+Lightspeed,"Austin Ventures VII, L.P.",,WSIB,ir093024,0.8,0.8073868984129869,-0.0279999999999999
+Lightspeed,"Austin Ventures VIII, L.P.",,WSIB,ir093024,1.6,1.6154479801758943,0.0684
+Lightspeed,"Avenue Asia Special Situations Fund IV, L.P.",,WSIB,ir093024,1.1,1.0559194102637797,0.0125
+Lightspeed,"Avenue Special Situations Fund IV, L.P.",,WSIB,ir093024,1.3,1.3131357722494863,0.084
+Lightspeed,"Avenue Special Situations Fund V, L.P.",,WSIB,ir093024,1.3,1.300207224042962,0.1123
+Lightspeed,"BC European Capital IX, L.P.",,WSIB,ir093024,1.5,1.2542090651436526,0.0984
+Lightspeed,"BC European Capital VI, L.P.",,WSIB,ir093024,2.7,2.731649197237309,0.2402
+Lightspeed,"BC European Capital VII, L.P.",,WSIB,ir093024,2.5,2.5313945923494594,0.2373
+Lightspeed,"BC European Capital VIII, L.P.",,WSIB,ir093024,1.2,1.231751059998869,0.0446
+Lightspeed,"BGH Capital Fund I, L.P.",,WSIB,ir093024,1.2,0.1329298702748578,0.0824
+Lightspeed,"Banc Fund IV, L.P.",,WSIB,ir093024,2.3,2.30116565,0.1559
+Lightspeed,"Banc Fund IX, L.P.",,WSIB,ir093024,1.5,0.71876439,0.0592
+Lightspeed,"Banc Fund V, L.P.",,WSIB,ir093024,2.3,2.2814717333333334,0.1557
+Lightspeed,"Banc Fund VII, L.P.",,WSIB,ir093024,1.5,1.5155331021290492,0.0391
+Lightspeed,"Banc Fund VIII, L.P.",,WSIB,ir093024,2.1,2.1485301647058823,0.1273
+Lightspeed,"Banc Fund X, L.P.",,WSIB,ir093024,1.2,0.1297643696880908,0.0503
+Lightspeed,"BlackRock Asset Investors, L.P.",,WSIB,ir093024,1.4,1.3697057474883374,0.2188
+Lightspeed,"Blackstone Capital Partners Asia II, L.P.",,WSIB,ir093024,1.5,0.0403706791781199,0.3425999999999999
+Lightspeed,"Blackstone Capital Partners Asia, L.P.",,WSIB,ir093024,2.0,0.9304730742342308,0.2634
+Lightspeed,"Blackstone Capital Partners V, L.P.",,WSIB,ir093024,1.7,1.6725677787078868,0.0881
+Lightspeed,"Blackstone Capital Partners VI, L.P.",,WSIB,ir093024,1.8,1.585436136465847,0.1222
+Lightspeed,"Blackstone Capital Partners VII, L.P.",,WSIB,ir093024,1.7,0.8362663796840742,0.1303
+Lightspeed,"Blackstone Capital Partners VIII, L.P.",,WSIB,ir093024,1.3,0.1051195027195403,0.1144
+Lightspeed,"Boston Ventures V, L.P.",,WSIB,ir093024,1.1,1.1341488670005797,0.0279999999999999
+Lightspeed,"Boston Ventures VI, L.P.",,WSIB,ir093024,1.5,1.4993317155399644,0.0941
+Lightspeed,"Brentwood Associates IV, L.P.",,WSIB,ir093024,2.2,2.1726406666666667,0.1094
+Lightspeed,"Bridgepoint Europe III, L.P.",,WSIB,ir093024,1.2,1.1920870723869168,0.024
+Lightspeed,"Bridgepoint Europe IV, L.P.",,WSIB,ir093024,1.6,1.4008901881985338,0.0933
+Lightspeed,"Bridgepoint Europe IV, L.P. (Secondary Purchase)",,WSIB,ir093024,1.3,1.0478173472188292,0.0877999999999999
+Lightspeed,"Bridgepoint Europe V, L.P.",,WSIB,ir093024,1.9,1.416630527078019,0.1639
+Lightspeed,"Bridgepoint Europe VI, L.P.",,WSIB,ir093024,1.6,0.2877386512404953,0.147
+Lightspeed,Bridgepoint Europe VII L.P.,,WSIB,ir093024,1.0,0.0028372329432296,-0.0265
+Lightspeed,"CDH Fund IV, L.P.",,WSIB,ir093024,1.4,1.2908834545339625,0.0711
+Lightspeed,"CHS Private Equity V, L.P.",,WSIB,ir093024,1.7,1.6729985313695743,0.0986
+Lightspeed,"Cable & Howse Transition Fund, L.P.",,WSIB,ir093024,0.8,0.8113332,-0.0352
+Lightspeed,"Capital Resource Lenders II, L.P.",,WSIB,ir093024,1.4,1.35268312,0.057
+Lightspeed,"Capital Resource Lenders III, L.P.",,WSIB,ir093024,1.2,1.196364633333333,0.0433
+Lightspeed,"Capital Resource Partners IV, L.P.",,WSIB,ir093024,1.1,1.116800274899005,0.0204999999999999
+Lightspeed,"Carlyle Partners VII, L.P.",,WSIB,ir093024,1.4,0.1636595181670151,0.0803999999999999
+Lightspeed,"Carlyle Partners VIII, L.P.",,WSIB,ir093024,1.1,0.08655238185775,0.0915
+Lightspeed,"Centerbridge Capital Partners V, L.P.",,WSIB,ir093024,,,
+Lightspeed,"Centurium Capital Partners 2018, L.P.",,WSIB,ir093024,1.4,0.1127100632609328,0.0809
+Lightspeed,"Charterhouse Capital Partners IX, L.P.",,WSIB,ir093024,1.3,1.3418765644076789,0.094
+Lightspeed,"Charterhouse Capital Partners VI, L.P.",,WSIB,ir093024,2.1,2.1019786743504354,0.188
+Lightspeed,"Charterhouse Capital Partners VII, L.P.",,WSIB,ir093024,1.9,1.9358954668647976,0.3792
+Lightspeed,"Charterhouse Capital Partners VIII, L.P.",,WSIB,ir093024,1.0,0.9613333921730262,-0.0063
+Lightspeed,"Charterhouse Capital Partners X, L.P.",,WSIB,ir093024,1.7,1.7312250764600594,0.1825
+Lightspeed,"Cinven Fifth Fund, L.P.",,WSIB,ir093024,1.7,1.450771277895877,0.1742
+Lightspeed,"Clayton, Dubilier & Rice Fund V, L.P.",,WSIB,ir093024,1.2,1.1705386867679453,0.0229
+Lightspeed,"Clayton, Dubilier & Rice Fund VI, L.P.",,WSIB,ir093024,1.5,1.532944993533192,0.0953
+Lightspeed,"Code, Hennessy & Simmons II, L.P.",,WSIB,ir093024,3.5,3.494418093306288,0.3259
+Lightspeed,"Code, Hennessy & Simmons III, L.P.",,WSIB,ir093024,1.5,1.460358346601878,0.074
+Lightspeed,"Code, Hennessy & Simmons IV, L.P.",,WSIB,ir093024,1.6,1.563277693739897,0.1211999999999999
+Lightspeed,"Contrarian Capital Fund II, L.P.",,WSIB,ir093024,1.4,1.4059193,0.0530999999999999
+Lightspeed,"DDJ Galileo Fund, L.P.",,WSIB,ir093024,0.8,0.8356889725762843,-0.0726
+Lightspeed,"Denham Commodity Partners Fund VI, L.P.",,WSIB,ir093024,1.0,0.5689450292646805,0.0015
+Lightspeed,"Doughty Hanson & Co Fund II, L.P.",,WSIB,ir093024,2.1,2.1094008046262087,0.4882999999999999
+Lightspeed,"Doughty Hanson & Co III, L.P.",,WSIB,ir093024,1.9,1.9211620603388,0.1358
+Lightspeed,"EIG Energy Fund XVI, L.P.",,WSIB,ir093024,1.2,0.7401421198906549,0.0373
+Lightspeed,"Elevation Partners, L.P.",,WSIB,ir093024,1.6,1.552435438620195,0.1181
+Lightspeed,"Endeavour Capital Fund IV, L.P.",,WSIB,ir093024,3.3,3.33503593874253,0.2569
+Lightspeed,"Endeavour Capital Fund V, L.P.",,WSIB,ir093024,2.0,2.0059543558685906,0.1085
+Lightspeed,"Endeavour Capital Fund V, L.P. - Secondary Purchase",,WSIB,ir093024,2.7,2.7090648584049175,1.6551
+Lightspeed,"Endeavour Capital Fund VI, L.P.",,WSIB,ir093024,2.2,2.1925341911433476,0.1467
+Lightspeed,"Endeavour Capital Fund VI, L.P. - Secondary Purchase",,WSIB,ir093024,2.8,2.8073406884625736,1.7685
+Lightspeed,"Endeavour Capital Fund VII, L.P.",,WSIB,ir093024,2.3,1.1903760782647763,0.1972
+Lightspeed,"Endeavour Capital Fund VII, L.P. - Secondary Purchase",,WSIB,ir093024,1.8,0.7674102472144546,0.2992
+Lightspeed,"Endeavour Capital Fund VIII, L.P.",,WSIB,ir093024,1.2,0.0845011626171302,0.0858
+Lightspeed,"Energy Recovery Fund, L.P.",,WSIB,ir093024,1.7,1.69999899,0.1067999999999999
+Lightspeed,"Equity-Linked Investors, L.P.",,WSIB,ir093024,2.8,2.75849964,0.1077999999999999
+Lightspeed,"Essex Woodlands Health Ventures Fund V, L.P.",,WSIB,ir093024,1.2,1.0579497254901962,0.0298
+Lightspeed,"Essex Woodlands Health Ventures Fund VI, L.P.",,WSIB,ir093024,1.4,1.0986811810012838,0.0349
+Lightspeed,"European Mezzanine Fund III, L.P.",,WSIB,ir093024,2.1,2.096389797111736,0.1711
+Lightspeed,"Evercore Capital Partners II, L.P.",,WSIB,ir093024,1.2,1.217316086727089,0.0491
+Lightspeed,"Evergreen I, L.P.",,WSIB,ir093024,2.8,2.79373996,0.126
+Lightspeed,"Evergreen II, L.P.",,WSIB,ir093024,1.1,1.1073114,0.0169
+Lightspeed,"Evergreen III, L.P.",,WSIB,ir093024,1.5,1.47419944,0.0776
+Lightspeed,"Evergreen IV, L.P.",,WSIB,ir093024,1.3,1.30763352,0.0547
+Lightspeed,"Evergreen Pacific Partners II, L.P.",,WSIB,ir093024,2.0,2.048677553167897,0.2196999999999999
+Lightspeed,"Evergreen Park Investment Fund, L.P.",,WSIB,ir093024,1.3,0.0019517864042812,0.1724
+Lightspeed,"FFL Capital Partners IV, L.P.",,WSIB,ir093024,1.7,1.6936791316673512,0.1669
+Lightspeed,"First Reserve Fund IX, L.P.",,WSIB,ir093024,2.8,2.8466522098510336,0.4811999999999999
+Lightspeed,"First Reserve Fund VIII, L.P.",,WSIB,ir093024,1.9,1.924043186295573,0.1583
+Lightspeed,"First Reserve Fund X, L.P.",,WSIB,ir093024,1.8,1.827616085,0.3106
+Lightspeed,"First Reserve Fund XI, L.P.",,WSIB,ir093024,0.7,0.6852549299366743,-0.0944999999999999
+Lightspeed,"First Reserve Fund XII, L.P.",,WSIB,ir093024,0.5,0.540240183933109,-0.1785999999999999
+Lightspeed,"First Reserve Fund XIII, L.P.",,WSIB,ir093024,0.9,0.5739995487667084,-0.0237
+Lightspeed,"Fisher Lynch Co-Investment Partnership II, L.P.",,WSIB,ir093024,2.3,1.7912456975355266,0.1737999999999999
+Lightspeed,"Fisher Lynch Co-Investment Partnership III, L.P.",,WSIB,ir093024,2.0,0.6755130216199483,0.1373
+Lightspeed,"Fisher Lynch Co-Investment Partnership IV, L.P.",,WSIB,ir093024,1.9,0.5025590896676507,0.1842
+Lightspeed,"Fisher Lynch Co-Investment Partnership, L.P.",,WSIB,ir093024,1.5,1.466863499549633,0.0684999999999999
+Lightspeed,"Fortress Investment Fund III, L.P.",,WSIB,ir093024,1.1,1.0664065748398968,0.012
+Lightspeed,"Fortress Investment Fund IV, L.P.",,WSIB,ir093024,0.9,0.8329570328200928,-0.0141999999999999
+Lightspeed,"Fortress Investment Fund IV, L.P. - Co-Investment",,WSIB,ir093024,0.7,0.7177274895627755,-0.0362
+Lightspeed,"Fortress Investment Fund V, L.P.",,WSIB,ir093024,1.5,1.084187144622445,0.0431
+Lightspeed,"Fortress Investment Fund V, L.P. - Co-Investment",,WSIB,ir093024,0.6,0.3207559622078215,-0.0495
+Lightspeed,"Fortress Investment Fund, L.P.",,WSIB,ir093024,2.3,2.336050171299821,0.2565
+Lightspeed,"FountainVest Capital Partners Fund IV, L.P.",,WSIB,ir093024,0.7,0.0030050018842238,-0.1419
+Lightspeed,"FountainVest China Capital Partners Fund III, L.P.",,WSIB,ir093024,1.3,0.3199355459639006,0.0746
+Lightspeed,"FountainVest China Growth Capital Fund II, L.P.",,WSIB,ir093024,1.4,1.3517595388332684,0.1171
+Lightspeed,"FountainVest China Growth Capital Fund, L.P.",,WSIB,ir093024,1.4,1.3616082257557147,0.0666
+Lightspeed,"France Private Equity II, L.P.",,WSIB,ir093024,1.7,1.694947218346626,0.1374
+Lightspeed,"Francisco Partners IV, L.P.",,WSIB,ir093024,3.1,2.340176494962088,0.2662
+Lightspeed,"Francisco Partners V, L.P.",,WSIB,ir093024,2.2,0.7945473384691681,0.1946
+Lightspeed,"Francisco Partners VI, L.P.",,WSIB,ir093024,1.4,0.1302136217252152,0.1553999999999999
+Lightspeed,"Francisco Partners VII, L.P.",,WSIB,ir093024,0.9,,-0.3616
+Lightspeed,"Francisco Partners, L.P.",,WSIB,ir093024,1.3,1.26869365364058,0.0441
+Lightspeed,"Francisco Partners, L.P. - WSIB Secondary",,WSIB,ir093024,2.1,2.13503577463043,0.2103
+Lightspeed,"Frazier Healthcare II, L.P.",,WSIB,ir093024,1.5,1.4619581730083306,0.0684999999999999
+Lightspeed,"Frazier Healthcare III, L.P.",,WSIB,ir093024,0.5,0.471668573874364,-0.1114
+Lightspeed,"Frazier Healthcare IV, L.P.",,WSIB,ir093024,1.0,1.0407382796780684,0.0065
+Lightspeed,"GI Partners Fund IV, L.P.",,WSIB,ir093024,2.1,1.3647040415385645,0.1514
+Lightspeed,"GI Partners Fund V, L.P.",,WSIB,ir093024,1.6,0.6611785296380287,0.1533
+Lightspeed,"GI Partners Fund VI, L.P.",,WSIB,ir093024,1.2,,0.092
+Lightspeed,"GTCR Capital Partners, L.P.",,WSIB,ir093024,1.4,1.4421992979962328,0.1081
+Lightspeed,"GTCR Fund IX, L.P.",,WSIB,ir093024,1.8,1.8065760815457057,0.1377
+Lightspeed,"GTCR Fund VII, L.P.",,WSIB,ir093024,2.4,2.3554573642741077,0.2183
+Lightspeed,"GTCR Fund VIII, L.P.",,WSIB,ir093024,1.8,1.808473096664114,0.2239999999999999
+Lightspeed,"GTCR Fund X, L.P.",,WSIB,ir093024,2.1,2.089194706362423,0.216
+Lightspeed,"GTCR Fund XI, L.P.",,WSIB,ir093024,3.2,2.438575981166923,0.3159
+Lightspeed,"GTCR Fund XII, L.P.",,WSIB,ir093024,1.8,0.6156664256414534,0.2155999999999999
+Lightspeed,"GTCR Fund XIII, L.P.",,WSIB,ir093024,1.3,0.1513439784505332,0.1919
+Lightspeed,"Georgian Partners Growth Fund V, L.P.",,Massachusetts PRIM,2020-Q1,0.8936829782490452,,-0.1063170217510389
+Lightspeed,"Gilbert Global Equity Partners, L.P.",,WSIB,ir093024,1.4,1.3513955531551551,0.0322
+Lightspeed,"Green Equity Investors IV, L.P.",,WSIB,ir093024,1.9,1.886983800878707,0.1113
+Lightspeed,"Green Equity Investors IX, L.P.",,WSIB,ir093024,1.1,0.0358336532890905,0.3207
+Lightspeed,"Green Equity Investors V, L.P.",,WSIB,ir093024,2.3,2.2719273670678795,0.1815
+Lightspeed,"Green Equity Investors VI, L.P.",,WSIB,ir093024,2.1,1.1950368311936332,0.1359
+Lightspeed,"Green Equity Investors VII, L.P.",,WSIB,ir093024,2.0,1.3878718597206166,0.1951
+Lightspeed,"Green Equity Investors VIII, L.P.",,WSIB,ir093024,1.4,0.0812548294637069,0.1173
+Lightspeed,"Green Mountain Partners II, L.P.",,WSIB,ir093024,1.6,1.6231420775243568,0.1031
+Lightspeed,"Green Mountain Partners, L.P.",,WSIB,ir093024,1.2,1.2424705743804547,0.0562
+Lightspeed,"Gryphon Partners II, L.P.",,WSIB,ir093024,1.2,1.1717652085491632,0.0461
+Lightspeed,"HIPEP VI-Asia Pacific Fund, L.P.",,WSIB,ir093024,1.6,1.3068666315789474,0.0803999999999999
+Lightspeed,"HIPEP VI-Emerging Markets Fund, L.P.",,WSIB,ir093024,1.2,0.59214316,0.0224
+Lightspeed,"HarbourVest Global Private Equity, L.P.",,WSIB,ir093024,1.4,1.3767845845887097,0.04
+Lightspeed,"HarbourVest Int'l PEP III - Direct Fund, L.P.",,WSIB,ir093024,0.8,0.834753785592895,-0.02
+Lightspeed,"HarbourVest Int'l PEP III - Partnership Fund, L.P.",,WSIB,ir093024,1.6,1.5614740885416667,0.105
+Lightspeed,HarbourVest Int'l PEP IV - Direct Fund L.P.,,WSIB,ir093024,1.9,1.8668015520282184,0.2128999999999999
+Lightspeed,HarbourVest Int'l PEP IV- Partnership Fund L.P.,,WSIB,ir093024,1.7,1.705372438271605,0.2259
+Lightspeed,"HarbourVest International PEP II - Direct Fund, L.P.",,WSIB,ir093024,1.9,1.9009952,0.1957
+Lightspeed,"HarbourVest International PEP II - Partnership Fund, L.P.",,WSIB,ir093024,1.4,1.440194188576336,0.0943
+Lightspeed,"HarbourVest Partners II, L.P.",,WSIB,ir093024,1.9,1.9369421,0.0849
+Lightspeed,"Hellman & Friedman Capital Partners IX, L.P.",,WSIB,ir093024,1.6,0.1207805991808276,0.1344
+Lightspeed,"Hellman & Friedman Capital Partners V, L.P.",,WSIB,ir093024,2.7,2.6592400358251576,0.2791
+Lightspeed,"Hellman & Friedman Capital Partners VI, L.P.",,WSIB,ir093024,1.8,1.799448242581858,0.1292
+Lightspeed,"Hellman & Friedman Capital Partners VII, L.P.",,WSIB,ir093024,3.4,3.2976341367858746,0.2464
+Lightspeed,"Hellman & Friedman Capital Partners VIII, L.P.",,WSIB,ir093024,1.8,0.6479085530821754,0.1174
+Lightspeed,"Hellman & Friedman Capital Partners X, L.P.",,WSIB,ir093024,1.2,0.0900268370093387,0.0892999999999999
+Lightspeed,"Hellman & Friedman Capital Partners XI, L.P.",,WSIB,ir093024,,,
+Lightspeed,"Heritage Fund III, L.P.",,WSIB,ir093024,0.5,0.4787386986714174,-0.2353
+Lightspeed,"Insight Partners XI, L.P.",,WSIB,ir093024,1.6,0.0064957297019527,0.1295
+Lightspeed,"Insight Partners XII, L.P.",,WSIB,ir093024,1.0,0.0015415972382048,-0.0075
+Lightspeed,"Insight Venture Partners Growth-Buyout Coinvestment Fund, L.P.",,WSIB,ir093024,3.5,1.6069956991232115,0.2666
+Lightspeed,"Insight Venture Partners IX, L.P.",,WSIB,ir093024,3.9,1.6343433366594389,0.2386
+Lightspeed,"Insight Venture Partners VIII, L.P.",,WSIB,ir093024,3.2,2.209973023647146,0.2073
+Lightspeed,"InterWest Partners VI, L.P.",,WSIB,ir093024,3.0,2.9717541,0.488
+Lightspeed,"Investech, L.P.",,WSIB,ir093024,1.2,1.2242738,0.0225
+Lightspeed,"Jade Equity Investors II, L.P.",,WSIB,ir093024,0.8,,-0.1661
+Lightspeed,"Jade Equity Investors, L.P.",,WSIB,ir093024,1.4,0.1797530875644386,0.2065
+Lightspeed,"John Hancock Venture Capital Fund, L.P.",,WSIB,ir093024,1.1,1.1268802,0.0173
+Lightspeed,"Joseph Littlejohn Levy Fund II, L.P.",,WSIB,ir093024,1.5,1.5079980868553478,0.0715
+Lightspeed,"KBA Partners II, L.P.",,WSIB,ir093024,0.0,0.0369719953051643,-0.4207
+Lightspeed,"KBA Partners, L.P.",,WSIB,ir093024,2.2,2.15150096969697,0.1473
+Lightspeed,"KKR 1982 Fund, L.P.",,WSIB,ir093024,3.0,2.9582486283352125,0.3655
+Lightspeed,"KKR 1984 Fund, L.P.",,WSIB,ir093024,4.4,4.422841721068355,0.2919
+Lightspeed,"KKR 2006 Fund, L.P.",,WSIB,ir093024,1.8,1.7525587263898383,0.0942
+Lightspeed,"KKR Americas Fund XII, L.P.",,WSIB,ir093024,2.1,0.7595975429756491,0.207
+Lightspeed,"KKR Asian Fund II, L.P.",,WSIB,ir093024,1.1,0.815282975594946,0.0318
+Lightspeed,"KKR Asian Fund III, L.P.",,WSIB,ir093024,2.0,0.8083966965603802,0.2191
+Lightspeed,"KKR Asian Fund, L.P.",,WSIB,ir093024,1.7,1.6919285729793023,0.1359
+Lightspeed,"KKR Beatrice, L.P.",,WSIB,ir093024,3.6,3.576796093333334,0.4317
+Lightspeed,"KKR DAW, L.P.",,WSIB,ir093024,3.0,2.98477171875,0.1308
+Lightspeed,"KKR E2 Investors, L.P.",,WSIB,ir093024,0.9,0.9146785181575006,-0.0287
+Lightspeed,"KKR European Fund II, L.P.",,WSIB,ir093024,1.3,1.3127670342683375,0.0478
+Lightspeed,"KKR European Fund III, L.P. - USD",,WSIB,ir093024,1.6,1.5554939167627908,0.11
+Lightspeed,"KKR European Fund IV, L.P.",,WSIB,ir093024,1.8,1.2454425633951618,0.1592
+Lightspeed,"KKR European Fund V, L.P. - USD",,WSIB,ir093024,1.4,0.2291871908568769,0.1144999999999999
+Lightspeed,"KKR European Fund, L.P.",,WSIB,ir093024,2.1,2.054864634040898,0.1973
+Lightspeed,"KKR Millennium Fund, L.P.",,WSIB,ir093024,1.8,1.827522716361608,0.1669999999999999
+Lightspeed,"KKR North America Fund XI, L.P.",,WSIB,ir093024,2.2,1.926761893168288,0.1951
+Lightspeed,"KKR North America Fund XI, L.P. - Second Commitment",,WSIB,ir093024,2.3,1.95665509059951,0.1949
+Lightspeed,"KKR Red Lion, L.P.",,WSIB,ir093024,3.3,3.291069126218721,0.1009999999999999
+Lightspeed,"KSL Capital Partners II, L.P.",,WSIB,ir093024,1.9,1.9365573021289657,0.153
+Lightspeed,"KSL Capital Partners III, L.P.",,WSIB,ir093024,1.3,1.0764506703462655,0.0834999999999999
+Lightspeed,"KSL Capital Partners IV, L.P.",,WSIB,ir093024,1.7,0.8065090176148992,0.1398
+Lightspeed,"KSL Capital Partners Supplemental II TE, L.P.",,WSIB,ir093024,2.2,2.164203599541971,0.2478999999999999
+Lightspeed,"KSL Capital Partners V, L.P.",,WSIB,ir093024,1.3,0.4090254181184549,0.1381
+Lightspeed,"Luminate Capital Partners III, L.P.",,WSIB,ir093024,1.1,,0.0506
+Lightspeed,"Luminate Capital Partners IV, L.P.",,WSIB,ir093024,,,
+Lightspeed,"Madison Dearborn Capital Partners III, L.P.",,WSIB,ir093024,1.5,1.4936039392021911,0.0857
+Lightspeed,"Madison Dearborn Capital Partners IV, L.P.",,WSIB,ir093024,1.8,1.7525672378951729,0.1391
+Lightspeed,"Madison Dearborn Capital Partners V, L.P.",,WSIB,ir093024,1.6,1.5523945849062473,0.0748
+Lightspeed,"Madison Dearborn Capital Partners VI, L.P.",,WSIB,ir093024,2.2,2.1589375304393057,0.2317
+Lightspeed,"Madison Dearborn Capital Partners VIII, L.P.",,WSIB,ir093024,1.2,0.323502987804691,0.1181
+Lightspeed,"Materia Ventures, L.P.",,WSIB,ir093024,1.2,1.2005579333333334,0.0191
+Lightspeed,"MatlinPatterson Global Opportunities Partners, L.P.",,WSIB,ir093024,1.7,1.6903255175302545,0.1582
+Lightspeed,"Menlo Evergreen V, L.P.",,WSIB,ir093024,3.6,3.6143842502257417,0.3214
+Lightspeed,"Menlo Inflection I, L.P.",,WSIB,ir093024,2.8,0.1774070534351145,0.1725
+Lightspeed,"Menlo Inflection II, L.P.",,WSIB,ir093024,1.6,0.0836825670103092,0.1352
+Lightspeed,"Menlo Inflection III, L.P.",,WSIB,ir093024,1.0,,-0.0279999999999999
+Lightspeed,"Menlo Olympic Fund I, L.P.",,WSIB,ir093024,0.9,,-0.1093
+Lightspeed,"Menlo Ventures IV, L.P.",,WSIB,ir093024,5.1,5.12716716,0.4215
+Lightspeed,"Menlo Ventures IX, L.P.",,WSIB,ir093024,1.0,1.019991745,0.0033
+Lightspeed,"Menlo Ventures VI, L.P.",,WSIB,ir093024,3.1,3.10748576923077,0.4083
+Lightspeed,"Menlo Ventures VII, L.P.",,WSIB,ir093024,4.7,4.71040612,1.3558
+Lightspeed,"Menlo Ventures VIII, L.P.",,WSIB,ir093024,0.5,0.4989016,-0.0894
+Lightspeed,"Menlo Ventures X, L.P.",,WSIB,ir093024,2.1,2.04408126,0.1049
+Lightspeed,"Menlo Ventures XI, L.P.",,WSIB,ir093024,4.2,3.634397599371673,0.2934
+Lightspeed,"Menlo Ventures XII, L.P.",,WSIB,ir093024,1.7,0.4982165735491854,0.0917999999999999
+Lightspeed,"Menlo Ventures XIV, L.P.",,WSIB,ir093024,2.4,0.3081325,0.2139
+Lightspeed,"Menlo Ventures XV, L.P.",,WSIB,ir093024,1.1,,0.0294
+Lightspeed,"Mobius Technology Ventures Side Fund VI, L.P.",,WSIB,ir093024,1.5,1.48115405109183,0.0634
+Lightspeed,"Mobius Technology Ventures VI, L.P.",,WSIB,ir093024,0.6,0.5984232787022438,-0.0579999999999999
+Lightspeed,"New Enterprise Associates 10, L.P.",,WSIB,ir093024,1.2,1.1260597272727273,0.0232
+Lightspeed,"New Enterprise Associates 12, L.P.",,WSIB,ir093024,1.4,1.3878117766497462,0.0642
+Lightspeed,"New Mountain Partners V, L.P.",,WSIB,ir093024,2.4,1.4452100802806778,0.2719
+Lightspeed,"New Mountain Partners VI, L.P.",,WSIB,ir093024,1.4,0.0126787553561849,0.1865
+Lightspeed,"New Mountain Partners VII, L.P.",,WSIB,ir093024,0.0,,
+Lightspeed,"Nordic Capital CV1 Beta, L.P.",,WSIB,ir093024,1.5,1.4993109038063932,0.1263
+Lightspeed,"Nordic Capital Fund III, L.P.",,WSIB,ir093024,3.6,3.566408130779302,0.3131
+Lightspeed,"Nordic Capital Fund IV, L.P.",,WSIB,ir093024,2.8,2.8196470499638604,0.3317
+Lightspeed,"Nordic Capital Fund IX, L.P.",,WSIB,ir093024,1.7,0.4683718382108809,0.1732999999999999
+Lightspeed,"Nordic Capital Fund VI, L.P.",,WSIB,ir093024,1.5,1.5040904405135531,0.0686
+Lightspeed,"Nordic Capital Fund VII, L.P.",,WSIB,ir093024,1.3,1.320314260164567,0.0518
+Lightspeed,"Nordic Capital Fund VIII, L.P.",,WSIB,ir093024,1.5,1.3023328595907862,0.1198
+Lightspeed,"Nordic Capital Fund X, L.P.",,WSIB,ir093024,1.4,0.1089533789651208,0.1782
+Lightspeed,"Nordic Capital Fund XI, L.P.",,WSIB,ir093024,1.0,0.0016308667457359,0.0571
+Lightspeed,"Nordic Capital V, L.P.",,WSIB,ir093024,2.7,2.7280996905810326,0.2055
+Lightspeed,"OCM Opportunities Fund II, L.P.",,WSIB,ir093024,1.5,1.5116945333333334,0.0844999999999999
+Lightspeed,"OCM Opportunities Fund III, L.P.",,WSIB,ir093024,1.5,1.4871917923076925,0.1193999999999999
+Lightspeed,"OCM Opportunities Fund IV, L.P.",,WSIB,ir093024,1.6,1.6064686325581394,0.2802
+Lightspeed,"OCM Opportunities Fund V, L.P.",,WSIB,ir093024,1.7,1.650003033333333,0.1401
+Lightspeed,"OCM Opportunities Fund VI, L.P.",,WSIB,ir093024,1.6,1.5794532,0.0875
+Lightspeed,"OCM Opportunities Fund VII, L.P.",,WSIB,ir093024,1.4,1.382666082352941,0.0733999999999999
+Lightspeed,"OCM Opportunities Fund VII-B, L.P.",,WSIB,ir093024,1.7,1.7318829095607235,0.1651999999999999
+Lightspeed,"OVP Venture Partners VI, L.P.",,WSIB,ir093024,0.3,0.2838343,-0.1559
+Lightspeed,"OVP Venture Partners VII, L.P.",,WSIB,ir093024,3.2,0.91481545,0.089
+Lightspeed,"Oak Investment Partners IX, L.P.",,WSIB,ir093024,0.7,0.6514497666666667,-0.0665
+Lightspeed,"Oak Investment Partners VIII, L.P.",,WSIB,ir093024,1.8,1.8005866,0.5533
+Lightspeed,"Oak Investment Partners X, L.P.",,WSIB,ir093024,1.3,1.26465587,0.035
+Lightspeed,"Oak Investment Partners XI, L.P.",,WSIB,ir093024,0.8,0.82292209,-0.0247
+Lightspeed,"Oaktree Opportunities Fund IX, L.P.",,WSIB,ir093024,1.8,1.202140205492008,0.0814
+Lightspeed,"Oaktree Opportunities Fund VIII, L.P.",,WSIB,ir093024,1.5,1.466437744,0.0906
+Lightspeed,"Oaktree Opportunities Fund VIII-B, L.P.",,WSIB,ir093024,1.7,1.569870728,0.0827
+Lightspeed,"Oaktree Opportunities Fund X, L.P.",,WSIB,ir093024,1.5,1.0207767031161885,0.0929
+Lightspeed,"Oaktree Opportunities Fund XI, L.P.",,WSIB,ir093024,1.3,0.1371257978929706,0.108
+Lightspeed,"Oaktree Opportunities Fund Xb, L.P.",,WSIB,ir093024,1.6,0.2325940496597334,0.1253999999999999
+Lightspeed,"Oaktree Principal Fund V, L.P.",,WSIB,ir093024,1.2,1.1317354954933592,0.032
+Lightspeed,"Olympus Growth Fund III, L.P.",,WSIB,ir093024,1.9,1.874787894758939,0.1503999999999999
+Lightspeed,"PAG Asia II, L.P.",,WSIB,ir093024,1.8,0.5953678120781796,0.1196
+Lightspeed,"PAG Asia III, L.P.",,WSIB,ir093024,1.3,0.1941177498295976,0.0926
+Lightspeed,"PAI Europe VIII, L.P.",,WSIB,ir093024,1.0,,0.0466
+Lightspeed,PSG Europe II L.P.,,WSIB,ir093024,1.3,0.0388189665947838,0.4135999999999999
+Lightspeed,PSG V L.P.,,WSIB,ir093024,1.2,0.104280847055345,0.1115
+Lightspeed,PSG VI L.P.,,WSIB,ir093024,,,
+Lightspeed,"Palamon European Equity II, L.P.",,WSIB,ir093024,1.5,1.391925837131627,0.0808
+Lightspeed,"Palamon European Equity, L.P.",,WSIB,ir093024,1.7,1.731294515906158,0.1075
+Lightspeed,"Paragon Partners, L.P.",,WSIB,ir093024,2.1,2.09289,0.1382
+Lightspeed,"Paragon Venture Partners II, L.P.",,WSIB,ir093024,2.3,2.2952274,0.1155
+Lightspeed,"Permira IV, L.P.",,WSIB,ir093024,1.6,1.5562774722545911,0.086
+Lightspeed,"Permira V, L.P.",,WSIB,ir093024,2.8,2.230596150517401,0.2101
+Lightspeed,"Permira VI, L.P.",,WSIB,ir093024,2.1,0.699514687076754,0.1691
+Lightspeed,"Permira VII, L.P.",,WSIB,ir093024,1.2,0.0866325204128491,0.0747
+Lightspeed,"Phoenix Partners II, L.P.",,WSIB,ir093024,1.9,1.8552404666666664,0.1297
+Lightspeed,"Phoenix Partners III, L.P.",,WSIB,ir093024,1.4,1.43413748,0.0530999999999999
+Lightspeed,"Phoenix Partners, L.P.",,WSIB,ir093024,0.9,0.8944986,-0.0163999999999999
+Lightspeed,"Phoenix Partners, L.P. - WSIB Secondary",,WSIB,ir093024,0.7,0.6985123007119982,-0.0944
+Lightspeed,Providence Equity Partners IX L.P.,,WSIB,ir093024,1.0,0.2153157654043863,0.096
+Lightspeed,"Providence Equity Partners VI, L.P.",,WSIB,ir093024,1.4,1.357651262251914,0.0594
+Lightspeed,"Providence Equity Partners VII, L.P.",,WSIB,ir093024,2.0,1.6574445149883812,0.2102
+Lightspeed,"Providence Equity Partners VIII, L.P.",,WSIB,ir093024,1.5,0.2854146227409073,0.1457
+Lightspeed,"Providence Strategic Growth Europe, L.P.",,WSIB,ir093024,1.4,0.3051238195613334,0.1753
+Lightspeed,"Rhone Partners V, L.P.",,WSIB,ir093024,2.0,0.8760738979958373,0.1693
+Lightspeed,"Rice Partners II, L.P.",,WSIB,ir093024,0.9,0.8805505077578537,-0.0338
+Lightspeed,"Riverside Capital Appreciation Fund VI, L.P.",,WSIB,ir093024,1.5,1.232558880430797,0.1132
+Lightspeed,"Riverside Capital Appreciation Fund VII, L.P.",,WSIB,ir093024,1.3,0.5734278834383442,0.1114
+Lightspeed,"Riverside Micro-Cap Fund V, L.P.",,WSIB,ir093024,1.5,0.1159476826097794,0.136
+Lightspeed,"Riverside Micro-Cap Fund VI, L.P.",,WSIB,ir093024,1.0,0.0005866721018524,0.0032
+Lightspeed,"Roark Capital Partners III, L.P.",,WSIB,ir093024,2.0,2.002205050606532,0.1175
+Lightspeed,"Roark Capital Partners IV, L.P.",,WSIB,ir093024,1.3,1.2905357803425674,0.0449
+Lightspeed,"Searchlight Capital Partners III, L.P.",,WSIB,ir093024,1.6,0.4451241712691327,0.2448999999999999
+Lightspeed,"Searchlight Capital Partners IV, L.P.",,WSIB,ir093024,0.8,,-0.1509
+Lightspeed,"Sequoia Global Growth Fund III - Endurance Partners, L.P.",,WSIB,ir093024,1.7,0.330057960884682,0.16
+Lightspeed,"Silver Lake III SL SPV-2, L.P.",,WSIB,ir093024,2.2,1.5538519434779725,0.3119
+Lightspeed,"Silver Lake Partners II, L.P.",,WSIB,ir093024,1.8,1.7509398900995796,0.1101999999999999
+Lightspeed,"Silver Lake Partners III, L.P.",,WSIB,ir093024,1.9,1.8827314669432973,0.1755999999999999
+Lightspeed,"Silver Lake Partners IV, L.P.",,WSIB,ir093024,2.7,1.4493966183572915,0.2162
+Lightspeed,"Silver Lake Partners V, L.P.",,WSIB,ir093024,1.6,0.6032405101173585,0.1324
+Lightspeed,"Silver Lake Partners VI, L.P.",,WSIB,ir093024,1.2,0.1022356525166557,0.0936999999999999
+Lightspeed,"Silver Lake Partners VII, L.P.",,WSIB,ir093024,1.1,0.0547963600122952,0.1277
+Lightspeed,"Silver Lake Partners, L.P.",,WSIB,ir093024,2.2,2.195063540650231,0.2457
+Lightspeed,"Sixth Street Growth Partners II, L.P.",,WSIB,ir093024,1.1,0.0004280083617615,0.0779
+Lightspeed,"Sixth Street Opportunities Partners II, L.P.",,WSIB,ir093024,1.7,1.7278599631319738,0.1644
+Lightspeed,"Sixth Street Opportunities Partners III, L.P.",,WSIB,ir093024,1.5,1.2336228823082562,0.086
+Lightspeed,"Sixth Street Opportunities Partners IV, L.P.",,WSIB,ir093024,1.4,0.4955428688444508,0.1049
+Lightspeed,"Sixth Street Opportunities Partners V, L.P.",,WSIB,ir093024,1.1,0.013075238187908,0.0774
+Lightspeed,"Southern Cross Latin America Private Equity Fund IV, L.P.",,WSIB,ir093024,0.2,0.2157470644558516,-0.2571
+Lightspeed,"Southern Cross Latin America Private Equity Fund IV, L.P. - WSIB Secondary",,WSIB,ir093024,0.2,0.223632034380626,-0.256
+Lightspeed,"Spectrum Equity Investors IV, L.P.",,WSIB,ir093024,1.3,1.334595762886598,0.0747
+Lightspeed,"Sprout Capital IX, L.P.",,WSIB,ir093024,1.4,1.4209316604802311,0.0567
+Lightspeed,"Sprout Capital VII, L.P.",,WSIB,ir093024,2.7,2.6701443333333335,0.2147
+Lightspeed,"Sprout VIII, L.P.",,WSIB,ir093024,0.9,0.9441261636363636,-0.0091
+Lightspeed,"TA XI, L.P.",,WSIB,ir093024,3.6,3.486107018787781,0.2671
+Lightspeed,"TA XII, L.P.",,WSIB,ir093024,2.8,2.032292743723552,0.3493
+Lightspeed,"TA XIII, L.P.",,WSIB,ir093024,1.8,0.5965012859411708,0.2380999999999999
+Lightspeed,"TA XIV, L.P.",,WSIB,ir093024,1.0,0.031413612565445,0.006
+Lightspeed,"TA XV, L.P.",,WSIB,ir093024,,,
+Lightspeed,"TA/Advent VIII, L.P.",,WSIB,ir093024,2.3,2.2842537414965984,0.2328
+Lightspeed,"TCV IX, L.P.",,WSIB,ir093024,2.0,1.3299052466555472,0.1873999999999999
+Lightspeed,"TCV VIII, L.P.",,WSIB,ir093024,2.3,1.5362937720177627,0.1231
+Lightspeed,"TCV X, L.P.",,WSIB,ir093024,2.4,0.4102669595079855,0.2299
+Lightspeed,"TCV XI, L.P.",,WSIB,ir093024,1.0,,0.0056999999999999
+Lightspeed,"TPG Growth II, L.P.",,WSIB,ir093024,1.8,1.7784870777776685,0.1483
+Lightspeed,"TPG Growth III, L.P.",,WSIB,ir093024,1.6,1.119118133852749,0.165
+Lightspeed,"TPG Growth IV, L.P.",,WSIB,ir093024,1.6,0.6490554760277706,0.1467999999999999
+Lightspeed,"TPG Growth V, L.P.",,WSIB,ir093024,1.4,0.1545362044471765,0.1609
+Lightspeed,"TPG Growth VI, L.P.",,WSIB,ir093024,1.2,,0.1784
+Lightspeed,"TPG Healthcare Partners II, L.P.",,WSIB,ir093024,1.1,0.035492141350817,0.1689
+Lightspeed,"TPG Partners III, L.P.",,WSIB,ir093024,2.4,2.4285267422795576,0.245
+Lightspeed,"TPG Partners IV, L.P.",,WSIB,ir093024,1.9,1.906785837000191,0.1524
+Lightspeed,"TPG Partners IX, L.P.",,WSIB,ir093024,1.1,0.0101560305322627,0.1427999999999999
+Lightspeed,"TPG Partners V, L.P.",,WSIB,ir093024,1.3,1.346292396344242,0.0481
+Lightspeed,"TPG Partners VI, L.P.",,WSIB,ir093024,1.5,1.4753865412839453,0.0967
+Lightspeed,"TPG Partners VII, L.P.",,WSIB,ir093024,2.0,1.7007402206375042,0.2055
+Lightspeed,"TPG Partners VIII, L.P.",,WSIB,ir093024,1.5,0.3082008263182873,0.1945
+Lightspeed,"TPG Rise Climate II, L.P.",,WSIB,ir093024,,,
+Lightspeed,"TPG STAR, L.P.",,WSIB,ir093024,1.3,1.2024597845780285,0.0622
+Lightspeed,"TSG Capital Fund II, L.P.",,WSIB,ir093024,0.7,0.6596158860352433,-0.0853999999999999
+Lightspeed,"TSG Capital Fund III, L.P.",,WSIB,ir093024,0.6,0.5677518232010063,-0.1352
+Lightspeed,"TWCP, L.P.",,WSIB,ir093024,0.6,0.6294463022773661,-0.0963
+Lightspeed,"Tailwind Capital Partners Fund IV, L.P.",,WSIB,ir093024,,,
+Lightspeed,"Tailwind Capital Partners III, L.P.",,WSIB,ir093024,1.5,0.5784269372752011,0.1697
+Lightspeed,"Telecom Partners III, L.P.",,WSIB,ir093024,0.1,0.106097658487039,-0.4056
+Lightspeed,"The Rise Fund III, L.P.",,WSIB,ir093024,1.2,0.0110992165948592,0.2419
+Lightspeed,"Thoma Bravo Discover Fund III, L.P.",,WSIB,ir093024,1.3,0.0454813046731712,0.1061999999999999
+Lightspeed,"Thoma Bravo Discover Fund IV, L.P.",,WSIB,ir093024,1.3,,0.1907
+Lightspeed,"Thoma Bravo Fund XIV, L.P.",,WSIB,ir093024,1.2,0.2067824889894241,0.0774
+Lightspeed,"Thoma Bravo Fund XV, L.P.",,WSIB,ir093024,1.3,0.0009237439785349,0.1498
+Lightspeed,"TowerBrook Delta (Onshore), L.P.",,WSIB,ir093024,0.8,0.0032109272797089,-0.2556
+Lightspeed,"TowerBrook Investors VI, L.P.",,WSIB,ir093024,1.1,,0.0851
+Lightspeed,"Towerbrook Investors IV, L.P.",,WSIB,ir093024,2.1,1.3887101992392883,0.179
+Lightspeed,"Towerbrook Investors V, L.P.",,WSIB,ir093024,1.4,0.1988154026048826,0.1568999999999999
+Lightspeed,"Trident IX, L.P.",,WSIB,ir093024,1.2,0.0244163669659324,0.1775
+Lightspeed,"Trident VII, L.P.",,WSIB,ir093024,2.1,0.8329708161573228,0.1896999999999999
+Lightspeed,"Trident VIII, L.P.",,WSIB,ir093024,1.5,0.1828335872401862,0.1386
+Lightspeed,"Triton Fund III, L.P.",,WSIB,ir093024,1.5,1.514793054292371,0.1015
+Lightspeed,"Triton Fund IV, L.P.",,WSIB,ir093024,1.4,1.3924746892908444,0.0719
+Lightspeed,"Triton Fund V, L.P.",,WSIB,ir093024,1.3,1.2574456623552943,0.0969
+Lightspeed,"U.S. Venture Partners V, L.P.",,WSIB,ir093024,2.3,2.2614698,0.2623
+Lightspeed,"U.S. Venture Partners VI, L.P.",,WSIB,ir093024,1.2,1.229624709677419,0.0434
+Lightspeed,"U.S. Venture Partners VII, L.P.",,WSIB,ir093024,0.7,0.7000255754754708,-0.0253
+Lightspeed,"U.S. Venture Partners VIII, L.P.",,WSIB,ir093024,1.3,1.296595993364273,0.0349
+Lightspeed,"Varde Select Fund, L.P.",,WSIB,ir093024,1.3,1.320734125,0.0602
+Lightspeed,"Ventech Partners, L.P.",,WSIB,ir093024,1.5,1.4838658483865848,0.0823
+Lightspeed,"Vestar Capital Partners III, L.P.",,WSIB,ir093024,1.1,1.1390947539294702,0.0259
+Lightspeed,"Vestar Capital Partners IV, L.P.",,WSIB,ir093024,1.8,1.7636067756629612,0.1344
+Lightspeed,"Vestar Capital Partners V, L.P.",,WSIB,ir093024,1.3,1.3207856933259354,0.0388
+Lightspeed,"Vestar Capital Partners VI, L.P.",,WSIB,ir093024,2.1,1.6541221661191052,0.2394
+Lightspeed,"Vestar Capital Partners VII, L.P.",,WSIB,ir093024,1.2,0.4775087779831503,0.0822
+Lightspeed,"WCAS Capital Partners III, L.P.",,WSIB,ir093024,1.7,1.74638563,0.1301999999999999
+Lightspeed,"Warburg Pincus China, L.P.",,WSIB,ir093024,1.3,0.4407643977145267,0.0581
+Lightspeed,"Warburg Pincus China-Southeast Asia II, L.P.",,WSIB,ir093024,1.1,0.1929133218390804,0.042
+Lightspeed,"Warburg Pincus Energy, L.P.",,WSIB,ir093024,1.2,0.7644985684897845,0.0399
+Lightspeed,"Warburg Pincus Equity Partners, L.P.",,WSIB,ir093024,1.7,1.6587227408150311,0.103
+Lightspeed,"Warburg Pincus Financial Sector II, L.P.",,WSIB,ir093024,1.5,0.2297223542568387,0.2336
+Lightspeed,"Warburg Pincus Financial Sector, L.P.",,WSIB,ir093024,2.0,0.7208153551533999,0.1858
+Lightspeed,"Warburg Pincus Global Growth 14, L.P.",,WSIB,ir093024,1.2,0.0732385923937624,0.16
+Lightspeed,"Warburg Pincus Global Growth, L.P.",,WSIB,ir093024,1.6,0.2629812407150641,0.1472
+Lightspeed,"Warburg Pincus International Partners, L.P.",,WSIB,ir093024,1.8,1.824696090969618,0.1047
+Lightspeed,"Warburg Pincus International Partners, L.P. - WSIB Secondary",,WSIB,ir093024,2.6,2.6391255496509234,0.2991
+Lightspeed,"Warburg Pincus Private Equity IX, L.P.",,WSIB,ir093024,1.7,1.7196489997815894,0.0960999999999999
+Lightspeed,"Warburg Pincus Private Equity VIII, L.P.",,WSIB,ir093024,2.2,2.2362267462094643,0.145
+Lightspeed,"Warburg Pincus Private Equity X, L.P.",,WSIB,ir093024,1.8,1.7568888047435485,0.0951
+Lightspeed,"Warburg Pincus Private Equity XI, L.P.",,WSIB,ir093024,1.8,1.5177247286097892,0.1202999999999999
+Lightspeed,"Warburg Pincus Private Equity XII, L.P.",,WSIB,ir093024,2.1,1.2713739507137545,0.1649
+Lightspeed,"Wellspring Capital Partners VI, L.P.",,WSIB,ir093024,1.6,0.6330065737518499,0.1482
+Lightspeed,"Welsh, Carson, Anderson & Stowe IX, L.P.",,WSIB,ir093024,1.7,1.661967003367003,0.1119
+Lightspeed,"Welsh, Carson, Anderson & Stowe VIII, L.P.",,WSIB,ir093024,1.3,1.2881686,0.0312
+Mayfield,FCO MA II LP,2010.0,CalSTRS,"FYE June 30, 2025",2.1394314481642205,2.048929311839773,15.52
 Mayfield,Mayfield XIV,2013.0,Oregon Treasury,2025-Q3,3.8,2.748971193415638,0.198
 Mayfield,Mayfield Select,2017.0,Oregon Treasury,2025-Q3,1.75,1.142857142857143,0.153
 Mayfield,Mayfield XV,2017.0,Oregon Treasury,2025-Q3,2.19,0.38671875,0.158
@@ -42,10 +1706,16 @@ Mayfield,Mayfield Select II,2021.0,Oregon Treasury,2025-Q3,1.37,0.0,0.149
 Mayfield,Mayfield XVI,2021.0,Oregon Treasury,2025-Q3,1.52,0.0,0.184
 Mayfield,Mayfield Select III,2023.0,Oregon Treasury,2025-Q3,1.05,0.0,
 Mayfield,Mayfield XVII,2023.0,Oregon Treasury,2025-Q3,1.22,0.0,
-Mayfield,"Mayfield XVII, a Delaware Limited Partnership",2024.0,CalPERS,unknown,1.0,0.0,1.0
-Mayfield,"Mayfield Select III, a Delaware Limited Partnership",2025.0,CalPERS,unknown,1.0,0.0,1.0
-Sequoia,"Sequoia Global Growth Fund III - Endurance Partners, L.P.",2018.0,WSIB,ir093024,1.7,0.330057960884682,0.16
-Thrive Capital,"Thrive Capital Partners VIII Growth, L.P.",2023.0,CalPERS,unknown,1.0,0.1615299355971991,1.0
-Thrive Capital,"Thrive Capital Partners IX Growth, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
-Thrive Capital,"Thrive Capital Partners Opportunity Fund, L.P.",2024.0,CalPERS,unknown,1.0,0.0,1.0
-Thrive Capital,"Thrive Capital Partners IX, L.P.",2025.0,CalPERS,unknown,1.0,0.0,1.0
+Redpoint,Red Admiral Fund LP,2023.0,CalPERS,unknown,1.0,0.2587646825707334,1.0
+Sequoia,Sequoia Capital (Legacy Funds),1999.0,UC Regents,2024-Q2,4.99,3.104576783619287,0.173
+Sequoia,Oaktree European Principal Fund III U.S.,2011.0,CalSTRS,"FYE June 30, 2025",1.388096452281106,1.1404158106811233,4.85
+Sequoia,Harbert U.S. Real Estate Fund VI LP,2016.0,Louisiana TRSL,2019-Q4,1.29,0.1797411455966194,0.1317
+Sequoia,Sequoia Capital Global Growth III,2018.0,UC Regents,2024-Q2,1.9,0.4224797163655633,0.187
+Sequoia,Sequoia Capital US Growth VIII,2018.0,UC Regents,2024-Q2,1.54,0.2473202321752044,0.104
+Sequoia,Sequoia Capital US Venture XVI,2018.0,UC Regents,2024-Q2,3.13,0.0,0.308
+Sequoia,Sequoia Capital GGF III - U.S./India Annex Fund,2020.0,UC Regents,2024-Q2,0.93,0.0,-0.031
+Sequoia,Sequoia Capital US Growth IX,2020.0,UC Regents,2024-Q2,0.96,0.0349417779932648,-0.017
+Sequoia,Sequoia Capital US Venture XVII,2020.0,UC Regents,2024-Q2,1.34,0.0,0.142
+Sequoia,Sequoia Capital US/E Seed IV,2021.0,UC Regents,2024-Q2,1.13,0.0,0.07
+Sequoia,Sequoia Capital Fund,2022.0,UC Regents,2024-Q2,1.063432918829822,0.1718110810138899,
+Sequoia,Blackstone Tac Ops III S LP,2023.0,CalSTRS,"FYE June 30, 2025",1.1916056416863583,0.1307965261945059,19.45

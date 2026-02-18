@@ -1,20 +1,15 @@
 import os
+import sys
+
 import pandas as pd
 
-FUNDS_PATH = "data/unified_funds.csv"
-TARGET_PATH = "metadata/target_firms.csv"
-OUTPUT_PATH = "data/coverage_snapshot.csv"
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-OUTPUT_COLUMNS = [
-    "canonical_gp",
-    "fund_name",
-    "vintage_year",
-    "source",
-    "reporting_period",
-    "tvpi",
-    "dpi",
-    "net_irr",
-]
+from normalize import build_coverage_outputs, load_target_firms, match_target_funds
+
+FUNDS_PATH = "data/unified_funds.csv"
+TARGET_PATH = "metadata/target_firms.csv"  # kept for compatibility
+OUTPUT_PATH = "data/coverage_snapshot.csv"
 
 
 def load_csv_safe(path):
@@ -28,65 +23,32 @@ def load_csv_safe(path):
 
 def main():
     funds_df = load_csv_safe(FUNDS_PATH)
-    target_df = load_csv_safe(TARGET_PATH)
+    _ = TARGET_PATH
 
-    if funds_df.empty or target_df.empty:
-        output_df = pd.DataFrame(columns=OUTPUT_COLUMNS)
+    if funds_df.empty:
         os.makedirs("data", exist_ok=True)
-        output_df.to_csv(OUTPUT_PATH, index=False)
+        pd.DataFrame(
+            columns=[
+                "canonical_gp",
+                "fund_name",
+                "vintage_year",
+                "source",
+                "reporting_period",
+                "tvpi",
+                "dpi",
+                "net_irr",
+            ]
+        ).to_csv(OUTPUT_PATH, index=False)
         print("total rows exported: 0")
         print("unique firms covered: 0")
         return
 
-    required_target_cols = {"canonical_gp", "match_pattern"}
-    if not required_target_cols.issubset(set(target_df.columns)):
-        output_df = pd.DataFrame(columns=OUTPUT_COLUMNS)
-        os.makedirs("data", exist_ok=True)
-        output_df.to_csv(OUTPUT_PATH, index=False)
-        print("total rows exported: 0")
-        print("unique firms covered: 0")
-        return
+    target_df = load_target_firms()
+    matched_df = match_target_funds(funds_df, target_df)
+    snapshot_df = build_coverage_outputs(matched_df, target_df)
 
-    if "fund_name" not in funds_df.columns:
-        funds_df["fund_name"] = ""
-
-    funds_work = funds_df.copy()
-    funds_work["fund_name_lc"] = funds_work["fund_name"].fillna("").astype(str).str.lower()
-    funds_work["canonical_gp"] = pd.NA
-
-    target_work = target_df[["canonical_gp", "match_pattern"]].copy()
-    target_work["canonical_gp"] = target_work["canonical_gp"].fillna("").astype(str).str.strip()
-    target_work["match_pattern"] = target_work["match_pattern"].fillna("").astype(str).str.strip().str.lower()
-    target_work = target_work[(target_work["canonical_gp"] != "") & (target_work["match_pattern"] != "")]
-
-    # Deterministic first-match assignment in source file order.
-    for _, row in target_work.iterrows():
-        pattern = row["match_pattern"]
-        gp = row["canonical_gp"]
-        mask = funds_work["fund_name_lc"].str.contains(pattern, regex=False, na=False)
-        needs_assignment = funds_work["canonical_gp"].isna()
-        funds_work.loc[mask & needs_assignment, "canonical_gp"] = gp
-
-    matched = funds_work[funds_work["canonical_gp"].notna()].copy()
-
-    for col in OUTPUT_COLUMNS:
-        if col not in matched.columns:
-            matched[col] = pd.NA
-
-    matched["_vintage_sort"] = pd.to_numeric(matched["vintage_year"], errors="coerce")
-    matched = matched.sort_values(
-        ["canonical_gp", "_vintage_sort", "fund_name"],
-        ascending=[True, True, True],
-        na_position="last",
-    )
-
-    output_df = matched[OUTPUT_COLUMNS]
-
-    os.makedirs("data", exist_ok=True)
-    output_df.to_csv(OUTPUT_PATH, index=False)
-
-    total_rows = int(len(output_df))
-    unique_firms = int(output_df["canonical_gp"].dropna().astype(str).nunique())
+    total_rows = int(len(snapshot_df))
+    unique_firms = int(snapshot_df["canonical_gp"].dropna().astype(str).nunique()) if not snapshot_df.empty else 0
 
     print(f"total rows exported: {total_rows}")
     print(f"unique firms covered: {unique_firms}")
