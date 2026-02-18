@@ -1,3 +1,5 @@
 .github/workflows/
 scrape.yml
 .github/workflows/
+.DS_Store
+**/.DS_Store
