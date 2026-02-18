@@ -1,6 +1,5 @@
 import sqlite3
 from contextlib import closing
-import math
 from typing import Dict, Optional, Tuple
 
 import pandas as pd
@@ -10,11 +9,6 @@ import streamlit as st
 
 st.set_page_config(page_title="Show Me the DPI", layout="wide")
 st.title("Show Me the DPI")
-st.markdown(
-    "This dashboard analyzes private equity fund performance using public LP disclosure data. "
-    "TVPI shows total value generated per dollar paid in, including both distributed cash and remaining value. "
-    "DPI shows how much cash has been returned to investors per dollar paid in."
-)
 
 # Simple benchmark table (unchanged assumptions)
 BENCHMARKS = {
@@ -84,67 +78,6 @@ def _benchmark_bucket(tvpi: float, benchmark: Optional[Dict[str, float]]) -> Opt
     return "below_median"
 
 
-def _distribution_weights(fund_life_years: int, distribution_pace: int) -> list:
-    if fund_life_years <= 0:
-        return []
-    if fund_life_years == 1:
-        return [1.0]
-
-    # 0 = very back-ended, 100 = very front-ended
-    pace_strength = (distribution_pace - 50) / 12.5
-    weights = []
-    for idx in range(fund_life_years):
-        position = idx / (fund_life_years - 1)
-        weights.append(math.exp((0.5 - position) * pace_strength))
-
-    total_weight = sum(weights)
-    if total_weight <= 0:
-        return [1.0 / fund_life_years] * fund_life_years
-    return [w / total_weight for w in weights]
-
-
-def _calculate_irr(cash_flows: list) -> float:
-    clean_flows = [0.0 if pd.isna(cf) else float(cf) for cf in cash_flows]
-    if not clean_flows:
-        return float("nan")
-    if not any(cf < 0 for cf in clean_flows) or not any(cf > 0 for cf in clean_flows):
-        return float("nan")
-
-    def npv(rate: float) -> float:
-        total = 0.0
-        for period, cf in enumerate(clean_flows):
-            total += cf / ((1.0 + rate) ** period)
-        return total
-
-    low = -0.9999
-    high = 10.0
-    npv_low = npv(low)
-    npv_high = npv(high)
-
-    while npv_low * npv_high > 0 and high < 1_000_000:
-        high *= 2
-        npv_high = npv(high)
-
-    if npv_low * npv_high > 0:
-        return float("nan")
-
-    for _ in range(120):
-        mid = (low + high) / 2
-        npv_mid = npv(mid)
-
-        if abs(npv_mid) < 1e-8:
-            return mid
-
-        if npv_low * npv_mid <= 0:
-            high = mid
-            npv_high = npv_mid
-        else:
-            low = mid
-            npv_low = npv_mid
-
-    return (low + high) / 2
-
-
 def _calculate_tvpi_percentile(selected_tvpi: float, tvpi_series: pd.Series) -> Optional[int]:
     if pd.isna(selected_tvpi):
         return None
@@ -158,13 +91,78 @@ def _calculate_tvpi_percentile(selected_tvpi: float, tvpi_series: pd.Series) -> 
     return max(1, min(100, percentile_int))
 
 
+def _metric_help_text() -> Dict[str, str]:
+    return {
+        "TVPI": "Total Value to Paid-In: (distributed cash + remaining value) divided by paid-in capital.",
+        "DPI": "Distributions to Paid-In: distributed cash divided by paid-in capital.",
+        "RVPI": "Residual Value to Paid-In: remaining unrealized value divided by paid-in capital.",
+        "IRR": "Internal Rate of Return: annualized net return implied by fund cash flows.",
+    }
+
+
+def _metric_data_label(row: pd.Series) -> str:
+    # TODO: Populate `as_of_date` for every fund row in the ingestion pipeline.
+    # TODO: Populate `source` for every fund row in the ingestion pipeline.
+    as_of_date = row.get("as_of_date")
+    source = row.get("source")
+
+    as_of_text = None if pd.isna(as_of_date) else str(as_of_date).strip()
+    source_text = None if pd.isna(source) else str(source).strip()
+
+    if as_of_text and source_text:
+        return f"as of {as_of_text} · Source: {source_text}"
+    return "as-of date unavailable · Source unknown"
+
+
+def _compute_vintage_quartile(tvpi: float, vintage_year, all_funds_df: pd.DataFrame) -> Tuple[Optional[str], int]:
+    if pd.isna(tvpi) or "vintage_year" not in all_funds_df.columns or "TVPI" not in all_funds_df.columns:
+        return None, 0
+
+    vintage_series = pd.to_numeric(all_funds_df["vintage_year"], errors="coerce")
+    if pd.isna(vintage_year):
+        return None, 0
+
+    try:
+        vintage_value = float(vintage_year)
+    except (TypeError, ValueError):
+        return None, 0
+
+    same_vintage_tvpi = pd.to_numeric(
+        all_funds_df.loc[vintage_series == vintage_value, "TVPI"],
+        errors="coerce",
+    ).dropna()
+
+    sample_size = int(len(same_vintage_tvpi))
+    if sample_size == 0:
+        return None, 0
+
+    percentile = (same_vintage_tvpi <= float(tvpi)).mean()
+    if percentile >= 0.75:
+        return "Top Quartile", sample_size
+    if percentile >= 0.50:
+        return "Second Quartile", sample_size
+    if percentile >= 0.25:
+        return "Third Quartile", sample_size
+    return "Bottom Quartile", sample_size
+
+
 @st.cache_data(show_spinner=False)
 def load_data(db_path: str = "openlp.db") -> pd.DataFrame:
     try:
-        with closing(sqlite3.connect(db_path)) as conn:
-            df = pd.read_sql("SELECT * FROM funds", conn)
+        df = pd.read_csv("data/unified_funds.csv")
+
+        if "capital_contributed" in df.columns and "cash_in" not in df.columns:
+            df["cash_in"] = df["capital_contributed"]
+        if "capital_distributed" in df.columns and "cash_out" not in df.columns:
+            df["cash_out"] = df["capital_distributed"]
+        if "nav" in df.columns and "remaining_value" not in df.columns:
+            df["remaining_value"] = df["nav"]
     except Exception:
-        return _empty_funds_df()
+        try:
+            with closing(sqlite3.connect(db_path)) as conn:
+                df = pd.read_sql("SELECT * FROM funds", conn)
+        except Exception:
+            return _empty_funds_df()
 
     for column in REQUIRED_COLUMNS:
         if column not in df.columns:
@@ -208,50 +206,53 @@ def _add_metric_columns(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([df, metrics], axis=1)
 
 
-def generate_insight(
-    tvpi: float,
-    dpi: float,
-    rvpi: float,
-    benchmark_position: Optional[str],
-    percentile_rank: Optional[int],
-) -> str:
-    def _ordinal(n: int) -> str:
-        if 10 <= (n % 100) <= 20:
-            suffix = "th"
-        else:
-            suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
-        return f"{n}{suffix}"
-
-    if pd.isna(dpi) or pd.isna(rvpi):
-        realization_view = "realization mix is not assessable from available data"
-    elif dpi >= rvpi * 1.1:
-        realization_view = "returns are tilted toward realized distributions"
-    elif rvpi >= dpi * 1.1:
-        realization_view = "returns are tilted toward unrealized value"
+def generate_insight(tvpi: float, dpi: float, vintage_year, all_funds_df: pd.DataFrame) -> str:
+    dpi_value = _format_multiple(dpi)
+    if pd.isna(dpi):
+        sentence_one = "DPI is unavailable, so realized distributions cannot be quantified from the reported cash flows."
     else:
-        realization_view = "realized and unrealized value are broadly balanced"
+        sentence_one = (
+            f"DPI is {dpi_value}, which means investors have received {dpi_value} of realized distributions "
+            "for each 1.0x of paid-in capital."
+        )
 
-    sentence_one = (
-        f"TVPI is {_format_multiple(tvpi)}, DPI is {_format_multiple(dpi)}, and "
-        f"RVPI is {_format_multiple(rvpi)}; {realization_view}."
-    )
+    median_dpi = float("nan")
+    if "vintage_year" in all_funds_df.columns and "DPI" in all_funds_df.columns and not pd.isna(vintage_year):
+        vintage_series = pd.to_numeric(all_funds_df["vintage_year"], errors="coerce")
+        try:
+            vintage_value = float(vintage_year)
+            median_dpi = pd.to_numeric(
+                all_funds_df.loc[vintage_series == vintage_value, "DPI"],
+                errors="coerce",
+            ).median()
+        except (TypeError, ValueError):
+            median_dpi = float("nan")
 
-    benchmark_text_map = {
-        "top_quartile": "above the top-quartile benchmark",
-        "above_median": "above the median benchmark",
-        "below_median": "below the median benchmark",
-    }
-    benchmark_text = benchmark_text_map.get(benchmark_position)
-    percentile_text = None if percentile_rank is None else f"in the {_ordinal(percentile_rank)} percentile by TVPI"
-
-    if benchmark_text and percentile_text:
-        sentence_two = f"Relative performance is {benchmark_text} and {percentile_text}."
-    elif benchmark_text:
-        sentence_two = f"Relative performance is {benchmark_text}; percentile rank is unavailable."
-    elif percentile_text:
-        sentence_two = f"Benchmark position is unavailable; the fund is {percentile_text}."
+    if pd.isna(tvpi) or tvpi == 0 or pd.isna(dpi):
+        realization_mix = "the realized versus unrealized split cannot be assessed"
+        ratio_text = "N/A"
     else:
-        sentence_two = "Benchmark position and percentile rank are unavailable."
+        ratio = _safe_divide(dpi, tvpi)
+        ratio_text = "N/A" if pd.isna(ratio) else f"{ratio:.2f}"
+        realization_mix = (
+            "returns appear primarily realized"
+            if not pd.isna(ratio) and ratio >= 0.5
+            else "returns appear primarily unrealized"
+        )
+
+    if pd.isna(median_dpi):
+        sentence_two = (
+            f"Median DPI for the same vintage is unavailable in this database, and {realization_mix} "
+            f"based on a DPI/TVPI ratio of {ratio_text}."
+        )
+    else:
+        comparison = "above" if not pd.isna(dpi) and dpi > median_dpi else "below"
+        if not pd.isna(dpi) and abs(dpi - median_dpi) < 1e-9:
+            comparison = "in line with"
+        sentence_two = (
+            f"Median DPI for the same vintage is {_format_multiple(median_dpi)}; this fund is {comparison} "
+            f"that level, and {realization_mix} based on a DPI/TVPI ratio of {ratio_text}."
+        )
 
     return f"{sentence_one} {sentence_two}"
 
@@ -354,18 +355,22 @@ def render_charts(row: pd.Series, tvpi: float, benchmark: Optional[Dict[str, flo
 def _render_fund_database_tab(filtered_df: pd.DataFrame) -> None:
     st.subheader("Fund Database")
     table_columns = ["fund_name", "gp_name", "vintage_year", "TVPI", "DPI", "net_irr"]
-    st.dataframe(filtered_df[table_columns], use_container_width=True)
+    st.dataframe(filtered_df.reindex(columns=table_columns), use_container_width=True)
 
     if filtered_df.empty:
         st.info("No funds match the current filters.")
 
 
 def _render_fund_detail_tab(filtered_df: pd.DataFrame, all_funds_df: pd.DataFrame) -> None:
-    st.subheader("Fund Detail & Insights")
+    st.subheader("Fund Detail")
     st.caption("Start by selecting a fund below.")
 
     if filtered_df.empty:
         st.info("No funds available for detail view under current filters.")
+        return
+
+    if "fund_name" not in filtered_df.columns:
+        st.info("Fund names are unavailable in this dataset.")
         return
 
     fund_options = filtered_df["fund_name"].dropna().astype(str).tolist()
@@ -386,127 +391,89 @@ def _render_fund_detail_tab(filtered_df: pd.DataFrame, all_funds_df: pd.DataFram
 
     selected_row = selected_rows.iloc[0]
     tvpi, dpi, rvpi = calculate_metrics(selected_row)
-    benchmark = _get_benchmark(selected_row.get("vintage_year"))
-    benchmark_position = _benchmark_bucket(tvpi, benchmark)
+    vintage_year = selected_row.get("vintage_year")
     all_tvpi = all_funds_df["TVPI"] if "TVPI" in all_funds_df.columns else pd.Series(dtype="float64")
-    percentile_rank = _calculate_tvpi_percentile(tvpi, all_tvpi)
+    metric_help = _metric_help_text()
+    metadata_text = _metric_data_label(selected_row)
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("TVPI", _format_multiple(tvpi))
-    c2.metric("DPI", _format_multiple(dpi))
-    c3.metric("RVPI", _format_multiple(rvpi))
-    c4.metric("Net IRR", _format_percent(selected_row.get("net_irr")))
+    c1.metric("TVPI", _format_multiple(tvpi), help=metric_help["TVPI"])
+    c2.metric("DPI", _format_multiple(dpi), help=metric_help["DPI"])
+    c3.metric("RVPI", _format_multiple(rvpi), help=metric_help["RVPI"])
+    c4.metric("IRR", _format_percent(selected_row.get("net_irr")), help=metric_help["IRR"])
+    c1.caption(metadata_text)
+    c2.caption(metadata_text)
+    c3.caption(metadata_text)
+    c4.caption(metadata_text)
 
-    st.subheader("Insight")
-    st.info(
-        generate_insight(
-            tvpi=tvpi,
-            dpi=dpi,
-            rvpi=rvpi,
-            benchmark_position=benchmark_position,
-            percentile_rank=percentile_rank,
-        )
+    quartile_label, sample_size = _compute_vintage_quartile(tvpi, vintage_year, all_funds_df)
+    try:
+        vintage_label = int(float(vintage_year))
+    except (TypeError, ValueError):
+        vintage_label = "unknown"
+
+    st.write(f"Quartile: {quartile_label if quartile_label else 'Unavailable'}")
+    st.caption(
+        f"Quartile based on {sample_size} funds in our database from {vintage_label} vintage."
     )
 
     benchmark = render_benchmark_section(
-        selected_row.get("vintage_year"),
+        vintage_year,
         tvpi,
         all_tvpi,
     )
     render_charts(selected_row, tvpi, benchmark)
 
-
-def _render_performance_calculator_tab() -> None:
-    st.subheader("Performance Calculator")
-    st.caption("Simple model using paid-in capital, fund life, exit multiple, and distribution pace.")
-
-    i1, i2, i3 = st.columns(3)
-    paid_in = i1.number_input("paid_in", min_value=0.0, value=10_000_000.0, step=500_000.0)
-    fund_life_years = int(i2.number_input("fund life (years)", min_value=1, value=10, step=1))
-    exit_multiple = i3.number_input("exit multiple", min_value=0.0, value=2.0, step=0.1)
-    distribution_pace = st.slider("distribution pace", min_value=0, max_value=100, value=50)
-
-    total_value = paid_in * exit_multiple
-    realized_share = max(0.25, min(0.95, distribution_pace / 100.0))
-    cash_out = total_value * realized_share
-    remaining_value = max(0.0, total_value - cash_out)
-
-    modeled_row = pd.Series(
-        {
-            "cash_in": paid_in,
-            "cash_out": cash_out,
-            "remaining_value": remaining_value,
-        }
-    )
-    modeled_tvpi, modeled_dpi, _ = calculate_metrics(modeled_row)
-
-    weights = _distribution_weights(fund_life_years, distribution_pace)
-    yearly_distributions = [cash_out * w for w in weights]
-    if yearly_distributions:
-        yearly_distributions[-1] += remaining_value
-
-    cash_flows = [-paid_in] + yearly_distributions
-    modeled_irr = _calculate_irr(cash_flows)
-
-    o1, o2, o3 = st.columns(3)
-    o1.metric("Modeled TVPI", _format_multiple(modeled_tvpi))
-    o2.metric("Modeled DPI", _format_multiple(modeled_dpi))
-    o3.metric("Modeled IRR", _format_percent(modeled_irr))
-
-    if paid_in <= 0:
-        st.info("Enter a non-zero Paid-In Capital value to model performance metrics.")
-
-    years = list(range(0, fund_life_years + 1))
-    cumulative_cash = []
-    running_total = 0.0
-    for cf in cash_flows:
-        running_total += cf
-        cumulative_cash.append(running_total)
-
-    cumulative_fig = go.Figure()
-    cumulative_fig.add_scatter(
-        x=years,
-        y=cumulative_cash,
-        mode="lines+markers",
-        name="Cumulative Net Cash",
-        line={"color": "#2C3E50", "width": 3},
-    )
-    cumulative_fig.update_layout(
-        title="Cumulative Cash Flow (Modeled)",
-        template="plotly_white",
-        height=320,
-        margin={"l": 10, "r": 10, "t": 35, "b": 10},
-        xaxis_title="Year",
-        yaxis_title="Cumulative Cash Flow",
-        showlegend=False,
-    )
-    st.plotly_chart(cumulative_fig, use_container_width=True)
+    st.subheader("Insight")
+    st.info(generate_insight(tvpi=tvpi, dpi=dpi, vintage_year=vintage_year, all_funds_df=all_funds_df))
 
 
-def _render_glossary_tab() -> None:
-    st.subheader("Glossary")
-    st.markdown(
-        """
-        - **TVPI (Total Value to Paid-In):** `(Cash Out + Remaining Value) / Cash In`
-        - **DPI (Distributions to Paid-In):** `Cash Out / Cash In`
-        - **RVPI (Residual Value to Paid-In):** `Remaining Value / Cash In`
-        - **Net IRR:** Annualized return net of fees and carry.
-        - **Median TVPI Benchmark:** Typical fund TVPI for a vintage year.
-        - **Top Quartile TVPI Benchmark:** 75th percentile TVPI for a vintage year.
-        """
-    )
+def _render_calculator_tab() -> None:
+    st.subheader("Calculator")
+    st.info("Performance calculator coming soon.")
 
 
 def _render_summary_row(df: pd.DataFrame) -> None:
     fund_count = int(len(df))
     gp_count = int(df["gp_name"].dropna().nunique()) if "gp_name" in df.columns else 0
     median_tvpi = pd.to_numeric(df["TVPI"], errors="coerce").median() if "TVPI" in df.columns else float("nan")
+    median_vintage = (
+        pd.to_numeric(df["vintage_year"], errors="coerce").median()
+        if "vintage_year" in df.columns
+        else float("nan")
+    )
+    median_vintage_display = "N/A" if pd.isna(median_vintage) else f"{int(round(median_vintage))}"
 
-    st.subheader("Portfolio Summary")
-    s1, s2, s3 = st.columns(3)
-    s1.metric("Number of Funds", f"{fund_count}")
+    metric_help = _metric_help_text()
+    s1, s2, s3, s4 = st.columns(4)
+    s1.metric("Total Funds", f"{fund_count}")
     s2.metric("Unique GPs", f"{gp_count}")
-    s3.metric("Median TVPI", _format_multiple(median_tvpi))
+    s3.metric("Median TVPI", _format_multiple(median_tvpi), help=metric_help["TVPI"])
+    s4.metric("Median Vintage Year", median_vintage_display)
+
+
+def _render_intro_banner() -> None:
+    st.markdown(
+        """
+        <div style="border:1px solid #E5E7EB;border-radius:6px;padding:12px 14px;margin:4px 0 12px 0;">
+          <div style="font-weight:600;margin-bottom:6px;">Public VC Fund Performance Database</div>
+          <div style="margin-bottom:4px;">This is a free searchable database of VC fund performance built from public pension LP disclosures.</div>
+          <div>Source fields are shown where available to keep disclosure provenance transparent.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _render_about_data() -> None:
+    with st.expander("About the Data"):
+        st.write(
+            "This database is assembled from public pension LP disclosures and reflects only funds that appear in "
+            "those public records. Reporting dates and valuation points can vary by LP, so as-of periods are not "
+            "fully aligned across funds. Results may also reflect survivorship bias because disclosure coverage is "
+            "not uniform across managers or vintages. Quartile and percentile statistics are calculated only from "
+            "funds currently present in this database, not from the full market."
+        )
 
 
 def main() -> None:
@@ -517,16 +484,15 @@ def main() -> None:
     search_term = st.sidebar.text_input("Search fund")
 
     filtered_df = df.copy()
-    if search_term:
+    if search_term and "fund_name" in filtered_df.columns:
         filtered_df = filtered_df[
             filtered_df["fund_name"].astype(str).str.contains(search_term, case=False, na=False)
         ]
 
+    _render_intro_banner()
     _render_summary_row(df)
 
-    tab1, tab2, tab3, tab4 = st.tabs(
-        ["Fund Database", "Fund Detail & Insights", "Performance Calculator", "Glossary"]
-    )
+    tab1, tab2, tab3 = st.tabs(["Database", "Fund Detail", "Calculator"])
 
     with tab1:
         _render_fund_database_tab(filtered_df)
@@ -535,10 +501,9 @@ def main() -> None:
         _render_fund_detail_tab(filtered_df, df)
 
     with tab3:
-        _render_performance_calculator_tab()
+        _render_calculator_tab()
 
-    with tab4:
-        _render_glossary_tab()
+    _render_about_data()
 
 
 if __name__ == "__main__":
