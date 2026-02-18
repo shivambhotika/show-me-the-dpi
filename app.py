@@ -1,5 +1,6 @@
 import html
 import os
+from textwrap import dedent
 
 import numpy as np
 import pandas as pd
@@ -14,6 +15,19 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+# Streamlit markdown treats leading indentation as code blocks.
+# Dedent every markdown body to keep custom HTML rendering correctly.
+_st_markdown = st.markdown
+
+
+def _markdown_dedent(body, *args, **kwargs):
+    if isinstance(body, str):
+        body = dedent(body)
+    return _st_markdown(body, *args, **kwargs)
+
+
+st.markdown = _markdown_dedent
 
 
 def inject_css():
