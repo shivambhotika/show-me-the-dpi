@@ -10,6 +10,11 @@ import streamlit as st
 
 st.set_page_config(page_title="Show Me the DPI", layout="wide")
 st.title("Show Me the DPI")
+st.markdown(
+    "This dashboard analyzes private equity fund performance using public LP disclosure data. "
+    "TVPI shows total value generated per dollar paid in, including both distributed cash and remaining value. "
+    "DPI shows how much cash has been returned to investors per dollar paid in."
+)
 
 # Simple benchmark table (unchanged assumptions)
 BENCHMARKS = {
@@ -357,6 +362,8 @@ def _render_fund_database_tab(filtered_df: pd.DataFrame) -> None:
 
 def _render_fund_detail_tab(filtered_df: pd.DataFrame, all_funds_df: pd.DataFrame) -> None:
     st.subheader("Fund Detail & Insights")
+    st.caption("Start by selecting a fund below.")
+
     if filtered_df.empty:
         st.info("No funds available for detail view under current filters.")
         return
@@ -366,7 +373,12 @@ def _render_fund_detail_tab(filtered_df: pd.DataFrame, all_funds_df: pd.DataFram
         st.info("No fund names are available in the current dataset.")
         return
 
-    selected_fund = st.selectbox("Select Fund", fund_options, key="detail_selected_fund")
+    selected_fund = st.selectbox(
+        "Select Fund",
+        fund_options,
+        index=0,
+        key="detail_selected_fund",
+    )
     selected_rows = filtered_df[filtered_df["fund_name"].astype(str) == selected_fund]
     if selected_rows.empty:
         st.info("Selected fund data is unavailable.")
@@ -376,7 +388,8 @@ def _render_fund_detail_tab(filtered_df: pd.DataFrame, all_funds_df: pd.DataFram
     tvpi, dpi, rvpi = calculate_metrics(selected_row)
     benchmark = _get_benchmark(selected_row.get("vintage_year"))
     benchmark_position = _benchmark_bucket(tvpi, benchmark)
-    percentile_rank = _calculate_tvpi_percentile(tvpi, all_funds_df["TVPI"])
+    all_tvpi = all_funds_df["TVPI"] if "TVPI" in all_funds_df.columns else pd.Series(dtype="float64")
+    percentile_rank = _calculate_tvpi_percentile(tvpi, all_tvpi)
 
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("TVPI", _format_multiple(tvpi))
@@ -398,7 +411,7 @@ def _render_fund_detail_tab(filtered_df: pd.DataFrame, all_funds_df: pd.DataFram
     benchmark = render_benchmark_section(
         selected_row.get("vintage_year"),
         tvpi,
-        all_funds_df["TVPI"],
+        all_tvpi,
     )
     render_charts(selected_row, tvpi, benchmark)
 
@@ -509,7 +522,7 @@ def main() -> None:
             filtered_df["fund_name"].astype(str).str.contains(search_term, case=False, na=False)
         ]
 
-    _render_summary_row(filtered_df)
+    _render_summary_row(df)
 
     tab1, tab2, tab3, tab4 = st.tabs(
         ["Fund Database", "Fund Detail & Insights", "Performance Calculator", "Glossary"]
