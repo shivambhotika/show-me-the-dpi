@@ -127,7 +127,10 @@ def inject_css():
     .badge-a16z      { background:#F0F4FF; color:#1D4ED8; border-color:#BFDBFE; }
     .badge-founders  { background:#F9F0FF; color:#6B21A8; border-color:#E9D5FF; }
     .badge-social    { background:#F0FFFE; color:#0F766E; border-color:#99F6E4; }
-    .badge-gp-disclosed { background:#FFFBEB; color:#92400E; border-color:#FDE68A; }
+    .badge-mi { background:#FFF7ED; color:#C2410C; border-color:#FED7AA; font-style:italic; }
+    .badge-mi-a16z { background:#FFF7ED; color:#C2410C; border-color:#FED7AA; }
+    .badge-mi-ff { background:#FAF5FF; color:#7E22CE; border-color:#E9D5FF; }
+    .badge-mi-sc { background:#F0FDFA; color:#0F766E; border-color:#99F6E4; }
     .badge-lp-disclosed { background:#EEF2FF; color:#1D4ED8; border-color:#BFDBFE; }
 
     .insight-box {
@@ -342,7 +345,7 @@ GP_SOURCES_CONFIG = [
     {
         "name": "Andreessen Horowitz (a16z)",
         "short": "A16Z",
-        "classification": "GP-DISCLOSED",
+        "classification": "MARKET INTEL",
         "badge_class": "badge-a16z",
         "coverage": 60,
         "period": "Sep 2025",
@@ -353,7 +356,7 @@ GP_SOURCES_CONFIG = [
     {
         "name": "Founders Fund",
         "short": "FOUNDERS",
-        "classification": "GP-DISCLOSED",
+        "classification": "MARKET INTEL",
         "badge_class": "badge-founders",
         "coverage": 80,
         "period": "2024 Q3",
@@ -364,12 +367,12 @@ GP_SOURCES_CONFIG = [
     {
         "name": "Social Capital",
         "short": "SOCIAL_CAP",
-        "classification": "GP-DISCLOSED",
+        "classification": "MARKET INTEL",
         "badge_class": "badge-social",
         "coverage": 90,
         "period": "Dec 2024",
         "fund_count": 5,
-        "notes": "Formal benchmarking report as of 12/31/2024. Most rigorous GP disclosure in dataset: Cambridge Associates quartile rankings, gross AND net metrics. Covers 5 funds.",
+        "notes": "Formal benchmarking report as of 12/31/2024. Most rigorous market intelligence set in dataset: Cambridge Associates quartile rankings, gross AND net metrics. Covers 5 funds.",
         "source_key": "Social Capital Firm Disclosure",
     },
 ]
@@ -388,11 +391,13 @@ def load_unified():
 
 
 @st.cache_data
-def load_gp_disclosed():
+def load_market_intel():
     if not os.path.exists("gp_disclosed_funds.csv"):
         return pd.DataFrame()
 
     df = pd.read_csv("gp_disclosed_funds.csv")
+    # Runtime override: this dataset is treated as market intelligence, not formal GP publication.
+    df["data_source_type"] = "Market Intelligence"
     df["irr_meaningful"] = df["irr_meaningful"].map(
         lambda x: True if str(x).lower() in ["true", "1", "yes"] else False
     )
@@ -419,6 +424,10 @@ def load_master_full():
     else:
         df["data_source_type"] = df["data_source_type"].fillna("LP-Disclosed")
 
+    mi_gps = {"a16z", "founders fund", "social capital"}
+    gp_series = df.get("canonical_gp", pd.Series(index=df.index, dtype="object")).astype(str).str.strip().str.lower()
+    df.loc[gp_series.isin(mi_gps), "data_source_type"] = "Market Intelligence"
+
     for col in ["gross_tvpi", "gross_dpi"]:
         if col not in df.columns:
             df[col] = None
@@ -440,6 +449,40 @@ def load_master_full():
         df[col] = pd.to_numeric(df.get(col), errors="coerce")
     df["vintage_year"] = df["vintage_year"].astype("Int64")
     return df
+
+
+@st.cache_data
+def load_benchmarks():
+    df = pd.read_csv("ca_benchmarks.csv")
+    for col in [
+        "median_net_irr",
+        "q1_net_irr",
+        "q3_net_irr",
+        "median_tvpi",
+        "q1_tvpi",
+        "q3_tvpi",
+        "median_dpi",
+        "q1_dpi",
+    ]:
+        df[col] = pd.to_numeric(df.get(col), errors="coerce")
+    df["vintage_year"] = pd.to_numeric(df.get("vintage_year"), errors="coerce").astype("Int64")
+    df = df[df["vintage_year"].notna()].copy()
+    df["vintage_year"] = df["vintage_year"].astype(int)
+    return df
+
+
+def bench_disclaimer():
+    st.markdown(
+        """
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF;
+        letter-spacing:0.05em;margin-top:4px;padding:6px 0;border-top:1px solid #F3F4F6">
+        BENCHMARK: Approximate CA US VC quartiles — synthesized from public LP annual
+        reports and academic literature (Harris, Jenkinson, Kaplan &amp; Stucke 2014).
+        Actual Cambridge Associates data is proprietary. Use as directional reference only.
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
 
 def render_page_header(title: str, subtitle: str, count: str = None):
@@ -468,15 +511,15 @@ def _fmt_committed(v):
     return "—" if pd.isna(v) else "${0:.0f}M".format(v / 1_000_000)
 
 
-def _to_database_gp_df(gp_df: pd.DataFrame) -> pd.DataFrame:
-    if gp_df.empty:
+def _to_database_market_intel_df(mi_df: pd.DataFrame) -> pd.DataFrame:
+    if mi_df.empty:
         return pd.DataFrame(columns=[
             "fund_name", "vintage_year", "source", "capital_committed", "tvpi", "dpi", "net_irr", "data_source_type"
         ])
 
-    out = gp_df.copy()
+    out = mi_df.copy()
     out["capital_committed"] = out["fund_size_usd_m"] * 1_000_000
-    out["data_source_type"] = "GP-Disclosed"
+    out["data_source_type"] = "Market Intelligence"
     keep = ["fund_name", "vintage_year", "source", "capital_committed", "tvpi", "dpi", "net_irr", "data_source_type"]
     for col in keep:
         if col not in out.columns:
@@ -508,9 +551,17 @@ def render_fund_table(df_display: pd.DataFrame, show_source_type: bool = False):
         color = "#E8571F" if v > 0.5 else "#9CA3AF"
         return "<span style=\"color:{0};font-family:'IBM Plex Mono',monospace;font-weight:500\">{1:.2f}×</span>".format(color, v)
 
-    def source_type_badge(v):
-        if str(v) == "GP-Disclosed":
-            return '<span class="badge badge-gp-disclosed">GP</span>'
+    def source_type_badge(row: pd.Series):
+        v = str(row.get("data_source_type", ""))
+        source = str(row.get("source", ""))
+        if v == "Market Intelligence":
+            if source == "a16z Firm Disclosure":
+                return '<span class="badge badge-mi-a16z">INTEL ▸ A16Z</span>'
+            if source == "Founders Fund Firm Disclosure":
+                return '<span class="badge badge-mi-ff">INTEL ▸ FOUNDERS</span>'
+            if source == "Social Capital Firm Disclosure":
+                return '<span class="badge badge-mi-sc">INTEL ▸ SOCIAL CAP</span>'
+            return '<span class="badge badge-mi">MARKET INTEL</span>'
         return '<span class="badge badge-lp-disclosed">LP</span>'
 
     rows_html = ""
@@ -525,7 +576,7 @@ def render_fund_table(df_display: pd.DataFrame, show_source_type: bool = False):
 
         source_type_cell = ""
         if show_source_type:
-            source_type_cell = "<td>{0}</td>".format(source_type_badge(row.get("data_source_type")))
+            source_type_cell = "<td>{0}</td>".format(source_type_badge(row))
 
         rows_html += (
             "<tr>"
@@ -567,53 +618,36 @@ def render_fund_table(df_display: pd.DataFrame, show_source_type: bool = False):
     )
 
 
-def render_fund_database(df_unified: pd.DataFrame, df_gp_disclosed: pd.DataFrame):
+def render_fund_database(df_unified: pd.DataFrame, df_market_intel: pd.DataFrame):
     lp_df = _to_database_lp_df(df_unified)
-    gp_df = _to_database_gp_df(df_gp_disclosed)
+    mi_df = _to_database_market_intel_df(df_market_intel)
 
     render_page_header(
         "FUND DATABASE",
         "PUBLIC LP DISCLOSURES — NORMALIZED & UNIFIED",
-        "{0:,} FUNDS INDEXED".format(len(lp_df)),
+        "{0:,} FUNDS INDEXED".format(len(lp_df) + len(mi_df)),
     )
 
-    source_type = st.radio(
-        "DATA SOURCE TYPE",
-        ["LP-Disclosed (FOIA)", "GP-Disclosed (Firm Published)", "Both"],
-        horizontal=True,
-        index=0,
-        label_visibility="visible",
-    )
-
-    if source_type == "GP-Disclosed (Firm Published)":
+    with st.expander("ℹ About Market Intelligence Data (a16z, Founders Fund, Social Capital)", expanded=False):
         st.markdown(
             """
-        <div class="insight-box">
-            <div class="insight-label">● DATA SOURCE NOTE</div>
-            <div class="insight-body">
-                <strong>These figures are GP self-disclosed.</strong> a16z, Founders Fund, and
-                Social Capital published this data voluntarily in blog posts and investor reports.
-                GP-disclosed figures may reflect selective fund reporting and show gross metrics
-                before fees and carry. <em>Compare with LP-disclosed data (from FOIA sources)
-                for independent verification where available.</em>
-            </div>
+        <div class="insight-body" style="padding:4px 0">
+            Performance data for <strong>Andreessen Horowitz</strong>, <strong>Founders Fund</strong>,
+            and <strong>Social Capital</strong> circulated through industry channels — secondary
+            market processes, LP reporting packages, and investor community sources.
+            These are <em>not</em> formally published figures, and provenance cannot be fully
+            verified. The vintage of marks is approximate. Treat as directional data,
+            not audited performance records. LP-disclosed (FOIA) data from pension funds
+            is independently reported and more reliable.
         </div>
         """,
             unsafe_allow_html=True,
         )
 
-    if source_type == "LP-Disclosed (FOIA)":
-        base_df = lp_df.copy()
-    elif source_type == "GP-Disclosed (Firm Published)":
-        base_df = gp_df.copy()
-    else:
-        base_df = pd.concat([lp_df, gp_df], ignore_index=True)
+    base_df = pd.concat([lp_df, mi_df], ignore_index=True)
 
     if "db_page" not in st.session_state:
         st.session_state["db_page"] = 0
-    if st.session_state.get("db_source_type") != source_type:
-        st.session_state["db_page"] = 0
-        st.session_state["db_source_type"] = source_type
 
     cols = st.columns([3.3, 1.6, 1.6])
     with cols[0]:
@@ -652,8 +686,7 @@ def render_fund_database(df_unified: pd.DataFrame, df_gp_disclosed: pd.DataFrame
     end = min(start + page_size, total)
     page_df = df_display.iloc[start:end].copy()
 
-    show_source_type = source_type == "Both"
-    render_fund_table(page_df, show_source_type=show_source_type)
+    render_fund_table(page_df, show_source_type=True)
 
     nav_cols = st.columns([8, 2])
     with nav_cols[0]:
@@ -744,7 +777,7 @@ def render_firms(df_master: pd.DataFrame):
         .apply(lambda s: sorted(set(s.dropna().astype(str))))
         .to_dict()
     )
-    gp_only_gps = [gp for gp in gps if source_by_gp.get(gp) == ["GP-Disclosed"]]
+    gp_only_gps = [gp for gp in gps if source_by_gp.get(gp) == ["Market Intelligence"]]
     lp_gps = [gp for gp in gps if gp not in gp_only_gps]
 
     st.markdown('<div class="section-label">LP-DISCLOSED — INSTITUTIONAL SOURCES</div>', unsafe_allow_html=True)
@@ -754,13 +787,14 @@ def render_firms(df_master: pd.DataFrame):
             with cols[j]:
                 render_firm_card(gp, df_master[df_master["canonical_gp"] == gp])
 
-    st.markdown('<div class="section-label">GP-DISCLOSED — FIRM PUBLISHED DATA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">MARKET INTELLIGENCE — CIRCULATED DATA</div>', unsafe_allow_html=True)
     st.markdown(
         """
     <div style="font-family:'Inter',sans-serif;font-size:13px;color:#6B7280;margin-bottom:1rem;
         padding:12px 16px;background:#FFFBEB;border-radius:6px;border:1px solid #FDE68A">
-        Performance data below is self-reported by the fund manager, not independently
-        verified by LP disclosure. Gross metrics shown where net unavailable.
+        Performance data below comes from market intelligence channels (circulated LP packages,
+        secondary processes, and investor community sources), not independent FOIA filing.
+        Provenance is not fully verifiable.
     </div>
     """,
         unsafe_allow_html=True,
@@ -780,8 +814,8 @@ def render_firms(df_master: pd.DataFrame):
         return
 
     row = gp_df.iloc[0]
-    is_gp_disclosed = bool((gp_df["data_source_type"] == "GP-Disclosed").all())
-    source_chip = '<span class="badge badge-gp-disclosed">GP-DISCLOSED</span>' if is_gp_disclosed else '<span class="badge badge-lp-disclosed">LP-DISCLOSED</span>'
+    is_market_intel = bool((gp_df["data_source_type"] == "Market Intelligence").all())
+    source_chip = '<span class="badge badge-mi">MARKET INTEL</span>' if is_market_intel else '<span class="badge badge-lp-disclosed">LP-DISCLOSED</span>'
 
     st.markdown(
         """
@@ -808,7 +842,7 @@ def render_firms(df_master: pd.DataFrame):
 
     meaningful = gp_df[gp_df["irr_meaningful"] == True]
 
-    if is_gp_disclosed and str(selected_gp).lower() == "a16z":
+    if is_market_intel and str(selected_gp).lower() == "a16z":
         gross_tvpi = meaningful["gross_tvpi"].median() if not meaningful.empty else np.nan
         gross_dpi = meaningful["gross_dpi"].median() if not meaningful.empty else np.nan
         net_tvpi = meaningful["tvpi"].median() if not meaningful.empty else np.nan
@@ -838,7 +872,7 @@ def render_firms(df_master: pd.DataFrame):
 
         st.markdown("<div style='font-size:12px;color:#9CA3AF;font-style:italic;margin-top:8px'>Gross metrics shown before fees and carry.</div>", unsafe_allow_html=True)
 
-    elif is_gp_disclosed:
+    elif is_market_intel:
         med_gross_tvpi = meaningful["gross_tvpi"].median() if not meaningful.empty else np.nan
         med_net_tvpi = meaningful["tvpi"].median() if not meaningful.empty else np.nan
         med_net_dpi = meaningful["dpi"].median() if not meaningful.empty else np.nan
@@ -881,7 +915,7 @@ def render_firms(df_master: pd.DataFrame):
         vintage = "—" if pd.isna(r.get("vintage_year")) else str(int(r.get("vintage_year")))
         gross_col = ""
         gross_cell = ""
-        if is_gp_disclosed:
+        if is_market_intel:
             gross_col = "<th class='right'>GROSS TVPI</th>"
             gross_cell = "<td class='numeric'>{0}</td>".format(_fmt_multiple(r.get("gross_tvpi")))
 
@@ -909,7 +943,7 @@ def render_firms(df_master: pd.DataFrame):
             _status_badge(r.get("irr_meaningful")),
         )
 
-    gross_header = "<th class='right'>GROSS TVPI</th>" if is_gp_disclosed else ""
+    gross_header = "<th class='right'>GROSS TVPI</th>" if is_market_intel else ""
     _render_html(
         (
             '<table class="fund-table" style="margin-top:1rem;"><thead><tr>'
@@ -920,7 +954,7 @@ def render_firms(df_master: pd.DataFrame):
         ).format(gross_header, rows_html)
     )
 
-    if is_gp_disclosed and str(selected_gp).lower() == "a16z":
+    if is_market_intel and str(selected_gp).lower() == "a16z":
         f3 = gp_df[gp_df["fund_name"].astype(str).str.contains("Fund III", case=False, na=False)]
         if not f3.empty:
             r = f3.iloc[0]
@@ -969,364 +1003,724 @@ def _plot_common_layout(fig, title_text: str):
     fig.update_yaxes(gridcolor="#F3F4F6", linecolor="#E5E7EB")
 
 
-def render_insights(df_master: pd.DataFrame):
+def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
     render_page_header("INSIGHTS", "ANALYTICAL FINDINGS FROM PUBLIC LP DISCLOSURE DATA")
+    bench_meaningful = bench[bench["vintage_year"] <= 2020].sort_values("vintage_year")
 
     st.markdown('<div class="section-label">KEY FINDINGS</div>', unsafe_allow_html=True)
-
     insight_cards = [
         {
             "number": "01",
             "label": "DPI DROUGHT",
             "headline": "Post-2017 = paper",
-            "body": "Across LP and GP-disclosed data, no fund with 2017+ vintage has returned meaningful cash. a16z Fund V and Founders Fund VI both show DPI < 0.5x despite 3x+ TVPI.",
+            "body": "Every fund vintage 2017+ in this dataset — LP and market intel — has DPI < 0.5×. CA median DPI for 2017 vintage historically reaches ~1.0× by year 8. This cohort is running late.",
         },
         {
             "number": "02",
             "label": "HIGHEST DPI",
-            "headline": "Founders Fund II",
-            "body": "18.6x DPI on a $227M 2007 fund — the highest cash-returned figure in this entire dataset. Driven by Palantir, SpaceX, and Airbnb distributions.",
+            "headline": "Founders Fund II: 18.6×",
+            "body": "On a $227M 2007 vehicle. CA top-quartile DPI for 2007 vintage is ~2.1×. FFII at 18.6× is roughly 9× above top quartile — extreme concentration in Palantir and SpaceX.",
         },
         {
             "number": "03",
-            "label": "BEST NET IRR",
-            "headline": "Seq. US Venture XVI",
-            "body": "30.8% Net IRR (UC Regents, 2018 vintage). Among GP-disclosed data, Social Capital Fund II leads at 26.2% Net IRR on a $1.5B fund.",
+            "label": "BENCHMARK BEATER",
+            "headline": "a16z Fund III",
+            "body": "Net TVPI 11.3× vs CA Q1 of ~4.2× for 2012 vintage. Net DPI 5.5× vs CA Q1 of ~3.1×. Beats top quartile on both dimensions at $1B+ scale — exceptional.",
         },
         {
             "number": "04",
-            "label": "FEE DRAG REALITY",
-            "headline": "a16z Fund III",
-            "body": "Gross TVPI 15.7x → Net TVPI 11.3x. The 4.4x drag on a $997M fund = ~$4.4B in fees and carry. Gross numbers in pitch decks tell a different story.",
+            "label": "FEE DRAG",
+            "headline": "28% taken in carry",
+            "body": "AH Fund III: Gross TVPI 15.7× → Net 11.3×. 28% of gross returns transferred to GP in fees and carry on a $997M fund ≈ $4.4B. Standard structure, rarely shown directly.",
         },
         {
             "number": "05",
-            "label": "CONSISTENT ALPHA",
-            "headline": "Social Capital",
-            "body": "4 of 5 funds are Cambridge Associates Quartile 1 on TVPI. All 5 are Quartile 1 on DPI. The most consistent top-quartile track record in the GP-disclosed dataset.",
+            "label": "SELECTION BIAS",
+            "headline": "Intel funds skew high",
+            "body": "Market intelligence funds (a16z, Founders, Social Capital) in this dataset all sit above the CA Q1 line in IRR. The source of the leak may itself have been selective.",
+        },
+        {
+            "number": "06",
+            "label": "CHINA RISK",
+            "headline": "HongShan collapse",
+            "body": "HongShan 2010 vintage: 5.7× TVPI, 4.7× DPI. HongShan 2020 vintage: sub-1× TVPI, negative IRR. Same manager. China regulatory intervention erased the edge in 5 years.",
         },
     ]
 
-    cols = st.columns(5)
-    for i, card in enumerate(insight_cards):
-        cols[i].markdown(
-            """
-        <div style="border:1px solid #E5E7EB;border-radius:6px;padding:16px;background:#fff;min-height:190px;">
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:#9CA3AF;margin-bottom:4px">{0} / {1}</div>
-            <div style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:#111827;margin-bottom:8px">{2}</div>
-            <div style="font-family:'Inter',sans-serif;font-size:12px;color:#6B7280;line-height:1.5">{3}</div>
-        </div>
-        """.format(
-                html.escape(card["number"]),
-                html.escape(card["label"]),
-                html.escape(card["headline"]),
-                html.escape(card["body"]),
-            ),
-            unsafe_allow_html=True,
-        )
-
-    st.markdown(
-        """
-    <div class="insight-box">
-      <div class="insight-label">● LP REALIZATION ANCHORS</div>
-      <div class="insight-body"><strong>Mayfield XIV</strong> and <strong>Khosla IV</strong> remain the clearest LP-disclosed examples of realized cash generation in this dataset.</div>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
+    row1 = st.columns(3)
+    row2 = st.columns(3)
+    all_cols = row1 + row2
+    for col, card in zip(all_cols, insight_cards):
+        with col:
+            st.markdown(
+                """
+            <div style="border:1px solid #E5E7EB;border-radius:6px;padding:16px;background:#fff;height:100%">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.15em;
+                    text-transform:uppercase;color:#9CA3AF;margin-bottom:4px">
+                    {0} / {1}
+                </div>
+                <div style="font-family:'Inter',sans-serif;font-size:15px;font-weight:700;
+                    color:#111827;margin-bottom:8px;line-height:1.2">
+                    {2}
+                </div>
+                <div style="font-family:'Inter',sans-serif;font-size:12px;color:#6B7280;line-height:1.5">
+                    {3}
+                </div>
+            </div>
+            """.format(
+                    html.escape(card["number"]),
+                    html.escape(card["label"]),
+                    html.escape(card["headline"]),
+                    html.escape(card["body"]),
+                ),
+                unsafe_allow_html=True,
+            )
 
     df = df_master.copy()
-    df_lp = df[df["data_source_type"] == "LP-Disclosed"].copy()
-    df_gp = df[df["data_source_type"] == "GP-Disclosed"].copy()
+    lp_df = df[(df["irr_meaningful"] == True) & (df["data_source_type"] == "LP-Disclosed")].copy()
+    mi_df = df[(df["irr_meaningful"] == True) & (df["data_source_type"] == "Market Intelligence")].copy()
+    lp_df = lp_df[lp_df["net_irr"].notna() & (lp_df["net_irr"].abs() < 2.0)]
+    mi_df = mi_df[mi_df["net_irr"].notna() & (mi_df["net_irr"].abs() < 2.0)]
 
     st.markdown('<div class="section-label">01 / FIRM LANDSCAPE</div>', unsafe_allow_html=True)
-
-    firm_summary = (
-        df.groupby("canonical_gp", as_index=False)
-        .agg(
-            gp_display_name=("gp_display_name", "first"),
-            firm_founded=("firm_founded", "min"),
-            firm_aum_usd_b=("firm_aum_usd_b", "max"),
-            total_capital_usd_m=("fund_size_usd_m", "sum"),
-            primary_category=("fund_category", lambda s: s.mode().iloc[0] if not s.mode().empty else "Venture"),
-        )
-    )
-
-    c1, c2 = st.columns([3, 2])
-    with c1:
-        fig1a = px.scatter(
-            firm_summary,
-            x="firm_founded",
-            y="firm_aum_usd_b",
-            size="total_capital_usd_m",
-            color="canonical_gp",
-            text="gp_display_name",
-            size_max=55,
+    col1, col2 = st.columns([3, 2])
+    with col1:
+        st.markdown('<div class="chart-title">CASH RETURN RECORD</div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-subtitle">X = funds with meaningful data · Y = median net DPI · size = total capital in dataset</div>', unsafe_allow_html=True)
+        firm_summary = []
+        for gp, grp in df.groupby("canonical_gp"):
+            meaningful = grp[grp["irr_meaningful"] == True]
+            r = grp.iloc[0]
+            mode_source = grp["data_source_type"].mode()
+            firm_summary.append(
+                {
+                    "firm": r.get("gp_display_name", gp),
+                    "canonical_gp": gp,
+                    "meaningful_count": len(meaningful),
+                    "median_dpi": meaningful["dpi"].dropna().median() if len(meaningful) > 0 else 0,
+                    "total_capital_bn": grp["fund_size_usd_m"].fillna(0).sum() / 1000.0,
+                    "source_type": mode_source.iloc[0] if not mode_source.empty else "LP-Disclosed",
+                }
+            )
+        firm_df = pd.DataFrame(firm_summary).dropna(subset=["median_dpi"])
+        color_map = {"LP-Disclosed": "#2C3E50", "Market Intelligence": "#E8571F"}
+        fig = px.scatter(
+            firm_df,
+            x="meaningful_count",
+            y="median_dpi",
+            size="total_capital_bn",
+            text="firm",
+            color="source_type",
+            color_discrete_map=color_map,
+            size_max=45,
             template="plotly_white",
-            labels={"firm_founded": "Founded", "firm_aum_usd_b": "Firm AUM ($B)"},
+            labels={"meaningful_count": "Funds with Meaningful Data", "median_dpi": "Median Net DPI (×)"},
         )
-        fig1a.update_traces(textposition="top center", textfont_size=10)
-        _plot_common_layout(fig1a, "FIRM SCALE VS TENURE")
-        fig1a.update_layout(height=420, showlegend=False)
-        st.plotly_chart(fig1a, use_container_width=True)
+        fig.add_hline(
+            y=1.0,
+            line_dash="dash",
+            line_color="#9CA3AF",
+            line_width=1,
+            annotation_text="1.0× — returned committed capital",
+            annotation_position="bottom right",
+            annotation_font_size=9,
+        )
+        fig.add_hline(
+            y=2.0,
+            line_dash="dash",
+            line_color="#16A34A",
+            line_width=1,
+            annotation_text="2.0× — strong realization",
+            annotation_position="bottom right",
+            annotation_font_size=9,
+        )
+        fig.update_traces(textposition="top center", textfont_size=9, marker=dict(line=dict(width=1, color="white")))
+        fig.update_layout(
+            height=380,
+            showlegend=True,
+            legend=dict(title="Source", orientation="h", y=-0.18, font=dict(size=9)),
+            plot_bgcolor="#FFFFFF",
+            paper_bgcolor="#FFFFFF",
+            xaxis=dict(gridcolor="#F3F4F6"),
+            yaxis=dict(gridcolor="#F3F4F6"),
+            font=dict(family="Inter", size=11),
+            margin=dict(l=40, r=40, t=30, b=40),
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
-    with c2:
-        cap_by_firm = firm_summary.sort_values("total_capital_usd_m", ascending=True)
-        colors = [CATEGORY_COLORS.get(cat, "#6B7280") for cat in cap_by_firm["primary_category"]]
-        fig1b = go.Figure(
-            go.Bar(
-                y=cap_by_firm["canonical_gp"],
-                x=cap_by_firm["total_capital_usd_m"],
-                orientation="h",
-                marker_color=colors,
-                text=cap_by_firm["total_capital_usd_m"].round(0),
-                textposition="outside",
+    with col2:
+        st.markdown('<div class="chart-title">FUND COVERAGE TIMELINE</div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-subtitle">Each square = one fund · color = DPI realization level</div>', unsafe_allow_html=True)
+        tl = df[df["vintage_year"].notna()].copy()
+        tl["dpi_safe"] = tl["dpi"].fillna(0)
+
+        def dpi_color(v):
+            if v > 2.0:
+                return "#E8571F"
+            if v > 1.0:
+                return "#6EE7B7"
+            if v > 0.1:
+                return "#FCD34D"
+            return "#E5E7EB"
+
+        tl["dot_color"] = tl["dpi_safe"].apply(dpi_color)
+        fig2 = go.Figure()
+        firms_order = tl.groupby("canonical_gp")["vintage_year"].min().sort_values().index
+        for gp in firms_order:
+            sub = tl[tl["canonical_gp"] == gp].sort_values("vintage_year")
+            disp = str(sub.iloc[0].get("gp_display_name", gp))
+            for _, r in sub.iterrows():
+                fig2.add_trace(
+                    go.Scatter(
+                        x=[int(r["vintage_year"])],
+                        y=[disp],
+                        mode="markers",
+                        marker=dict(symbol="square", size=12, color=r["dot_color"], line=dict(width=1, color="#9CA3AF")),
+                        showlegend=False,
+                        hovertemplate="<b>{0}</b><br>Vintage: {1}<br>DPI: {2}<br>TVPI: {3}<extra></extra>".format(
+                            html.escape(str(r.get("fund_name", ""))),
+                            r.get("vintage_year", "N/A"),
+                            "N/A" if pd.isna(r.get("dpi")) else "{0:.2f}×".format(r.get("dpi")),
+                            "N/A" if pd.isna(r.get("tvpi")) else "{0:.2f}×".format(r.get("tvpi")),
+                        ),
+                    )
+                )
+        for label, color in [
+            ("> 2× DPI", "#E8571F"),
+            ("1–2× DPI", "#6EE7B7"),
+            ("0.1–1× DPI", "#FCD34D"),
+            ("< 0.1× / None", "#E5E7EB"),
+        ]:
+            fig2.add_trace(
+                go.Scatter(
+                    x=[None],
+                    y=[None],
+                    mode="markers",
+                    marker=dict(symbol="square", size=10, color=color, line=dict(width=1, color="#9CA3AF")),
+                    name=label,
+                    showlegend=True,
+                )
             )
+        fig2.update_layout(
+            height=380,
+            template="plotly_white",
+            xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=3),
+            yaxis=dict(title="", tickfont=dict(size=9)),
+            legend=dict(title="DPI Range", font=dict(size=9), orientation="h", y=-0.18),
+            plot_bgcolor="#FFFFFF",
+            paper_bgcolor="#FFFFFF",
+            font=dict(family="Inter", size=10),
+            margin=dict(l=10, r=20, t=30, b=40),
         )
-        _plot_common_layout(fig1b, "CAPITAL IN DATASET BY FIRM")
-        fig1b.update_layout(height=420, showlegend=False)
-        st.plotly_chart(fig1b, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width=True)
 
-    st.markdown('<div class="section-label">02 / RETURNS — MEANINGFUL FUNDS ONLY</div>', unsafe_allow_html=True)
-    st.markdown('<div class="chart-subtitle">Only includes LP-disclosed funds where vintage ≤ 2020 and IRR is non-placeholder</div>', unsafe_allow_html=True)
-
-    df_perf_lp = df_lp[(df_lp["irr_meaningful"] == True) & df_lp["net_irr"].notna()].copy()
-    df_perf_lp = df_perf_lp[df_perf_lp["net_irr"] <= 2.0].copy()
-    df_perf_lp["marker_size"] = df_perf_lp["fund_size_usd_m"].clip(upper=3000)
-
-    fig2a = px.scatter(
-        df_perf_lp,
-        x="vintage_year",
-        y=df_perf_lp["net_irr"] * 100,
-        color="canonical_gp",
-        size="marker_size",
-        template="plotly_white",
-        custom_data=["fund_name", "tvpi", "dpi"],
-    )
-    fig2a.update_traces(
-        marker=dict(line=dict(color="#E8571F", width=1.2)),
-        hovertemplate="<b>%{customdata[0]}</b><br>IRR: %{y:.1f}%<br>TVPI: %{customdata[1]:.2f}x<br>DPI: %{customdata[2]:.2f}x<extra></extra>",
-    )
-    fig2a.add_hline(y=10, line_dash="dash", line_color="#DC2626", annotation_text="10% INSTITUTIONAL BENCHMARK")
-    fig2a.add_hline(y=20, line_dash="dash", line_color="#16A34A", annotation_text="20% TOP QUARTILE VC")
-    _plot_common_layout(fig2a, "NET IRR BY VINTAGE YEAR")
-    fig2a.update_layout(height=500)
-    st.plotly_chart(fig2a, use_container_width=True)
-
-    fig2b = px.scatter(
-        df_perf_lp,
-        x="dpi",
-        y="tvpi",
-        color="canonical_gp",
-        size="marker_size",
-        template="plotly_white",
-        custom_data=["fund_name", "vintage_year", "net_irr"],
-    )
-    fig2b.update_traces(
-        marker=dict(line=dict(color="#E8571F", width=1.0)),
-        hovertemplate="<b>%{customdata[0]}</b><br>Vintage: %{customdata[1]}<br>IRR: %{customdata[2]:.1%}<extra></extra>",
-    )
-
-    max_dpi = float(df_perf_lp["dpi"].max()) if not df_perf_lp["dpi"].dropna().empty else 3.0
-    max_tvpi = float(df_perf_lp["tvpi"].max()) if not df_perf_lp["tvpi"].dropna().empty else 3.0
-    max_val = max(max_dpi, max_tvpi) + 0.5
-    fig2b.add_shape(type="line", x0=0, y0=0, x1=max_val, y1=max_val, line=dict(color="#9CA3AF", dash="dash"))
-    fig2b.add_annotation(x=max_val * 0.2, y=max_val * 0.9, text="PAPER GAINS ZONE", showarrow=False, font=dict(size=10, color="#9CA3AF"))
-    fig2b.add_annotation(x=max_val * 0.78, y=max_val * 0.78, text="FULLY REALIZED", textangle=45, showarrow=False, font=dict(size=10, color="#9CA3AF"))
-
-    mayfield = df_perf_lp[df_perf_lp["fund_name"].astype(str).str.contains("Mayfield XIV", case=False, na=False)]
-    if not mayfield.empty:
-        r = mayfield.iloc[0]
-        fig2b.add_trace(
-            go.Scatter(
-                x=[r["dpi"]], y=[r["tvpi"]], mode="markers",
-                marker=dict(symbol="star", size=16, color="#E8571F", line=dict(color="#111827", width=1)),
-                name="Mayfield XIV",
-                hovertemplate="<b>Mayfield XIV</b><br>DPI: %{x:.2f}x<br>TVPI: %{y:.2f}x<extra></extra>",
-            )
+    st.markdown('<div class="section-label">02 / RETURNS — LP-DISCLOSED + MARKET INTEL vs CA BENCHMARK</div>', unsafe_allow_html=True)
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=list(bench_meaningful["vintage_year"]) + list(bench_meaningful["vintage_year"])[::-1],
+            y=list(bench_meaningful["q1_net_irr"] * 100) + list(bench_meaningful["q3_net_irr"] * 100)[::-1],
+            fill="toself",
+            fillcolor="rgba(16,185,129,0.07)",
+            line=dict(color="rgba(0,0,0,0)"),
+            name="CA Q3–Q1 Band (approx.)",
+            hoverinfo="skip",
         )
-
-    _plot_common_layout(fig2b, "TVPI VS DPI — THE REALIZATION MAP")
-    fig2b.update_layout(height=560)
-    fig2b.update_xaxes(range=[0, max_val])
-    fig2b.update_yaxes(range=[0, max_val])
-    st.markdown('<div class="chart-subtitle">Funds near the diagonal have returned real cash. Upper-left = paper gains only.</div>', unsafe_allow_html=True)
-    st.plotly_chart(fig2b, use_container_width=True)
-
-    rank = df_perf_lp.sort_values("net_irr", ascending=True).copy()
-    rank["label"] = rank["fund_name"] + " (" + rank["canonical_gp"] + ")"
-
-    def _irr_color(v):
-        pct = v * 100
-        if pct >= 20:
-            return "#16A34A"
-        if pct >= 10:
-            return "#D97706"
-        return "#DC2626"
-
-    fig2c = go.Figure(go.Bar(y=rank["label"], x=rank["net_irr"] * 100, orientation="h", marker_color=[_irr_color(v) for v in rank["net_irr"]]))
-    _plot_common_layout(fig2c, "NET IRR RANKING")
-    fig2c.update_layout(height=620, showlegend=False)
-    st.plotly_chart(fig2c, use_container_width=True)
-
-    st.markdown('<div class="section-label">02B / GP-DISCLOSED PERFORMANCE (SELECT FIRMS)</div>', unsafe_allow_html=True)
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=bench_meaningful["vintage_year"],
+            y=bench_meaningful["q1_net_irr"] * 100,
+            mode="lines",
+            line=dict(color="#16A34A", width=1.5, dash="dash"),
+            name="CA Top Quartile (approx.)",
+            hovertemplate="Vintage %{x}<br>CA Q1: %{y:.1f}%<extra></extra>",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=bench_meaningful["vintage_year"],
+            y=bench_meaningful["median_net_irr"] * 100,
+            mode="lines",
+            line=dict(color="#9CA3AF", width=1.5, dash="dot"),
+            name="CA Median (approx.)",
+            hovertemplate="Vintage %{x}<br>CA Median: %{y:.1f}%<extra></extra>",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=lp_df["vintage_year"],
+            y=lp_df["net_irr"] * 100,
+            mode="markers",
+            marker=dict(
+                symbol="circle",
+                size=lp_df["fund_size_usd_m"].fillna(50).clip(50, 3000) / 65,
+                color="#2C3E50",
+                opacity=0.7,
+                line=dict(width=1, color="white"),
+            ),
+            name="LP-Disclosed (FOIA)",
+            customdata=lp_df[["fund_name", "canonical_gp", "tvpi", "dpi"]].values,
+            hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>IRR: %{y:.1f}%<br>TVPI: %{customdata[2]:.2f}×<br>DPI: %{customdata[3]:.2f}×<extra></extra>",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=mi_df["vintage_year"],
+            y=mi_df["net_irr"] * 100,
+            mode="markers",
+            marker=dict(
+                symbol="diamond",
+                size=mi_df["fund_size_usd_m"].fillna(50).clip(50, 3000) / 65,
+                color="#FFF4EF",
+                opacity=0.95,
+                line=dict(width=2, color="#E8571F"),
+            ),
+            name="Market Intelligence (Circulated)",
+            customdata=mi_df[["fund_name", "canonical_gp", "tvpi", "dpi"]].values,
+            hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>IRR: %{y:.1f}%<br>TVPI: %{customdata[2]:.2f}×<br>DPI: %{customdata[3]:.2f}×<br><i>Market Intelligence — unverified provenance</i><extra></extra>",
+        )
+    )
+    fig.add_annotation(
+        x=2013,
+        y=34,
+        text="Market intel funds (◆)<br>cluster above Q1 line<br>— source may be selective",
+        showarrow=True,
+        arrowhead=2,
+        arrowcolor="#E8571F",
+        arrowwidth=1.5,
+        font=dict(size=9, color="#E8571F", family="IBM Plex Mono"),
+        bgcolor="#FFF4EF",
+        bordercolor="#E8571F",
+        borderwidth=1,
+        borderpad=6,
+        ax=80,
+        ay=-50,
+    )
+    fig.update_layout(
+        title=dict(
+            text="NET IRR BY VINTAGE — LP-DISCLOSED vs MARKET INTEL vs CA BENCHMARK",
+            font=dict(family="IBM Plex Mono", size=11, color="#6B7280"),
+        ),
+        height=500,
+        template="plotly_white",
+        xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
+        yaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
+        legend=dict(orientation="h", y=-0.2, font=dict(size=10)),
+        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="#FFFFFF",
+        font=dict(family="Inter", size=12),
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    bench_disclaimer()
     st.markdown(
         """
-    <div class="chart-subtitle">
-        Source: GP self-published data — a16z (as of 9/30/2025), Social Capital (12/31/2024),
-        Founders Fund. These are the funds each firm has chosen to disclose. Caution:
-        later and underperforming funds may be excluded.
+    <div class="insight-box">
+        <div class="insight-label">● READING THIS CHART</div>
+        <div class="insight-body">
+            <strong>● circles = LP-disclosed</strong> — independently reported by pension funds
+            under FOIA. Scattered across the full distribution including underperformers.
+            <strong>◆ diamonds = market intelligence</strong> — data that circulated through
+            secondary market and LP channels for a16z, Founders Fund, and Social Capital.
+            Notice diamonds cluster above the Q1 line. This may reflect genuine outperformance
+            by these firms — or it may reflect that the source of the circulated data was
+            selective. The green band is the approximate Cambridge Associates Q3–Q1 range.
+            <em>Funds inside the band are performing between median and top quartile for their vintage.</em>
+        </div>
     </div>
     """,
         unsafe_allow_html=True,
     )
 
-    gp_dpi = df_gp[df_gp["dpi"].notna()].copy()
-    gp_dpi = gp_dpi.sort_values("dpi", ascending=True)
-    gp_dpi["label"] = gp_dpi["fund_name"] + " (" + gp_dpi["canonical_gp"] + ", " + gp_dpi["vintage_year"].astype("Int64").astype(str) + ")"
+    st.markdown('<div class="section-label" style="margin-top:2rem">02A / THE GROSS vs NET GAP — FEES QUANTIFIED</div>', unsafe_allow_html=True)
+    st.markdown('<div class="chart-subtitle">a16z is the only firm in this dataset with both gross and net metrics in the circulated data. The gap = management fees + carry transferred from LP to GP.</div>', unsafe_allow_html=True)
+    a16z_rows = [
+        {"fund": "AH Fund I", "vintage": 2009, "size": 300, "gross_tvpi": 9.3, "net_tvpi": 6.9, "net_dpi": 6.0},
+        {"fund": "AH Fund II", "vintage": 2010, "size": 656, "gross_tvpi": 4.9, "net_tvpi": 3.7, "net_dpi": 3.5},
+        {"fund": "AH Annex", "vintage": 2011, "size": 204, "gross_tvpi": 7.2, "net_tvpi": 5.4, "net_dpi": 5.1},
+        {"fund": "AH Fund III", "vintage": 2012, "size": 997, "gross_tvpi": 15.7, "net_tvpi": 11.3, "net_dpi": 5.5},
+        {"fund": "AH Fund IV", "vintage": 2014, "size": 1173, "gross_tvpi": 5.5, "net_tvpi": 4.1, "net_dpi": 3.0},
+        {"fund": "AH Fund V", "vintage": 2017, "size": 1189, "gross_tvpi": 4.0, "net_tvpi": 3.1, "net_dpi": 0.3},
+    ]
+    table_rows = ""
+    for d in a16z_rows:
+        drag = d["gross_tvpi"] - d["net_tvpi"]
+        drag_pct = (drag / d["gross_tvpi"] * 100) if d["gross_tvpi"] else np.nan
+        drag_usd_m = drag * d["size"]
+        dpi_color = "#E8571F" if d["net_dpi"] >= 1.5 else ("#D97706" if d["net_dpi"] >= 0.5 else "#9CA3AF")
+        table_rows += (
+            "<tr>"
+            '<td style="font-weight:500">{0}</td><td class="numeric">{1}</td><td class="numeric">${2:,}M</td>'
+            '<td class="numeric" style="color:#6B7280">{3:.1f}×</td><td class="numeric" style="font-weight:600;color:#111827">{4:.1f}×</td>'
+            '<td class="numeric" style="color:#DC2626">−{5:.1f}× <span style="font-size:9px;color:#9CA3AF">({6:.0f}% / ${7:.1f}B)</span></td>'
+            '<td class="numeric" style="color:{8};font-weight:600">{9:.1f}×</td></tr>'
+        ).format(
+            d["fund"],
+            d["vintage"],
+            d["size"],
+            d["gross_tvpi"],
+            d["net_tvpi"],
+            drag,
+            drag_pct,
+            drag_usd_m / 1000.0,
+            dpi_color,
+            d["net_dpi"],
+        )
+    _render_html(
+        '<table class="fund-table"><thead><tr><th>FUND</th><th class="right">VINTAGE</th><th class="right">SIZE</th>'
+        '<th class="right">GROSS TVPI</th><th class="right">NET TVPI</th>'
+        '<th class="right" style="color:#DC2626">FEE DRAG (×  /  $)</th><th class="right" style="color:#E8571F">NET DPI ▲</th>'
+        "</tr></thead><tbody>{0}</tbody></table>".format(table_rows)
+    )
+    st.markdown(
+        """
+    <div class="insight-box" style="margin-top:1rem">
+        <div class="insight-label">● WHAT THIS TABLE SHOWS</div>
+        <div class="insight-body">
+            Fee drag = gross TVPI minus net TVPI. For AH Fund III, 4.4× drag on $997M ≈
+            <strong>$4.4B transferred from LPs to a16z in management fees and carry</strong>.
+            This is standard 2/20 structure — not predatory. But it's rarely shown this
+            concretely. Note AH Fund V (2017): Net DPI is only 0.3× despite Net TVPI of 3.1×
+            — <em>LPs have received less than a third of their committed capital back in cash,
+            a decade in.</em>
+        </div>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
-    def gp_dpi_color(v):
-        if v > 2.0:
-            return "#E8571F"
-        if v >= 0.5:
-            return "#D97706"
-        return "#9CA3AF"
+    st.markdown('<div class="section-label" style="margin-top:2rem">02B / THE REALIZATION MAP</div>', unsafe_allow_html=True)
+    st.markdown('<div class="chart-subtitle">Each point = one fund. X = DPI (cash returned). Y = TVPI (total value including paper). Color = vintage era.</div>', unsafe_allow_html=True)
+    plot_df = df[df["tvpi"].notna() & df["dpi"].notna()].copy()
+    plot_df["vintage_bucket"] = pd.cut(
+        plot_df["vintage_year"].astype(float),
+        bins=[1999, 2014, 2017, 2030],
+        labels=["Pre-2015 (Mature)", "2015–2017 (DPI Drought Onset)", "Post-2017 (Paper Only)"],
+    )
+    bucket_colors = {
+        "Pre-2015 (Mature)": "#16A34A",
+        "2015–2017 (DPI Drought Onset)": "#D97706",
+        "Post-2017 (Paper Only)": "#DC2626",
+    }
+    max_dpi = min(plot_df["dpi"].max() + 0.5, 20) if not plot_df.empty else 4.0
+    max_tvpi = min(plot_df["tvpi"].max() + 0.5, 20) if not plot_df.empty else 4.0
+    max_val = max(max_dpi, max_tvpi)
+    fig_map = go.Figure()
+    fig_map.add_shape(type="rect", x0=0, y0=2.0, x1=0.99, y1=max_val, fillcolor="rgba(239,68,68,0.04)", line=dict(width=0))
+    fig_map.add_shape(type="rect", x0=1.0, y0=2.0, x1=max_val, y1=max_val, fillcolor="rgba(22,163,74,0.04)", line=dict(width=0))
+    fig_map.add_vline(
+        x=1.0,
+        line_dash="dash",
+        line_color="#6B7280",
+        line_width=1,
+        annotation_text="1.0× DPI — committed capital returned",
+        annotation_position="top right",
+        annotation_font_size=9,
+    )
+    fig_map.add_trace(
+        go.Scatter(
+            x=[0, max_val],
+            y=[0, max_val],
+            mode="lines",
+            line=dict(color="#9CA3AF", dash="dot", width=1),
+            name="DPI = TVPI (fully realized)",
+            showlegend=True,
+            hoverinfo="skip",
+        )
+    )
+    for bucket, color in bucket_colors.items():
+        sub = plot_df[plot_df["vintage_bucket"].astype(str) == bucket]
+        if len(sub) == 0:
+            continue
+        fig_map.add_trace(
+            go.Scatter(
+                x=sub["dpi"],
+                y=sub["tvpi"],
+                mode="markers",
+                marker=dict(size=sub["fund_size_usd_m"].fillna(50).clip(50, 3000) / 55, color=color, opacity=0.70, line=dict(width=1, color="white")),
+                name=bucket,
+                customdata=sub[["fund_name", "canonical_gp", "vintage_year", "net_irr", "fund_size_usd_m", "data_source_type"]].values,
+                hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]} · %{customdata[2]}<br>TVPI: %{y:.2f}× | DPI: %{x:.2f}×<br>IRR: %{customdata[3]:.1%}<br>%{customdata[5]}<extra></extra>",
+            )
+        )
+    may = plot_df[plot_df["fund_name"].astype(str).str.contains("XIV", na=False)]
+    if len(may):
+        fig_map.add_trace(
+            go.Scatter(
+                x=may["dpi"],
+                y=may["tvpi"],
+                mode="markers+text",
+                marker=dict(symbol="star", size=18, color="#E8571F", line=dict(width=1.5, color="white")),
+                text=["Mayfield XIV"] * len(may),
+                textposition="top right",
+                textfont=dict(size=9, color="#E8571F", family="IBM Plex Mono"),
+                name="Mayfield XIV ★",
+                showlegend=True,
+            )
+        )
+    fig_map.add_annotation(
+        x=0.2,
+        y=max_val * 0.88,
+        text="PAPER GAINS ZONE<br>High TVPI, Low DPI",
+        font=dict(size=9, color="#DC2626", family="IBM Plex Mono"),
+        showarrow=False,
+        bgcolor="rgba(254,242,242,0.85)",
+    )
+    fig_map.add_annotation(
+        x=max_val * 0.65,
+        y=max_val * 0.88,
+        text="REAL RETURNS ZONE<br>High TVPI, High DPI",
+        font=dict(size=9, color="#16A34A", family="IBM Plex Mono"),
+        showarrow=False,
+        bgcolor="rgba(240,253,244,0.85)",
+    )
+    fig_map.update_layout(
+        title=dict(text="TVPI vs DPI — THE REALIZATION MAP", font=dict(family="IBM Plex Mono", size=11, color="#6B7280")),
+        height=500,
+        template="plotly_white",
+        xaxis=dict(title="Net DPI (× distributed to LPs)", range=[0, max_val], gridcolor="#F3F4F6"),
+        yaxis=dict(title="Net TVPI (× total value)", range=[0, max_val], gridcolor="#F3F4F6"),
+        legend=dict(orientation="h", y=-0.2, font=dict(size=10)),
+        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="#FFFFFF",
+        font=dict(family="Inter", size=12),
+    )
+    st.plotly_chart(fig_map, use_container_width=True)
 
-    fig_gp_dpi = go.Figure(
+    st.markdown('<div class="section-label" style="margin-top:2rem">02C / NET IRR RANKING — HOVER FOR vs BENCHMARK</div>', unsafe_allow_html=True)
+    rank_df = lp_df.copy()
+    rank_df = rank_df.merge(bench[["vintage_year", "median_net_irr", "q1_net_irr"]], on="vintage_year", how="left")
+    rank_df["irr_pct"] = rank_df["net_irr"] * 100
+    rank_df["vs_median_pp"] = rank_df["irr_pct"] - rank_df["median_net_irr"] * 100
+    rank_df["vs_q1_pp"] = rank_df["irr_pct"] - rank_df["q1_net_irr"] * 100
+    rank_df["est_quartile"] = rank_df["vs_q1_pp"].apply(lambda x: "Q1 (Top)" if x >= 0 else ("Q2" if x >= -5 else "Q3+"))
+    rank_df["short_label"] = rank_df.apply(lambda r: "{0} ({1})".format(str(r["fund_name"])[:32], r["canonical_gp"]), axis=1)
+    rank_df["bar_color"] = rank_df["irr_pct"].apply(lambda x: "#16A34A" if x >= 20 else ("#D97706" if x >= 10 else "#DC2626"))
+    rank_df = rank_df.sort_values("irr_pct", ascending=True)
+    avg_q1 = rank_df["q1_net_irr"].mean() * 100 if not rank_df.empty else 0
+    fig_rank = go.Figure()
+    fig_rank.add_trace(
         go.Bar(
-            y=gp_dpi["label"],
-            x=gp_dpi["dpi"],
+            y=rank_df["short_label"],
+            x=rank_df["irr_pct"],
             orientation="h",
-            marker_color=[gp_dpi_color(v) for v in gp_dpi["dpi"]],
-            hovertemplate="<b>%{y}</b><br>Net DPI: %{x:.2f}x<extra></extra>",
+            marker_color=rank_df["bar_color"].tolist(),
+            customdata=rank_df[["vintage_year", "tvpi", "dpi", "vs_median_pp", "vs_q1_pp", "est_quartile"]].values,
+            hovertemplate="<b>%{y}</b><br>IRR: %{x:.1f}%<br>Vintage: %{customdata[0]}<br>TVPI: %{customdata[1]:.2f}× | DPI: %{customdata[2]:.2f}×<br>vs CA Median: %{customdata[3]:+.1f}pp<br>vs CA Q1: %{customdata[4]:+.1f}pp<br>Est. Quartile: %{customdata[5]}<extra></extra>",
         )
     )
-    _plot_common_layout(fig_gp_dpi, "NET DPI RANKING — GP-DISCLOSED FUNDS")
-    fig_gp_dpi.update_layout(height=550, showlegend=False)
-    st.plotly_chart(fig_gp_dpi, use_container_width=True)
-
-    lp_points = df_perf_lp.dropna(subset=["tvpi", "dpi"]).copy()
-    gp_points = df_gp[df_gp["tvpi"].notna() & df_gp["dpi"].notna()].copy()
-
-    fig_mix = go.Figure()
-    fig_mix.add_trace(
-        go.Scatter(
-            x=lp_points["dpi"],
-            y=lp_points["tvpi"],
-            mode="markers",
-            name="● LP-Disclosed",
-            marker=dict(symbol="circle", size=9, color="#6B7280", opacity=0.55),
-            customdata=np.stack([lp_points["fund_name"], lp_points["canonical_gp"]], axis=1) if not lp_points.empty else None,
-            hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>DPI: %{x:.2f}x<br>TVPI: %{y:.2f}x<extra></extra>",
-        )
+    fig_rank.add_vline(x=avg_q1, line_dash="dash", line_color="#16A34A", line_width=1, annotation_text="Avg CA Q1 ({0:.0f}%)".format(avg_q1), annotation_font_size=9)
+    fig_rank.add_vline(x=10, line_dash="dot", line_color="#9CA3AF", line_width=1, annotation_text="10% floor", annotation_font_size=9)
+    fig_rank.update_layout(
+        height=max(400, len(rank_df) * 22),
+        template="plotly_white",
+        xaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
+        yaxis=dict(tickfont=dict(size=9)),
+        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="#FFFFFF",
+        font=dict(family="Inter", size=10),
+        margin=dict(l=300, r=80, t=30, b=40),
     )
-    fig_mix.add_trace(
-        go.Scatter(
-            x=gp_points["dpi"],
-            y=gp_points["tvpi"],
-            mode="markers",
-            name="◆ GP-Disclosed",
-            marker=dict(symbol="diamond", size=11, color="#E8571F", opacity=0.9, line=dict(color="#7C2D12", width=0.8)),
-            customdata=np.stack([gp_points["fund_name"], gp_points["canonical_gp"]], axis=1) if not gp_points.empty else None,
-            hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>DPI: %{x:.2f}x<br>TVPI: %{y:.2f}x<extra></extra>",
-        )
-    )
-
-    max_lp = max(
-        float(lp_points["dpi"].max()) if not lp_points.empty else 0,
-        float(lp_points["tvpi"].max()) if not lp_points.empty else 0,
-        float(gp_points["dpi"].max()) if not gp_points.empty else 0,
-        float(gp_points["tvpi"].max()) if not gp_points.empty else 0,
-    )
-    max_lp = max(max_lp, 2.0) + 0.5
-    fig_mix.add_shape(type="line", x0=0, y0=0, x1=max_lp, y1=max_lp, line=dict(color="#9CA3AF", dash="dash"))
-    _plot_common_layout(fig_mix, "TVPI VS DPI — LP VS GP DISCLOSURES")
-    fig_mix.update_layout(height=560)
-    fig_mix.update_xaxes(title_text="DPI", range=[0, max_lp])
-    fig_mix.update_yaxes(title_text="TVPI", range=[0, max_lp])
-    st.plotly_chart(fig_mix, use_container_width=True)
+    st.plotly_chart(fig_rank, use_container_width=True)
+    bench_disclaimer()
 
     st.markdown('<div class="section-label">03 / VINTAGE COHORT ANALYSIS</div>', unsafe_allow_html=True)
+    col3a, col3b = st.columns(2)
+    with col3a:
+        st.markdown('<div class="chart-title">TVPI BY VINTAGE — vs CA BENCHMARK</div>', unsafe_allow_html=True)
+        tvpi_df = lp_df[lp_df["tvpi"].notna()].copy()
+        tvpi_df["x_jitter"] = tvpi_df["vintage_year"].astype(float) + np.random.uniform(-0.25, 0.25, len(tvpi_df))
+        fig_tvpi = go.Figure()
+        fig_tvpi.add_trace(
+            go.Scatter(
+                x=list(bench_meaningful["vintage_year"]) + list(bench_meaningful["vintage_year"])[::-1],
+                y=list(bench_meaningful["q1_tvpi"]) + list(bench_meaningful["q3_tvpi"])[::-1],
+                fill="toself",
+                fillcolor="rgba(16,185,129,0.07)",
+                line=dict(color="rgba(0,0,0,0)"),
+                name="CA Q3–Q1 TVPI Band",
+                hoverinfo="skip",
+            )
+        )
+        fig_tvpi.add_trace(
+            go.Scatter(
+                x=bench_meaningful["vintage_year"],
+                y=bench_meaningful["median_tvpi"],
+                mode="lines",
+                line=dict(color="#9CA3AF", dash="dot", width=1.5),
+                name="CA Median TVPI",
+            )
+        )
+        fig_tvpi.add_trace(
+            go.Scatter(
+                x=tvpi_df["x_jitter"],
+                y=tvpi_df["tvpi"],
+                mode="markers",
+                marker=dict(size=7, color="#2C3E50", opacity=0.6, line=dict(width=0.5, color="white")),
+                name="LP-Disclosed Fund",
+                customdata=tvpi_df[["fund_name", "canonical_gp", "dpi"]].values,
+                hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>TVPI: %{y:.2f}× | DPI: %{customdata[2]:.2f}×<extra></extra>",
+            )
+        )
+        medians = tvpi_df.groupby("vintage_year")["tvpi"].median().reset_index()
+        fig_tvpi.add_trace(
+            go.Scatter(
+                x=medians["vintage_year"],
+                y=medians["tvpi"],
+                mode="lines+markers",
+                line=dict(color="#E8571F", width=2),
+                marker=dict(size=6, color="#E8571F"),
+                name="This Dataset Median",
+            )
+        )
+        fig_tvpi.add_hline(y=1.0, line_dash="dot", line_color="#9CA3AF", line_width=1)
+        fig_tvpi.update_layout(
+            height=380,
+            template="plotly_white",
+            xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
+            yaxis=dict(title="Net TVPI (×)", gridcolor="#F3F4F6"),
+            legend=dict(font=dict(size=9)),
+            plot_bgcolor="#FFFFFF",
+            paper_bgcolor="#FFFFFF",
+            font=dict(family="Inter", size=11),
+            margin=dict(t=20, b=30),
+        )
+        st.plotly_chart(fig_tvpi, use_container_width=True)
+        n_per = tvpi_df.groupby("vintage_year").size().to_dict()
+        n_str = "  ·  ".join(["{0}: n={1}".format(y, n) for y, n in sorted(n_per.items()) if y >= 2005])
+        st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">{0}</div>".format(html.escape(n_str)), unsafe_allow_html=True)
+        bench_disclaimer()
 
-    c3a, c3b = st.columns(2)
-    with c3a:
-        box_df = df_perf_lp.dropna(subset=["vintage_year", "tvpi"]).copy()
-        fig3a = go.Figure()
-        for vintage in sorted(box_df["vintage_year"].dropna().astype(int).unique().tolist()):
-            sub = box_df[box_df["vintage_year"] == vintage]
-            fig3a.add_trace(go.Box(y=sub["tvpi"], name=str(vintage), marker_color="#2C3E50", boxpoints="all", jitter=0.3, pointpos=0, marker=dict(size=5, opacity=0.5)))
-        fig3a.add_hline(y=1.0, line_dash="solid", line_color="#9CA3AF")
-        fig3a.add_hline(y=2.0, line_dash="dash", line_color="#16A34A")
-        _plot_common_layout(fig3a, "TVPI DISTRIBUTION BY VINTAGE")
-        fig3a.update_layout(height=450, showlegend=False)
-        st.plotly_chart(fig3a, use_container_width=True)
-
-    with c3b:
-        stack_df = df_perf_lp.dropna(subset=["vintage_year", "dpi", "tvpi"]).copy()
-        stack_df = stack_df[stack_df["tvpi"] > 0]
-        stack_df["realized"] = (stack_df["dpi"] / stack_df["tvpi"]).clip(lower=0, upper=1)
-        stack_agg = stack_df.groupby("vintage_year", as_index=False)["realized"].mean()
-        stack_agg["unrealized"] = 1 - stack_agg["realized"]
-
-        fig3b = go.Figure()
-        fig3b.add_trace(go.Bar(x=stack_agg["vintage_year"], y=stack_agg["realized"], name="Realized", marker_color="#18A999"))
-        fig3b.add_trace(go.Bar(x=stack_agg["vintage_year"], y=stack_agg["unrealized"], name="Unrealized", marker_color="#E5E7EB"))
-        fig3b.add_annotation(xref="paper", yref="paper", x=0.8, y=0.08, text="0% realized", showarrow=True, arrowhead=2)
-        _plot_common_layout(fig3b, "REALIZED VS UNREALIZED CAPITAL BY VINTAGE")
-        fig3b.update_layout(height=450, barmode="stack")
-        st.plotly_chart(fig3b, use_container_width=True)
+    with col3b:
+        st.markdown('<div class="chart-title">CAPITAL REALIZATION BY VINTAGE</div>', unsafe_allow_html=True)
+        cohort = lp_df.copy()
+        cohort["cap"] = cohort["fund_size_usd_m"].fillna(0)
+        cohort["dist"] = cohort["dpi"].fillna(0) * cohort["cap"]
+        agg = cohort.groupby("vintage_year").agg(total=("cap", "sum"), distributed=("dist", "sum")).reset_index()
+        agg["unrealized"] = (agg["total"] - agg["distributed"]).clip(lower=0)
+        agg["pct"] = (agg["distributed"] / agg["total"].replace(0, np.nan) * 100).clip(0, 100).round(0)
+        agg = agg[agg["vintage_year"] >= 2005]
+        fig_cap = go.Figure()
+        fig_cap.add_trace(go.Bar(x=agg["vintage_year"], y=agg["distributed"] / 1000.0, name="Realized (DPI × Contributed)", marker_color="#E8571F"))
+        fig_cap.add_trace(go.Bar(x=agg["vintage_year"], y=agg["unrealized"] / 1000.0, name="Unrealized (Paper)", marker_color="#E5E7EB"))
+        for _, r in agg.iterrows():
+            fig_cap.add_annotation(
+                x=r["vintage_year"],
+                y=r["total"] / 1000.0 + 0.1,
+                text="{0:.0f}%".format(r["pct"]),
+                showarrow=False,
+                font=dict(size=8, color="#6B7280", family="IBM Plex Mono"),
+            )
+        fig_cap.update_layout(
+            barmode="stack",
+            height=380,
+            template="plotly_white",
+            xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
+            yaxis=dict(title="Capital ($B)", gridcolor="#F3F4F6"),
+            legend=dict(font=dict(size=9), orientation="h", y=-0.18),
+            plot_bgcolor="#FFFFFF",
+            paper_bgcolor="#FFFFFF",
+            font=dict(family="Inter", size=11),
+            margin=dict(t=20, b=40),
+        )
+        st.plotly_chart(fig_cap, use_container_width=True)
+        st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">% = realization rate per vintage. Orange = cash distributed to LPs. Grey = unrealized paper value.</div>", unsafe_allow_html=True)
 
     st.markdown('<div class="section-label">04 / GP PERFORMANCE TRAJECTORIES</div>', unsafe_allow_html=True)
+    col4a, col4b = st.columns(2)
+    with col4a:
+        st.markdown('<div class="chart-title">IRR TRAJECTORY — FIRMS WITH 3+ FUNDS</div>', unsafe_allow_html=True)
+        traj = lp_df[lp_df["net_irr"].notna()].copy()
+        eligible = traj.groupby("canonical_gp").size()
+        eligible = eligible[eligible >= 3].index
+        traj = traj[traj["canonical_gp"].isin(eligible)]
+        traj = traj.merge(bench[["vintage_year", "median_net_irr"]], on="vintage_year", how="left")
+        fig_traj = go.Figure()
+        for gp in traj["canonical_gp"].dropna().unique():
+            sub = traj[traj["canonical_gp"] == gp].sort_values("vintage_year")
+            fig_traj.add_trace(
+                go.Scatter(
+                    x=sub["vintage_year"],
+                    y=sub["net_irr"] * 100,
+                    mode="lines+markers",
+                    name=sub.iloc[0].get("gp_display_name", gp),
+                    line=dict(width=2),
+                    marker=dict(size=7),
+                )
+            )
+        fig_traj.add_trace(
+            go.Scatter(
+                x=bench_meaningful["vintage_year"],
+                y=bench_meaningful["median_net_irr"] * 100,
+                mode="lines",
+                name="CA Median (approx.)",
+                line=dict(color="#9CA3AF", dash="dot", width=1.5),
+            )
+        )
+        fig_traj.update_layout(
+            height=380,
+            template="plotly_white",
+            xaxis=dict(gridcolor="#F3F4F6"),
+            yaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
+            legend=dict(font=dict(size=9)),
+            plot_bgcolor="#FFFFFF",
+            paper_bgcolor="#FFFFFF",
+            font=dict(family="Inter", size=11),
+            margin=dict(t=20),
+        )
+        st.plotly_chart(fig_traj, use_container_width=True)
+        bench_disclaimer()
 
-    c4a, c4b = st.columns(2)
-    with c4a:
-        gp_counts = df_perf_lp.groupby("canonical_gp")["fund_name"].nunique()
-        eligible = gp_counts[gp_counts >= 2].index.tolist()
-        trend = df_perf_lp[df_perf_lp["canonical_gp"].isin(eligible)].copy().sort_values(["canonical_gp", "vintage_year"])
-
-        fig4a = go.Figure()
-        best_gp = trend.groupby("canonical_gp")["net_irr"].max().sort_values(ascending=False).index[0] if not trend.empty else None
-        for gp, sub in trend.groupby("canonical_gp"):
-            color = "#E8571F" if gp == best_gp else "#6B7280"
-            fig4a.add_trace(go.Scatter(x=sub["vintage_year"], y=sub["net_irr"] * 100, mode="lines+markers", name=gp, line=dict(color=color, width=2), marker=dict(size=7)))
-
-        _plot_common_layout(fig4a, "IRR TRAJECTORY ACROSS FUND GENERATIONS")
-        fig4a.update_layout(height=460)
-        st.plotly_chart(fig4a, use_container_width=True)
-
-    with c4b:
-        mix = df_lp.groupby(["canonical_gp", "fund_category"], as_index=False)["fund_size_usd_m"].sum()
-        gp_order = mix.groupby("canonical_gp")["fund_size_usd_m"].sum().sort_values(ascending=True).index.tolist()
-
-        fig4b = go.Figure()
-        for cat in ["Venture", "Growth", "Opportunities", "PE", "Company Creation"]:
-            sub = mix[mix["fund_category"] == cat]
-            vals = []
-            for gp in gp_order:
-                m = sub[sub["canonical_gp"] == gp]["fund_size_usd_m"]
-                vals.append(float(m.iloc[0]) if not m.empty else 0.0)
-            fig4b.add_trace(go.Bar(y=gp_order, x=vals, orientation="h", marker_color=CATEGORY_COLORS.get(cat, "#6B7280"), name=cat))
-
-        _plot_common_layout(fig4b, "CAPITAL BY STRATEGY PER FIRM")
-        fig4b.update_layout(height=460, barmode="stack")
-        st.plotly_chart(fig4b, use_container_width=True)
+    with col4b:
+        st.markdown('<div class="chart-title">CASH RETURNED BY STRATEGY — CAPITAL-WEIGHTED DPI</div>', unsafe_allow_html=True)
+        strat = lp_df[lp_df["dpi"].notna() & lp_df["fund_size_usd_m"].notna()].copy()
+        strat["weighted"] = strat["dpi"] * strat["fund_size_usd_m"]
+        agg_s = strat.groupby("fund_category").agg(weighted_sum=("weighted", "sum"), total_cap=("fund_size_usd_m", "sum"), n=("fund_name", "count")).reset_index()
+        agg_s["wtd_dpi"] = agg_s["weighted_sum"] / agg_s["total_cap"]
+        agg_s = agg_s.sort_values("wtd_dpi", ascending=True)
+        colors = [CATEGORY_COLORS.get(c, "#9CA3AF") for c in agg_s["fund_category"]]
+        fig_strat = go.Figure()
+        fig_strat.add_trace(
+            go.Bar(
+                y=agg_s["fund_category"],
+                x=agg_s["wtd_dpi"],
+                orientation="h",
+                marker_color=colors,
+                customdata=agg_s[["total_cap", "n"]].values,
+                hovertemplate="<b>%{y}</b><br>Wtd DPI: %{x:.2f}×<br>Capital: $%{customdata[0]:.0f}M<br>Funds: %{customdata[1]}<extra></extra>",
+            )
+        )
+        fig_strat.add_vline(x=1.0, line_dash="dash", line_color="#9CA3AF", annotation_text="1.0×", annotation_font_size=9)
+        fig_strat.update_layout(
+            height=380,
+            template="plotly_white",
+            xaxis=dict(title="Capital-Weighted Avg Net DPI (×)", gridcolor="#F3F4F6"),
+            yaxis=dict(gridcolor="#F3F4F6"),
+            plot_bgcolor="#FFFFFF",
+            paper_bgcolor="#FFFFFF",
+            font=dict(family="Inter", size=11),
+            margin=dict(t=20, l=20),
+        )
+        st.plotly_chart(fig_strat, use_container_width=True)
+        st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">Capital-weighted: larger funds influence the average proportionally. LP-disclosed funds only.</div>", unsafe_allow_html=True)
 
     st.markdown(
         """
-    <div class="insight-box">
-        <div class="insight-label">● ANALYST INSIGHT — GP vs LP DATA</div>
+    <div class="insight-box" style="margin-top:2rem">
+        <div class="insight-label">● ANALYST INSIGHT — MARKET INTEL vs LP DATA</div>
         <div class="insight-body">
             <strong>The gross/net gap is the most underappreciated number in VC.</strong>
-            a16z Fund III shows 15.7x gross TVPI vs 11.3x net — a 28% reduction from fees
-            and carry. Founders Fund's early funds show extraordinary DPI figures (18.6x for
-            FFII), but these reflect $227M vehicles with exceptional concentration in
-            Palantir and SpaceX. At $1.4B+ fund sizes (FFVI onward), DPI collapses to
+            a16z Fund III shows 15.7× gross TVPI vs 11.3× net — a 28% reduction in returns
+            from fees and carry. Founders Fund's early funds show extraordinary DPI figures
+            (18.6× for FFII), but these reflect $227M vehicles with extreme concentration
+            in Palantir and SpaceX. At $1.4B+ fund sizes (FFVI onward), DPI collapses to
             near-zero — the same structural challenge every large fund faces.
             <br><br>
-            <em>Social Capital presents the most methodologically rigorous GP disclosure in
-            this dataset: Cambridge Associates verified quartile rankings, net metrics only,
-            no cherry-picking of fund vintage. Their Fund II (2013) at 26.2% net IRR and
-            3.4x net DPI on $1.5B is genuinely exceptional at scale.</em>
+            <em>The market intelligence data that circulates through the ecosystem tends to
+            cluster above the CA top-quartile line. Whether this reflects genuine outperformance
+            by the firms whose numbers circulate, or selection bias in what gets leaked and
+            forwarded, is difficult to disentangle. Treat it as a directional signal, not
+            a verified benchmark.</em>
         </div>
     </div>
     """,
@@ -1417,24 +1811,58 @@ def render_sources(df_unified: pd.DataFrame, df_master: pd.DataFrame):
         row_count = int(src_counts.get(cfg["row_count_key"], 0))
         render_source_row(cfg, row_count)
 
-    st.markdown('<div class="section-label">03 / GP-DISCLOSED SOURCES</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">03 / MARKET INTELLIGENCE SOURCES</div>', unsafe_allow_html=True)
     st.markdown(
         """
     <div style="font-family:'Inter',sans-serif;font-size:14px;color:#374151;line-height:1.7;
-        padding:16px 20px;background:#FFFBEB;border-radius:6px;border:1px solid #FDE68A;margin-bottom:1.5rem">
-        The following data comes from fund managers themselves, not independent LP disclosures.
-        These are typically published in blog posts, investor letters, or formal benchmarking
-        reports. While valuable, they carry selection bias risk — GPs tend to publish their
-        best-performing funds and omit struggling vehicles.
+        padding:16px 20px;background:#FFF7ED;border-radius:6px;border:1px solid #FED7AA;margin-bottom:1.5rem">
+        <strong>Market Intelligence</strong> refers to performance data that circulates through
+        the private markets ecosystem — via secondary market processes, LP quarterly reports
+        that get forwarded, placement agent materials, and investor community channels.
+        Unlike LP-disclosed FOIA data, this data was not independently submitted under legal
+        obligation. Provenance is unverified and mark vintage may vary. Figures are
+        directionally useful but should not be treated as audited performance records.
     </div>
     """,
         unsafe_allow_html=True,
     )
 
-    gp_counts = df_master[df_master["data_source_type"] == "GP-Disclosed"]["source"].value_counts(dropna=False).to_dict()
+    gp_counts = df_master[df_master["data_source_type"] == "Market Intelligence"]["source"].value_counts(dropna=False).to_dict()
     for cfg in GP_SOURCES_CONFIG:
         row_count = int(gp_counts.get(cfg["source_key"], cfg["fund_count"]))
         render_source_row(cfg, row_count, coverage_label="DISCLOSED UNIVERSE COVERAGE")
+
+    st.markdown('<div class="section-label">04 / BENCHMARK DATA</div>', unsafe_allow_html=True)
+    st.markdown(
+        """
+    <div style="display:grid;grid-template-columns:180px 1fr;gap:2rem;padding:2rem 0;border-top:1px solid #E5E7EB">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#E8571F;text-transform:uppercase">
+            CA BENCHMARKS<br>(APPROXIMATE)
+        </div>
+        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#374151;line-height:1.7">
+            Benchmark figures (median IRR, top quartile IRR, median TVPI by vintage year) are
+            <strong>approximate</strong> — synthesized from three public sources:
+            <br><br>
+            <strong>1. Public LP Annual Reports</strong> — CalPERS, WSIB, and other pensions
+            routinely publish their portfolio returns compared to Cambridge Associates benchmarks.
+            These references allow backward-inference of approximate CA values.<br>
+            <strong>2. Academic Literature</strong> — Harris, Jenkinson, Kaplan &amp; Stucke (2014)
+            using Burgiss fund-level data; Kaplan &amp; Schoar (2005). Burgiss data closely
+            mirrors CA methodology.<br>
+            <strong>3. Social Capital's CA Quartile Rankings</strong> — the only fund-level
+            CA rankings in this dataset that are independently confirmed. Used as spot-check
+            calibration points for 2011–2018 vintages.
+            <br><br>
+            Cambridge Associates' actual benchmark data is proprietary. The figures in
+            <code style="font-family:'IBM Plex Mono',monospace;background:#F3F4F6;padding:1px 6px;border-radius:3px">ca_benchmarks.csv</code>
+            are directional reference bands — accurate enough to identify top-quartile
+            outperformers and underperformers, not precise enough for formal LP reporting.
+            Every chart using these benchmarks includes a disclaimer.
+        </div>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         """
@@ -1464,13 +1892,13 @@ def render_about():
                     padding:18px 20px;background:#FAFAFA;border-radius:8px;border:1px solid #E5E7EB;">
             <strong>Show Me the DPI</strong> is a research project focused on one practical question:
             how much cash VC/PE funds have actually returned to LPs. The dataset combines public LP disclosures
-            from pension systems and endowments with clearly-labeled GP self-disclosed performance where available.
+            from pension systems and endowments with clearly-labeled market intelligence performance where available.
             <br><br>
             The core metric is <strong>DPI</strong> (Distributed-to-Paid-In), shown in orange across the product.
             TVPI and IRR are included for context, but DPI is prioritized because it reflects realized outcomes,
             not only unrealized marks.
             <br><br>
-            This is not investment advice and not a complete census of all funds. LP-reported and GP-reported numbers
+            This is not investment advice and not a complete census of all funds. LP-reported and market intelligence numbers
             can differ due to reporting dates, valuation policies, fees/carry treatment, and selective disclosure.
             Use this as a starting point for diligence and always cross-check original filings where possible.
         </div>
@@ -1482,7 +1910,7 @@ def render_about():
         """
         <ul style="margin-top:0; color:#374151; line-height:1.7;">
           <li>Cash realization first (DPI), then valuation context (TVPI), then annualized return (IRR).</li>
-          <li>Source transparency on every page, with LP vs GP disclosure separation.</li>
+          <li>Source transparency on every page, with LP vs market intelligence separation.</li>
           <li>Analyst-friendly structure for fast comparison across firms, vintages, and source types.</li>
         </ul>
         """
@@ -1494,8 +1922,8 @@ def render_footer():
         """
         <div class="footer-wrap">
             <div class="footer-text">
-                Data is compiled from public disclosures and select GP-published reports. Figures may differ by LP methodology,
-                valuation date, and fee treatment. GP-disclosed data can include selection bias.
+                Data is compiled from public disclosures and select market intelligence records. Figures may differ by LP methodology,
+                valuation date, and fee treatment. Market intelligence data can include selection bias and unverified provenance.
             </div>
             <div class="footer-text footer-links" style="margin-top:6px;">
                 Created by resident venture nerd — Shivam Bhotika ·
@@ -1515,15 +1943,21 @@ def main():
         return
 
     try:
-        df_gp_disclosed = load_gp_disclosed()
+        df_market_intel = load_market_intel()
     except Exception as exc:
         st.error("Failed loading gp_disclosed_funds.csv: {0}".format(exc))
-        df_gp_disclosed = pd.DataFrame()
+        df_market_intel = pd.DataFrame()
 
     try:
         df_master = load_master_full()
     except Exception as exc:
         st.error("Failed loading vc_fund_master.csv: {0}".format(exc))
+        return
+
+    try:
+        bench = load_benchmarks()
+    except Exception as exc:
+        st.error("Failed loading ca_benchmarks.csv: {0}".format(exc))
         return
 
     _render_html(
@@ -1551,13 +1985,13 @@ def main():
         render_about()
 
     with tab_insights:
-        render_insights(df_master)
+        render_insights(df_master, bench)
 
     with tab_firms:
         render_firms(df_master)
 
     with tab_database:
-        render_fund_database(df_unified, df_gp_disclosed)
+        render_fund_database(df_unified, df_market_intel)
 
     with tab_sources:
         render_sources(df_unified, df_master)
