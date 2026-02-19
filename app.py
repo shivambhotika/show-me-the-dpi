@@ -1,5 +1,8 @@
 import html
 import os
+import re
+from difflib import SequenceMatcher
+from datetime import date
 from textwrap import dedent
 
 import numpy as np
@@ -403,8 +406,114 @@ def load_unified():
     df["tvpi"] = pd.to_numeric(df.get("tvpi"), errors="coerce")
     df["dpi"] = pd.to_numeric(df.get("dpi"), errors="coerce")
     df["capital_committed"] = pd.to_numeric(df.get("capital_committed"), errors="coerce")
+    df["capital_contributed"] = pd.to_numeric(df.get("capital_contributed"), errors="coerce")
+    df["capital_distributed"] = pd.to_numeric(df.get("capital_distributed"), errors="coerce")
+    df["nav"] = pd.to_numeric(df.get("nav"), errors="coerce")
     df["source"] = df.get("source", pd.Series(index=df.index, dtype="object")).fillna("Unknown")
+
+    # Optional UTIMCO fallback merge for local runs before normalize.py has been re-run.
+    utimco_path = "data/utimco_processed_for_openvc.csv"
+    if os.path.exists(utimco_path):
+        ut = load_utimco_for_app(utimco_path)
+        if not ut.empty:
+            keep_cols = [
+                "fund_name",
+                "vintage_year",
+                "capital_committed",
+                "capital_contributed",
+                "capital_distributed",
+                "nav",
+                "net_irr",
+                "tvpi",
+                "dpi",
+                "source",
+                "scraped_date",
+                "reporting_period",
+            ]
+            for c in keep_cols:
+                if c not in df.columns:
+                    df[c] = np.nan
+                if c not in ut.columns:
+                    ut[c] = np.nan
+            merged = pd.concat([df[keep_cols], ut[keep_cols]], ignore_index=True)
+            merged["vintage_year"] = pd.to_numeric(merged["vintage_year"], errors="coerce").astype("Int64")
+            merged = merged.drop_duplicates(
+                subset=["fund_name", "vintage_year", "source", "reporting_period"], keep="first"
+            ).reset_index(drop=True)
+            df = merged
     return df
+
+
+def _norm_text(s: str) -> str:
+    t = str(s or "").lower().strip()
+    t = "".join(ch if ch.isalnum() or ch.isspace() else " " for ch in t)
+    t = " ".join(t.split())
+    return t
+
+
+def _clean_num(series: pd.Series) -> pd.Series:
+    s = series.astype(str).str.strip()
+    pct = s.str.contains("%", na=False)
+    s = s.str.replace(",", "", regex=False)
+    s = s.str.replace("$", "", regex=False)
+    s = s.str.replace("%", "", regex=False)
+    s = s.str.replace("x", "", regex=False)
+    s = s.str.replace("X", "", regex=False)
+    s = s.str.replace(r"^\((.*)\)$", r"-\1", regex=True)
+    s = s.replace({"": np.nan, "-": np.nan, "--": np.nan, "N/M": np.nan, "NM": np.nan})
+    out = pd.to_numeric(s, errors="coerce")
+    out = out.where(~pct, out / 100.0)
+    return out
+
+
+def _infer_vintage_from_name(name: str):
+    text = str(name or "")
+    m_start = re.search(r"^\s*((?:19|20)\d{2})\b", text)
+    if m_start:
+        return int(m_start.group(1))
+    m_end = re.search(r"\b((?:19|20)\d{2})\s*$", text)
+    if m_end:
+        return int(m_end.group(1))
+    m_any = re.search(r"\b((?:19|20)\d{2})\b", text)
+    if m_any:
+        return int(m_any.group(1))
+    return np.nan
+
+
+def load_utimco_for_app(filepath: str) -> pd.DataFrame:
+    raw = pd.read_csv(filepath)
+    cols = {str(c).strip().lower().replace("\n", "_").replace(" ", "_"): c for c in raw.columns}
+
+    def pick(*names):
+        for n in names:
+            if n in cols:
+                return raw[cols[n]]
+        return pd.Series([np.nan] * len(raw))
+
+    out = pd.DataFrame(index=raw.index)
+    out["fund_name"] = pick("fund_name", "description").astype(str).str.strip()
+    out["fund_name"] = out["fund_name"].replace({"": np.nan, "nan": np.nan}).fillna("UNKNOWN_FUND")
+    out["vintage_year"] = pd.to_numeric(pick("vintage_year"), errors="coerce")
+    out["vintage_year"] = out["vintage_year"].fillna(out["fund_name"].map(_infer_vintage_from_name))
+    out["capital_committed"] = _clean_num(pick("capital_committed"))
+    out["capital_contributed"] = _clean_num(pick("capital_contributed", "cash_in"))
+    out["capital_distributed"] = _clean_num(pick("capital_distributed", "cash_out"))
+    total_value = _clean_num(pick("total_value"))
+    out["nav"] = _clean_num(pick("nav"))
+    out["nav"] = out["nav"].where(out["nav"].notna(), total_value - out["capital_distributed"])
+    out["net_irr"] = _clean_num(pick("net_irr"))
+    irr_med = out["net_irr"].dropna().median()
+    if pd.notna(irr_med) and irr_med > 1.5:
+        out["net_irr"] = out["net_irr"] / 100.0
+    out["tvpi"] = _clean_num(pick("tvpi"))
+    contrib = pd.to_numeric(out["capital_contributed"], errors="coerce")
+    out["tvpi"] = out["tvpi"].where(out["tvpi"].notna(), np.where(contrib > 0, (out["capital_distributed"] + out["nav"]) / contrib, np.nan))
+    out["dpi"] = np.where(contrib > 0, out["capital_distributed"] / contrib, np.nan)
+    out["source"] = "UTIMCO"
+    out["scraped_date"] = pick("scraped_date").fillna(str(date.today()))
+    out["reporting_period"] = pick("reporting_period").fillna("unknown")
+    out["vintage_year"] = pd.to_numeric(out["vintage_year"], errors="coerce").astype("Int64")
+    return out
 
 
 @st.cache_data
@@ -502,6 +611,71 @@ def bench_disclaimer():
     )
 
 
+@st.cache_data
+def load_target_firm_patterns():
+    path = "metadata/target_firms.csv"
+    out = {}
+    if os.path.exists(path):
+        df = pd.read_csv(path)
+        if {"canonical_gp", "match_pattern"}.issubset(df.columns):
+            for gp, grp in df.groupby("canonical_gp"):
+                pats = [p for p in grp["match_pattern"].astype(str).tolist() if str(p).strip()]
+                if pats:
+                    out[str(gp)] = pats
+            return out
+
+    fallback = "data/coverage_snapshot.csv"
+    if os.path.exists(fallback):
+        df = pd.read_csv(fallback)
+        if {"canonical_gp", "fund_name"}.issubset(df.columns):
+            for gp, grp in df.groupby("canonical_gp"):
+                # fallback patterns from first 3 words of fund name
+                pats = []
+                for f in grp["fund_name"].dropna().astype(str).head(5):
+                    toks = _norm_text(f).split()
+                    if toks:
+                        pats.append(" ".join(toks[: min(3, len(toks))]))
+                if pats:
+                    out[str(gp)] = sorted(set(pats))
+    return out
+
+
+def _pattern_match(text_norm: str, pattern_norm: str) -> bool:
+    if not text_norm or not pattern_norm:
+        return False
+    if pattern_norm in text_norm:
+        return True
+    ptoks = [t for t in pattern_norm.split() if t]
+    if ptoks and all(t in text_norm for t in ptoks):
+        return True
+    if SequenceMatcher(None, pattern_norm, text_norm).ratio() >= 0.85:
+        return True
+    words = text_norm.split()
+    for w in words:
+        if SequenceMatcher(None, pattern_norm, w).ratio() >= 0.9:
+            return True
+    return False
+
+
+def canonical_gp_for_fund_name(fund_name: str, pattern_map: dict):
+    text_norm = _norm_text(fund_name)
+    best = None
+    best_score = 0.0
+    for canonical_gp, patterns in pattern_map.items():
+        for p in patterns:
+            p_norm = _norm_text(p)
+            if not p_norm:
+                continue
+            if _pattern_match(text_norm, p_norm):
+                score = SequenceMatcher(None, p_norm, text_norm).ratio()
+                if p_norm in text_norm:
+                    score = max(score, 0.95)
+                if score > best_score:
+                    best = canonical_gp
+                    best_score = score
+    return best
+
+
 def _infer_category_from_name(name: str) -> str:
     s = str(name).lower()
     if "opportun" in s:
@@ -528,7 +702,7 @@ def style_chart_readability(fig: go.Figure):
     fig.update_yaxes(title_font=dict(size=15), tickfont=dict(size=13))
 
 
-def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame) -> pd.DataFrame:
+def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame, pattern_map: dict = None) -> pd.DataFrame:
     # Remove Accel-KKR globally; keep only Accel VC rows if/when available.
     master = df_master.copy()
     master_gp = master.get("canonical_gp", pd.Series(index=master.index, dtype="object")).astype(str)
@@ -546,18 +720,33 @@ def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame) -> pd.
     for col in ["vintage_year", "capital_committed", "tvpi", "dpi", "net_irr"]:
         u[col] = pd.to_numeric(u.get(col), errors="coerce")
 
-    rows = []
-    fund_names = u["fund_name"].astype(str)
+    # Combine metadata-driven mapping with explicit fallback patterns used in the current product.
+    merged_patterns = {}
+    if pattern_map:
+        for gp, patterns in pattern_map.items():
+            merged_patterns[str(gp)] = sorted(set([_norm_text(p) for p in patterns if str(p).strip()]))
     for spec in FOCUS_FIRM_SPECS:
-        inc_mask = False
+        gp = spec["canonical_gp"]
+        base = merged_patterns.get(gp, [])
+        add = []
         for p in spec["include"]:
-            inc_mask = inc_mask | fund_names.str.contains(p, case=False, na=False, regex=True)
+            if not str(p).strip():
+                continue
+            p_text = str(p).replace("\\\\b", "").replace("\\b", "").replace("\\", "")
+            add.append(_norm_text(p_text))
+        merged_patterns[gp] = sorted(set(base + add))
 
-        exc_mask = False
-        for p in spec["exclude"]:
-            exc_mask = exc_mask | fund_names.str.contains(p, case=False, na=False, regex=True)
+    # Canonicalize unified rows to target firms.
+    u["canonical_gp"] = u["fund_name"].astype(str).map(lambda x: canonical_gp_for_fund_name(x, merged_patterns))
+    u = u[u["canonical_gp"].notna()].copy()
 
-        sub = u[inc_mask & ~exc_mask].copy()
+    # Exclude known non-target aliases where needed (e.g., Accel-KKR should not map to Accel).
+    exclude_mask = u["fund_name"].astype(str).str.contains(r"accel-kkr", case=False, na=False)
+    u = u[~exclude_mask].copy()
+
+    rows = []
+    for canonical_gp, sub in u.groupby("canonical_gp"):
+        sub = sub.copy()
         if sub.empty:
             continue
 
@@ -572,8 +761,7 @@ def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame) -> pd.
             & sub["net_irr"].notna()
             & sub["net_irr"].abs().ne(1.0)
         )
-        sub["canonical_gp"] = spec["canonical_gp"]
-        sub["gp_display_name"] = spec["gp_display_name"]
+        sub["gp_display_name"] = canonical_gp
         sub["fund_size_confidence"] = "Derived from LP committed capital"
         sub["firm_aum_usd_b"] = np.nan
         sub["firm_founded"] = np.nan
@@ -1162,7 +1350,7 @@ def _plot_common_layout(fig, title_text: str):
     fig.update_yaxes(gridcolor="#F3F4F6", linecolor="#E5E7EB")
 
 
-def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
+def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_rows: pd.DataFrame = None):
     render_page_header("INSIGHTS", "ANALYTICAL FINDINGS FROM PUBLIC LP DISCLOSURE DATA")
     bench_meaningful = bench[bench["vintage_year"] <= 2020].sort_values("vintage_year")
 
@@ -1525,6 +1713,19 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
     """,
         unsafe_allow_html=True,
     )
+
+    if incomplete_rows is not None and not incomplete_rows.empty:
+        with st.expander("Developer: Incomplete rows (missing vintage_year or capital_contributed)", expanded=False):
+            show_cols = [
+                c
+                for c in ["source", "fund_name", "vintage_year", "capital_contributed", "reporting_period", "net_irr", "tvpi", "dpi"]
+                if c in incomplete_rows.columns
+            ]
+            st.dataframe(
+                incomplete_rows[show_cols].sort_values(["source", "fund_name"], na_position="last"),
+                use_container_width=True,
+                hide_index=True,
+            )
 
     st.markdown('<div class="section-label" style="margin-top:2rem">02A / THE GROSS vs NET GAP — FEES QUANTIFIED</div>', unsafe_allow_html=True)
     st.markdown('<div class="chart-subtitle">a16z is the only firm in this dataset with both gross and net metrics in the circulated data. The gap = management fees + carry transferred from LP to GP.</div>', unsafe_allow_html=True)
@@ -2160,7 +2361,19 @@ def main():
         st.error("Failed loading ca_benchmarks.csv: {0}".format(exc))
         return
 
-    df_focus_master = build_focus_master(df_master, df_unified)
+    target_patterns = load_target_firm_patterns()
+    df_focus_master = build_focus_master(df_master, df_unified, target_patterns)
+
+    # Header-level summary metrics (kept in-memory for consistent downstream use).
+    total_funds = int(len(df_unified))
+    unique_gps = int(df_focus_master["canonical_gp"].dropna().nunique()) if "canonical_gp" in df_focus_master.columns else 0
+    median_tvpi = pd.to_numeric(df_unified.get("tvpi"), errors="coerce").median()
+    median_vintage = pd.to_numeric(df_unified.get("vintage_year"), errors="coerce").median()
+    _ = (total_funds, unique_gps, median_tvpi, median_vintage)
+
+    incomplete_rows = df_unified[
+        df_unified["vintage_year"].isna() | pd.to_numeric(df_unified.get("capital_contributed"), errors="coerce").isna()
+    ].copy()
 
     _render_html(
         """
@@ -2184,7 +2397,7 @@ def main():
         render_about()
 
     with tab_insights:
-        render_insights(df_focus_master, bench)
+        render_insights(df_focus_master, bench, incomplete_rows)
 
     with tab_firms:
         render_firms(df_focus_master)
