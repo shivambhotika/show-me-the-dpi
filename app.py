@@ -822,39 +822,48 @@ def load_target_firm_patterns():
     return out
 
 
-def _pattern_match(text_norm: str, pattern_norm: str) -> bool:
-    if not text_norm or not pattern_norm:
-        return False
-    if pattern_norm in text_norm:
-        return True
-    ptoks = [t for t in pattern_norm.split() if t]
-    if ptoks and all(t in text_norm for t in ptoks):
-        return True
-    if SequenceMatcher(None, pattern_norm, text_norm).ratio() >= 0.85:
-        return True
-    words = text_norm.split()
-    for w in words:
-        if SequenceMatcher(None, pattern_norm, w).ratio() >= 0.9:
-            return True
-    return False
-
-
 def canonical_gp_for_fund_name(fund_name: str, pattern_map: dict):
     text_norm = _norm_text(fund_name)
+    if not text_norm:
+        return None
+    text_tokens = set(text_norm.split())
     best = None
-    best_score = 0.0
+    best_score = -1.0
+
+    # Fast deterministic pass: substring/token-only checks.
     for canonical_gp, patterns in pattern_map.items():
         for p in patterns:
-            p_norm = _norm_text(p)
+            p_norm = str(p)
             if not p_norm:
                 continue
-            if _pattern_match(text_norm, p_norm):
-                score = SequenceMatcher(None, p_norm, text_norm).ratio()
-                if p_norm in text_norm:
-                    score = max(score, 0.95)
-                if score > best_score:
-                    best = canonical_gp
-                    best_score = score
+            if p_norm in text_norm:
+                score = len(p_norm) + 5.0
+            else:
+                ptoks = [t for t in p_norm.split() if t]
+                if ptoks and all(t in text_tokens for t in ptoks):
+                    score = float(len(p_norm))
+                else:
+                    continue
+            if score > best_score:
+                best = canonical_gp
+                best_score = score
+
+    if best is not None:
+        return best
+
+    # Fuzzy fallback: only for hard misses, with strict gates to keep this cheap.
+    for canonical_gp, patterns in pattern_map.items():
+        for p in patterns:
+            p_norm = str(p)
+            if len(p_norm) < 5:
+                continue
+            ptoks = [t for t in p_norm.split() if t]
+            if ptoks and not any(t in text_tokens for t in ptoks):
+                continue
+            ratio = SequenceMatcher(None, p_norm, text_norm).ratio()
+            if ratio >= 0.9 and ratio > best_score:
+                best = canonical_gp
+                best_score = ratio
     return best
 
 
@@ -949,9 +958,12 @@ def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame, patter
     merged_patterns = {}
     if pattern_map:
         for gp, patterns in pattern_map.items():
-            merged_patterns[str(gp)] = sorted(set([_norm_text(p) for p in patterns if str(p).strip()]))
+            canonical_gp = normalize_canonical_gp_label(gp)
+            existing = merged_patterns.get(canonical_gp, [])
+            normed = [_norm_text(p) for p in patterns if str(p).strip()]
+            merged_patterns[canonical_gp] = sorted(set(existing + normed), key=len, reverse=True)
     for spec in FOCUS_FIRM_SPECS:
-        gp = spec["canonical_gp"]
+        gp = normalize_canonical_gp_label(spec["canonical_gp"])
         base = merged_patterns.get(gp, [])
         add = []
         for p in spec["include"]:
@@ -959,7 +971,7 @@ def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame, patter
                 continue
             p_text = str(p).replace("\\\\b", "").replace("\\b", "").replace("\\", "")
             add.append(_norm_text(p_text))
-        merged_patterns[gp] = sorted(set(base + add))
+        merged_patterns[gp] = sorted(set(base + add), key=len, reverse=True)
 
     # Canonicalize unified rows to target firms.
     u["canonical_gp"] = u["fund_name"].astype(str).map(lambda x: canonical_gp_for_fund_name(x, merged_patterns))
@@ -1061,6 +1073,26 @@ def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame, patter
     ].copy()
 
     return combined
+
+
+@st.cache_data(show_spinner=False)
+def build_focus_master_cached(df_master: pd.DataFrame, df_unified: pd.DataFrame, pattern_items: tuple) -> pd.DataFrame:
+    pattern_map = {gp: list(patterns) for gp, patterns in pattern_items}
+    return build_focus_master(df_master, df_unified, pattern_map)
+
+
+def get_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame, target_patterns: dict = None) -> pd.DataFrame:
+    safe_patterns = target_patterns or {}
+    pattern_items = tuple(
+        sorted(
+            (
+                str(gp),
+                tuple(sorted({_norm_text(p) for p in pats if str(p).strip()})),
+            )
+            for gp, pats in safe_patterns.items()
+        )
+    )
+    return build_focus_master_cached(df_master, df_unified, pattern_items)
 
 
 def render_page_header(title: str, subtitle: str, count: str = None):
@@ -2919,7 +2951,7 @@ def main():
             df_unified = load_unified()
             df_master = load_master_full()
             target_patterns = load_target_firm_patterns()
-            df_focus_master = build_focus_master(df_master, df_unified, target_patterns)
+            df_focus_master = get_focus_master(df_master, df_unified, target_patterns)
         except Exception as exc:
             st.error("Failed loading firm datasets: {0}".format(exc))
             render_footer()
@@ -2931,7 +2963,7 @@ def main():
             df_master = load_master_full()
             bench = load_benchmarks()
             target_patterns = load_target_firm_patterns()
-            df_focus_master = build_focus_master(df_master, df_unified, target_patterns)
+            df_focus_master = get_focus_master(df_master, df_unified, target_patterns)
         except Exception as exc:
             st.error("Failed loading insights datasets: {0}".format(exc))
             render_footer()
