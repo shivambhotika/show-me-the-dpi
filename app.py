@@ -1604,27 +1604,33 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         return "#E5E7EB"
 
     tl["dot_color"] = tl["dpi_safe"].apply(dpi_color)
+    tl["firm_display"] = tl["gp_display_name"].where(
+        tl["gp_display_name"].notna(), tl["canonical_gp"]
+    ).astype(str)
+    tl["dpi_fmt"] = np.where(tl["dpi"].notna(), tl["dpi"].map(lambda v: "{0:.2f}×".format(v)), "N/A")
+    tl["tvpi_fmt"] = np.where(tl["tvpi"].notna(), tl["tvpi"].map(lambda v: "{0:.2f}×".format(v)), "N/A")
+
+    gp_order = tl.groupby("canonical_gp")["vintage_year"].min().sort_values().index.tolist()
+    label_lookup = (
+        tl.sort_values("vintage_year")
+        .drop_duplicates("canonical_gp")
+        .set_index("canonical_gp")["firm_display"]
+        .to_dict()
+    )
+    firms_order = [label_lookup.get(gp, str(gp)) for gp in gp_order]
+
     fig2 = go.Figure()
-    firms_order = tl.groupby("canonical_gp")["vintage_year"].min().sort_values().index
-    for gp in firms_order:
-        sub = tl[tl["canonical_gp"] == gp].sort_values("vintage_year")
-        disp = str(sub.iloc[0].get("gp_display_name", gp))
-        for _, r in sub.iterrows():
-            fig2.add_trace(
-                go.Scatter(
-                    x=[int(r["vintage_year"])],
-                    y=[disp],
-                    mode="markers",
-                    marker=dict(symbol="square", size=12, color=r["dot_color"], line=dict(width=1, color="#9CA3AF")),
-                    showlegend=False,
-                    hovertemplate="<b>{0}</b><br>Vintage: {1}<br>DPI: {2}<br>TVPI: {3}<extra></extra>".format(
-                        html.escape(str(r.get("fund_name", ""))),
-                        r.get("vintage_year", "N/A"),
-                        "N/A" if pd.isna(r.get("dpi")) else "{0:.2f}×".format(r.get("dpi")),
-                        "N/A" if pd.isna(r.get("tvpi")) else "{0:.2f}×".format(r.get("tvpi")),
-                    ),
-                )
-            )
+    fig2.add_trace(
+        go.Scattergl(
+            x=tl["vintage_year"].astype(int),
+            y=tl["firm_display"],
+            mode="markers",
+            marker=dict(symbol="square", size=10, color=tl["dot_color"], line=dict(width=1, color="#9CA3AF")),
+            showlegend=False,
+            customdata=tl[["fund_name", "vintage_year", "dpi_fmt", "tvpi_fmt"]].values,
+            hovertemplate="<b>%{customdata[0]}</b><br>Vintage: %{customdata[1]}<br>DPI: %{customdata[2]}<br>TVPI: %{customdata[3]}<extra></extra>",
+        )
+    )
     for label, color in [
         ("> 2× DPI", "#E8571F"),
         ("1–2× DPI", "#6EE7B7"),
@@ -1645,7 +1651,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         height=max(430, len(firms_order) * 26 + 150),
         template="plotly_white",
         xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=3),
-        yaxis=dict(title="", tickfont=dict(size=9)),
+        yaxis=dict(title="", tickfont=dict(size=10), categoryorder="array", categoryarray=firms_order),
         legend=dict(title="DPI Range", font=dict(size=10), orientation="h"),
         plot_bgcolor="#FFFFFF",
         paper_bgcolor="#FFFFFF",
@@ -2397,44 +2403,6 @@ def render_footer():
 
 
 def main():
-    try:
-        df_unified = load_unified()
-    except Exception as exc:
-        st.error("Failed loading data/unified_funds.csv: {0}".format(exc))
-        return
-
-    try:
-        df_market_intel = load_market_intel()
-    except Exception as exc:
-        st.error("Failed loading gp_disclosed_funds.csv: {0}".format(exc))
-        df_market_intel = pd.DataFrame()
-
-    try:
-        df_master = load_master_full()
-    except Exception as exc:
-        st.error("Failed loading vc_fund_master.csv: {0}".format(exc))
-        return
-
-    try:
-        bench = load_benchmarks()
-    except Exception as exc:
-        st.error("Failed loading ca_benchmarks.csv: {0}".format(exc))
-        return
-
-    target_patterns = load_target_firm_patterns()
-    df_focus_master = build_focus_master(df_master, df_unified, target_patterns)
-
-    # Header-level summary metrics (kept in-memory for consistent downstream use).
-    total_funds = int(len(df_unified))
-    unique_gps = int(df_focus_master["canonical_gp"].dropna().nunique()) if "canonical_gp" in df_focus_master.columns else 0
-    median_tvpi = pd.to_numeric(df_unified.get("tvpi"), errors="coerce").median()
-    median_vintage = pd.to_numeric(df_unified.get("vintage_year"), errors="coerce").median()
-    _ = (total_funds, unique_gps, median_tvpi, median_vintage)
-
-    incomplete_rows = df_unified[
-        df_unified["vintage_year"].isna() | pd.to_numeric(df_unified.get("capital_contributed"), errors="coerce").isna()
-    ].copy()
-
     _render_html(
         """
         <div style="display:flex;align-items:center;gap:10px;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
@@ -2449,23 +2417,75 @@ def main():
         """
     )
 
-    tab_about, tab_insights, tab_firms, tab_database, tab_sources = st.tabs(
-        ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
-    )
+    nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
+    if hasattr(st, "segmented_control"):
+        active_page = st.segmented_control(
+            "Navigate",
+            nav_options,
+            default=nav_options[0],
+            label_visibility="collapsed",
+        )
+    else:
+        active_page = st.radio(
+            "Navigate",
+            nav_options,
+            horizontal=True,
+            label_visibility="collapsed",
+        )
 
-    with tab_about:
+    if not active_page:
+        active_page = nav_options[0]
+
+    if active_page == "ABOUT":
         render_about()
-
-    with tab_insights:
-        render_insights(df_focus_master, bench, incomplete_rows)
-
-    with tab_firms:
-        render_firms(df_focus_master)
-
-    with tab_database:
+    elif active_page == "FUND DATABASE":
+        try:
+            df_unified = load_unified()
+        except Exception as exc:
+            st.error("Failed loading data/unified_funds.csv: {0}".format(exc))
+            render_footer()
+            return
+        try:
+            df_market_intel = load_market_intel()
+        except Exception as exc:
+            st.error("Failed loading gp_disclosed_funds.csv: {0}".format(exc))
+            df_market_intel = pd.DataFrame()
         render_fund_database(df_unified, df_market_intel)
+    elif active_page == "TOP FIRMS":
+        try:
+            df_unified = load_unified()
+            df_master = load_master_full()
+            target_patterns = load_target_firm_patterns()
+            df_focus_master = build_focus_master(df_master, df_unified, target_patterns)
+        except Exception as exc:
+            st.error("Failed loading firm datasets: {0}".format(exc))
+            render_footer()
+            return
+        render_firms(df_focus_master)
+    elif active_page == "INSIGHTS":
+        try:
+            df_unified = load_unified()
+            df_master = load_master_full()
+            bench = load_benchmarks()
+            target_patterns = load_target_firm_patterns()
+            df_focus_master = build_focus_master(df_master, df_unified, target_patterns)
+        except Exception as exc:
+            st.error("Failed loading insights datasets: {0}".format(exc))
+            render_footer()
+            return
 
-    with tab_sources:
+        incomplete_rows = df_unified[
+            df_unified["vintage_year"].isna() | pd.to_numeric(df_unified.get("capital_contributed"), errors="coerce").isna()
+        ].copy()
+        render_insights(df_focus_master, bench, incomplete_rows)
+    elif active_page == "SOURCES":
+        try:
+            df_unified = load_unified()
+            df_master = load_master_full()
+        except Exception as exc:
+            st.error("Failed loading source datasets: {0}".format(exc))
+            render_footer()
+            return
         render_sources(df_unified, df_master)
 
     render_footer()
