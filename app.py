@@ -125,6 +125,7 @@ def inject_css():
     .badge-mass      { background:#FEF2F2; color:#991B1B; border-color:#FECACA; }
     .badge-florida   { background:#FFFBEB; color:#92400E; border-color:#FDE68A; }
     .badge-louisiana { background:#F0F9FF; color:#0C4A6E; border-color:#BAE6FD; }
+    .badge-utimco    { background:#F0F9FF; color:#075985; border-color:#BAE6FD; }
     .badge-estimated { background:#FFF4EF; color:#E8571F; border-color:#FED7AA; }
 
     .badge-a16z      { background:#F0F4FF; color:#1D4ED8; border-color:#BFDBFE; }
@@ -234,6 +235,8 @@ SOURCE_BADGE_CLASS = {
     "Massachusetts PRIM": "badge-mass",
     "Florida SBA": "badge-florida",
     "Louisiana Teachers": "badge-louisiana",
+    "Louisiana TRSL": "badge-louisiana",
+    "UTIMCO": "badge-utimco",
     "a16z Firm Disclosure": "badge-a16z",
     "Founders Fund Firm Disclosure": "badge-founders",
     "Social Capital Firm Disclosure": "badge-social",
@@ -248,6 +251,8 @@ SOURCE_SHORT = {
     "Massachusetts PRIM": "MASS_PRIM",
     "Florida SBA": "FLORIDA_SBA",
     "Louisiana Teachers": "LOUISIANA",
+    "Louisiana TRSL": "LOUISIANA_TRSL",
+    "UTIMCO": "UTIMCO",
     "a16z Firm Disclosure": "A16Z",
     "Founders Fund Firm Disclosure": "FOUNDERS",
     "Social Capital Firm Disclosure": "SOCIAL_CAP",
@@ -261,10 +266,27 @@ CATEGORY_COLORS = {
     "Company Creation": "#7B68EE",
 }
 
+CANONICAL_GP_ALIASES = {
+    "a16z": "Andreessen Horowitz",
+    "usv": "Union Square Ventures",
+    "sequoia": "Sequoia Capital",
+    "ggv": "GGV Capital",
+    "peak xv": "Peak XV Partners",
+}
+
+
+def normalize_canonical_gp_label(value):
+    if pd.isna(value):
+        return value
+    raw = str(value).strip()
+    if not raw:
+        return raw
+    return CANONICAL_GP_ALIASES.get(raw.lower(), raw)
+
 
 FOCUS_FIRM_SPECS = [
     {"canonical_gp": "a16z", "gp_display_name": "Andreessen Horowitz", "include": [r"ah fund", r"andreessen", r"\ba16z\b"], "exclude": []},
-    {"canonical_gp": "USV", "gp_display_name": "Union Square Ventures", "include": [r"union square ventures", r"\busv\b"], "exclude": []},
+    {"canonical_gp": "Union Square Ventures", "gp_display_name": "Union Square Ventures", "include": [r"union square ventures", r"\busv\b"], "exclude": []},
     {"canonical_gp": "Spark Capital", "gp_display_name": "Spark Capital", "include": [r"spark capital"], "exclude": []},
     {"canonical_gp": "Social Capital", "gp_display_name": "Social Capital", "include": [r"social capital"], "exclude": []},
     {"canonical_gp": "NEA", "gp_display_name": "New Enterprise Associates", "include": [r"new enterprise associates", r"\bnea\b"], "exclude": []},
@@ -276,7 +298,44 @@ FOCUS_FIRM_SPECS = [
     {"canonical_gp": "Founders Fund", "gp_display_name": "Founders Fund", "include": [r"founders fund"], "exclude": []},
     {"canonical_gp": "Insight Partners", "gp_display_name": "Insight Partners", "include": [r"insight venture", r"insight partners"], "exclude": []},
     {"canonical_gp": "Coatue", "gp_display_name": "Coatue", "include": [r"coatue"], "exclude": []},
+    {"canonical_gp": "ARCH Venture Partners", "gp_display_name": "ARCH Venture Partners", "include": [r"arch venture"], "exclude": []},
+    {"canonical_gp": "Foundry Group", "gp_display_name": "Foundry Group", "include": [r"foundry"], "exclude": []},
+    {"canonical_gp": "True Ventures", "gp_display_name": "True Ventures", "include": [r"true ventures"], "exclude": []},
+    {"canonical_gp": "Forerunner Ventures", "gp_display_name": "Forerunner Ventures", "include": [r"forerunner"], "exclude": []},
+    {"canonical_gp": "IA Ventures", "gp_display_name": "IA Ventures", "include": [r"ia venture"], "exclude": []},
+    {"canonical_gp": "Technology Crossover Ventures", "gp_display_name": "Technology Crossover Ventures", "include": [r"\\btcv\\b", r"technology crossover ventures"], "exclude": []},
+    {"canonical_gp": "TLV Partners", "gp_display_name": "TLV Partners", "include": [r"tlv partners"], "exclude": []},
+    {"canonical_gp": "Techstars", "gp_display_name": "Techstars", "include": [r"techstars"], "exclude": []},
+    {"canonical_gp": "Upfront Ventures", "gp_display_name": "Upfront Ventures", "include": [r"upfront"], "exclude": []},
+    {"canonical_gp": "Morgenthaler Ventures", "gp_display_name": "Morgenthaler Ventures", "include": [r"morgenthaler"], "exclude": []},
+    {"canonical_gp": "Sofinnova Ventures", "gp_display_name": "Sofinnova Ventures", "include": [r"sofinnova"], "exclude": []},
+    {"canonical_gp": "Mosaic Ventures", "gp_display_name": "Mosaic Ventures", "include": [r"mosaic ventures"], "exclude": []},
+    {"canonical_gp": "Correlation Ventures", "gp_display_name": "Correlation Ventures", "include": [r"correlation ventures"], "exclude": []},
+    {"canonical_gp": "Austin Ventures", "gp_display_name": "Austin Ventures", "include": [r"austin ventures"], "exclude": []},
+    {"canonical_gp": "Ampersand Capital Partners", "gp_display_name": "Ampersand Capital Partners", "include": [r"ampersand"], "exclude": []},
+    {"canonical_gp": "Wingate Partners", "gp_display_name": "Wingate Partners", "include": [r"wingate partners"], "exclude": []},
+    {"canonical_gp": "Alta Partners", "gp_display_name": "Alta Partners", "include": [r"alta partners"], "exclude": []},
+    {"canonical_gp": "Sante Ventures", "gp_display_name": "Sante Ventures", "include": [r"sante"], "exclude": []},
+    {"canonical_gp": "Cendana Capital", "gp_display_name": "Cendana Capital", "include": [r"cendana"], "exclude": []},
 ]
+
+GP_METADATA = {
+    "Union Square Ventures": {"hq": "New York, NY", "founded": 2003, "strategy": "Generalist VC — early stage, network effects", "aum_approx": 3.0, "notable": "Twitter, Tumblr, Coinbase, Etsy"},
+    "Foundry Group": {"hq": "Boulder, CO", "founded": 2007, "strategy": "Early stage VC — themes-based", "aum_approx": 2.0, "notable": "Fitbit, Zynga, SendGrid, Duo Security"},
+    "True Ventures": {"hq": "San Francisco, CA", "founded": 2005, "strategy": "Early stage VC — founder-first", "aum_approx": 2.5, "notable": "Ring, Peloton, Blue Bottle, Automattic"},
+    "Spark Capital": {"hq": "Boston/San Francisco", "founded": 2005, "strategy": "Multi-stage VC", "aum_approx": 3.5, "notable": "Twitter, Tumblr, Slack, Wayfair"},
+    "Forerunner Ventures": {"hq": "San Francisco, CA", "founded": 2012, "strategy": "Consumer VC", "aum_approx": 2.0, "notable": "Dollar Shave Club, Warby Parker, Away, Chime"},
+    "ARCH Venture Partners": {"hq": "Chicago, IL", "founded": 1986, "strategy": "Deep science VC", "aum_approx": 3.0, "notable": "Illumina, Editas, Alnylam, GRAIL"},
+    "IA Ventures": {"hq": "New York, NY", "founded": 2010, "strategy": "Data-driven early stage VC", "aum_approx": 0.5, "notable": "Wise, The Trade Desk, Betterment"},
+    "Technology Crossover Ventures": {"hq": "Palo Alto, CA", "founded": 1995, "strategy": "Growth/late-stage VC", "aum_approx": 20.0, "notable": "Facebook, Netflix, Spotify, Airbnb"},
+    "TLV Partners": {"hq": "Tel Aviv, Israel", "founded": 2012, "strategy": "Israeli early-stage VC", "aum_approx": 0.5, "notable": "Next Insurance, Lusha, Firebolt"},
+    "Techstars": {"hq": "Boulder, CO", "founded": 2006, "strategy": "Accelerator seed-stage", "aum_approx": 1.0, "notable": "SendGrid, ClassPass, PillPack"},
+    "Upfront Ventures": {"hq": "Los Angeles, CA", "founded": 1996, "strategy": "LA-focused early-stage VC", "aum_approx": 2.0, "notable": "Ring, TrueCar, Maker Studios"},
+    "Morgenthaler Ventures": {"hq": "Cleveland, OH / Menlo Park, CA", "founded": 1968, "strategy": "Generalist VC", "aum_approx": 3.0, "notable": "Quanta, Xoma, Advanced Energy"},
+    "Sofinnova Ventures": {"hq": "San Francisco, CA", "founded": 1976, "strategy": "Life sciences VC", "aum_approx": 2.0, "notable": "Pharmacyclics, Rigel, Arena"},
+    "Mosaic Ventures": {"hq": "London, UK", "founded": 2014, "strategy": "European early-stage VC", "aum_approx": 0.5, "notable": "Wayve, Cleo, Beamery"},
+    "Correlation Ventures": {"hq": "San Diego, CA", "founded": 2012, "strategy": "Quantitative co-invest VC", "aum_approx": 0.3, "notable": "Data-driven co-investment strategy"},
+}
 
 SOURCES_CONFIG = [
     {
@@ -357,7 +416,29 @@ SOURCES_CONFIG = [
         "coverage": 75,
         "period": "Dec 2019",
         "notes": "Historical PE vintage data. 2019 cutoff.",
-        "row_count_key": "Louisiana Teachers",
+        "row_count_key": "Louisiana TRSL",
+    },
+    {
+        "name": "University of Texas IMC (UTIMCO)",
+        "short": "UTIMCO",
+        "classification": "PUBLIC",
+        "badge_class": "badge-utimco",
+        "coverage": 78,
+        "period": "2023-02-28 (+ 2009–2016 history)",
+        "notes": (
+            "UTIMCO (~$78B AUM). 2023 report is primary, with fund-by-fund DPI/TVPI/IRR and capital_contributed. "
+            "Vintage years are inferred where possible; capital_committed is not disclosed."
+        ),
+        "row_count_key": "UTIMCO",
+        "coverage_breakdown": {
+            "fund_name": 100,
+            "vintage_year": 80,
+            "tvpi": 100,
+            "dpi": 100,
+            "net_irr": 100,
+            "capital_contributed": 100,
+            "capital_committed": 0,
+        },
     },
 ]
 
@@ -412,7 +493,7 @@ def load_unified():
     df["source"] = df.get("source", pd.Series(index=df.index, dtype="object")).fillna("Unknown")
 
     # Optional UTIMCO fallback merge for local runs before normalize.py has been re-run.
-    utimco_path = "data/utimco_processed_for_openvc.csv"
+    utimco_path = "data/utimco_2023.csv"
     if os.path.exists(utimco_path):
         ut = load_utimco_for_app(utimco_path)
         if not ut.empty:
@@ -495,8 +576,8 @@ def load_utimco_for_app(filepath: str) -> pd.DataFrame:
     out["fund_name"] = out["fund_name"].replace({"": np.nan, "nan": np.nan}).fillna("UNKNOWN_FUND")
     out["vintage_year"] = pd.to_numeric(pick("vintage_year"), errors="coerce")
     out["vintage_year"] = out["vintage_year"].fillna(out["fund_name"].map(_infer_vintage_from_name))
-    out["capital_committed"] = _clean_num(pick("capital_committed"))
-    out["capital_contributed"] = _clean_num(pick("capital_contributed", "cash_in"))
+    out["capital_committed"] = _clean_num(pick("capital_committed"))  # UTIMCO 2023 generally does not provide this
+    out["capital_contributed"] = _clean_num(pick("capital_contributed", "capital_invested", "cash_in"))
     out["capital_distributed"] = _clean_num(pick("capital_distributed", "cash_out"))
     total_value = _clean_num(pick("total_value"))
     out["nav"] = _clean_num(pick("nav"))
@@ -511,7 +592,7 @@ def load_utimco_for_app(filepath: str) -> pd.DataFrame:
     out["dpi"] = np.where(contrib > 0, out["capital_distributed"] / contrib, np.nan)
     out["source"] = "UTIMCO"
     out["scraped_date"] = pick("scraped_date").fillna(str(date.today()))
-    out["reporting_period"] = pick("reporting_period").fillna("unknown")
+    out["reporting_period"] = pick("reporting_period").fillna("2023-02-28")
     out["vintage_year"] = pd.to_numeric(out["vintage_year"], errors="coerce").astype("Int64")
     return out
 
@@ -550,7 +631,10 @@ def load_master_full():
     else:
         df["data_source_type"] = df["data_source_type"].fillna("LP-Disclosed")
 
-    mi_gps = {"a16z", "founders fund", "social capital"}
+    if "canonical_gp" in df.columns:
+        df["canonical_gp"] = df["canonical_gp"].map(normalize_canonical_gp_label)
+
+    mi_gps = {"a16z", "andreessen horowitz", "founders fund", "social capital"}
     gp_series = df.get("canonical_gp", pd.Series(index=df.index, dtype="object")).astype(str).str.strip().str.lower()
     df.loc[gp_series.isin(mi_gps), "data_source_type"] = "Market Intelligence"
 
@@ -574,6 +658,104 @@ def load_master_full():
     ]:
         df[col] = pd.to_numeric(df.get(col), errors="coerce")
     df["vintage_year"] = df["vintage_year"].astype("Int64")
+
+    if "vintage_source" not in df.columns:
+        df["vintage_source"] = "unknown"
+
+    # Merge canonical UTIMCO rows into master with reporting-period precedence.
+    utimco_path = "data/utimco_2023.csv"
+    if os.path.exists(utimco_path):
+        ut = pd.read_csv(utimco_path)
+        if not ut.empty and "fund_name" in ut.columns:
+            def _bucket_to_category(v):
+                s = str(v or "").lower()
+                if "pe" in s:
+                    return "PE"
+                if "growth" in s:
+                    return "Growth"
+                if "fund of funds" in s:
+                    return "Opportunities"
+                return "Venture"
+
+            ut_rows = pd.DataFrame({
+                "canonical_gp": ut.get("canonical_gp").map(normalize_canonical_gp_label),
+                "gp_display_name": ut.get("canonical_gp").map(normalize_canonical_gp_label),
+                "fund_name": ut.get("fund_name"),
+                "vintage_year": pd.to_numeric(ut.get("vintage_year"), errors="coerce").astype("Int64"),
+                "vintage_source": ut.get("vintage_source", "unknown"),
+                "fund_category": ut.get("fund_category", pd.Series(index=ut.index, dtype="object")).map(_bucket_to_category),
+                "sub_strategy": ut.get("fund_category"),
+                "fund_size_usd_m": pd.to_numeric(ut.get("capital_contributed"), errors="coerce") / 1_000_000.0,
+                "fund_size_confidence": "Derived from UTIMCO capital_contributed",
+                "firm_aum_usd_b": np.nan,
+                "firm_founded": np.nan,
+                "hq_city": "",
+                "investment_focus": ut.get("fund_category"),
+                "stage_focus": "",
+                "notable_portfolio": "",
+                "source": "UTIMCO",
+                "reporting_period": ut.get("reporting_period", "2023-02-28"),
+                "tvpi": pd.to_numeric(ut.get("tvpi"), errors="coerce"),
+                "dpi": pd.to_numeric(ut.get("dpi"), errors="coerce"),
+                "net_irr": pd.to_numeric(ut.get("net_irr"), errors="coerce"),
+                "irr_meaningful": ut.get("vintage_year").notna() & (pd.to_numeric(ut.get("vintage_year"), errors="coerce") <= 2020),
+                "performance_note": "UTIMCO LP disclosure (2023-02-28).",
+                "gross_tvpi": np.nan,
+                "gross_dpi": np.nan,
+                "data_source_type": "LP-Disclosed",
+            })
+
+            for c in ut_rows.columns:
+                if c not in df.columns:
+                    df[c] = np.nan
+            for c in df.columns:
+                if c not in ut_rows.columns:
+                    ut_rows[c] = np.nan
+
+            combined = pd.concat([df, ut_rows[df.columns]], ignore_index=True, sort=False)
+
+            def _parse_reporting_period(v):
+                s = str(v or "").strip()
+                if not s or s.lower() in {"nan", "none", "unknown"}:
+                    return None
+                m = re.match(r"^(\\d{4})-(\\d{2})-(\\d{2})$", s)
+                if m:
+                    y, mn, d = map(int, m.groups())
+                    return date(y, mn, d)
+                m = re.match(r"^(\\d{4})-Q([1-4])$", s, flags=re.I)
+                if m:
+                    y, q = int(m.group(1)), int(m.group(2))
+                    md = {1: (3, 31), 2: (6, 30), 3: (9, 30), 4: (12, 31)}
+                    mn, d = md[q]
+                    return date(y, mn, d)
+                m = re.match(r"^ir(\\d{2})(\\d{2})(\\d{2})$", s, flags=re.I)
+                if m:
+                    mm, dd, yy = map(int, m.groups())
+                    return date(2000 + yy, mm, dd)
+                m = re.search(r"(\\d{4})", s)
+                if m:
+                    return date(int(m.group(1)), 1, 1)
+                return None
+
+            combined["__rp_date"] = combined["reporting_period"].map(_parse_reporting_period)
+            combined["__rp_ord"] = combined["__rp_date"].map(lambda d: d.toordinal() if d else -1)
+            combined["__utimco_bonus"] = (
+                (combined["source"].astype(str) == "UTIMCO")
+                & (combined["reporting_period"].astype(str) == "2023-02-28")
+            ).astype(int)
+
+            combined = (
+                combined.sort_values(["fund_name", "__rp_ord", "__utimco_bonus"])
+                .drop_duplicates(subset=["fund_name"], keep="last")
+                .drop(columns=["__rp_date", "__rp_ord", "__utimco_bonus"])
+                .reset_index(drop=True)
+            )
+            combined["canonical_gp"] = combined["canonical_gp"].map(normalize_canonical_gp_label)
+            combined["gp_display_name"] = combined["gp_display_name"].where(
+                combined["gp_display_name"].notna(), combined["canonical_gp"]
+            )
+            df = combined
+
     return df
 
 
@@ -744,6 +926,10 @@ def style_chart_readability(fig: go.Figure):
 def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame, pattern_map: dict = None) -> pd.DataFrame:
     # Remove Accel-KKR globally; keep only Accel VC rows if/when available.
     master = df_master.copy()
+    if "canonical_gp" in master.columns:
+        master["canonical_gp"] = master["canonical_gp"].map(normalize_canonical_gp_label)
+    if "gp_display_name" in master.columns:
+        master["gp_display_name"] = master["gp_display_name"].where(master["gp_display_name"].notna(), master.get("canonical_gp"))
     master_gp = master.get("canonical_gp", pd.Series(index=master.index, dtype="object")).astype(str)
     master_fn = master.get("fund_name", pd.Series(index=master.index, dtype="object")).astype(str)
     drop_mask = master_gp.str.contains("accel-kkr", case=False, na=False) | master_fn.str.contains("accel-kkr", case=False, na=False)
@@ -777,6 +963,7 @@ def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame, patter
 
     # Canonicalize unified rows to target firms.
     u["canonical_gp"] = u["fund_name"].astype(str).map(lambda x: canonical_gp_for_fund_name(x, merged_patterns))
+    u["canonical_gp"] = u["canonical_gp"].map(normalize_canonical_gp_label)
     u = u[u["canonical_gp"].notna()].copy()
 
     # Exclude known non-target aliases where needed (e.g., Accel-KKR should not map to Accel).
@@ -849,6 +1036,11 @@ def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame, patter
 
     added = pd.concat(rows, ignore_index=True)
     combined = pd.concat([master, added], ignore_index=True, sort=False)
+    combined["canonical_gp"] = combined["canonical_gp"].map(normalize_canonical_gp_label)
+    combined["gp_display_name"] = combined.get("gp_display_name", pd.Series(index=combined.index, dtype="object")).where(
+        combined.get("gp_display_name", pd.Series(index=combined.index, dtype="object")).notna(),
+        combined["canonical_gp"],
+    )
     combined["vintage_year"] = pd.to_numeric(combined.get("vintage_year"), errors="coerce").astype("Int64")
 
     # De-dupe within a GP while preserving multi-source rows where reporting periods differ.
@@ -1095,44 +1287,92 @@ def render_fund_database(df_unified: pd.DataFrame, df_market_intel: pd.DataFrame
 
 def render_firm_card(gp_name: str, gp_data: pd.DataFrame):
     row = gp_data.iloc[0]
+    meta = GP_METADATA.get(gp_name, {})
     fund_count = len(gp_data)
-    meaningful = gp_data[gp_data["irr_meaningful"] == True]
-    best_irr = meaningful["net_irr"].max() if len(meaningful) > 0 else None
+    vintage_series = pd.to_numeric(gp_data["vintage_year"], errors="coerce").dropna()
+    if vintage_series.empty:
+        vintage_range = "—"
+    else:
+        vintage_range = "{0}–{1}".format(int(vintage_series.min()), int(vintage_series.max()))
 
-    founded = "—" if pd.isna(row.get("firm_founded")) else str(int(row.get("firm_founded")))
-    aum_txt = "—" if pd.isna(row.get("firm_aum_usd_b")) else "${0:.0f}B AUM".format(row.get("firm_aum_usd_b"))
-    best_irr_html = '<div class="firm-best-irr-value" style="color:#9CA3AF">N/A</div>'
-    if best_irr is not None and pd.notna(best_irr):
-        best_irr_html = '<div class="firm-best-irr-value">{0:.1f}%</div>'.format(best_irr * 100)
+    dpi_series = pd.to_numeric(gp_data["dpi"], errors="coerce").dropna()
+    med_dpi = dpi_series.median() if not dpi_series.empty else np.nan
+    if pd.isna(med_dpi):
+        dpi_color = "#9CA3AF"
+    elif med_dpi >= 2:
+        dpi_color = "#E8571F"
+    elif med_dpi >= 1:
+        dpi_color = "#16A34A"
+    else:
+        dpi_color = "#6B7280"
 
-    categories = " / ".join(gp_data["fund_category"].dropna().astype(str).unique()[:3])
+    dpi_for_best = pd.to_numeric(gp_data["dpi"], errors="coerce")
+    dpi_nonnull = dpi_for_best.dropna()
+    best_dpi_idx = dpi_nonnull.idxmax() if not dpi_nonnull.empty else None
+    best_fund = None
+    if best_dpi_idx is not None and best_dpi_idx in gp_data.index and pd.notna(gp_data.loc[best_dpi_idx, "dpi"]):
+        best_fund = gp_data.loc[best_dpi_idx]
+
+    founded_val = row.get("firm_founded")
+    if pd.isna(founded_val) and "founded" in meta:
+        founded_val = meta["founded"]
+    founded = "—" if pd.isna(founded_val) else str(int(float(founded_val)))
+
+    aum_val = row.get("firm_aum_usd_b")
+    if pd.isna(aum_val) and "aum_approx" in meta:
+        aum_val = meta["aum_approx"]
+    aum_txt = "—" if pd.isna(aum_val) else "${0:.1f}B AUM".format(float(aum_val))
+
+    hq = str(row.get("hq_city", "")).strip()
+    if (not hq or hq.lower() in {"nan", "none"}) and meta.get("hq"):
+        hq = meta["hq"]
+    if not hq:
+        hq = "—"
+
+    strategy = meta.get("strategy", "")
+    if not strategy:
+        strategy = " / ".join(gp_data["fund_category"].dropna().astype(str).unique()[:2])
+    notable = meta.get("notable", str(row.get("notable_portfolio", "")))
+    notable_tokens = [t.strip() for t in str(notable).split(",") if t.strip()]
+    notable_short = ", ".join(notable_tokens[:4]) if notable_tokens else "—"
+
+    best_fund_line = "Best: —"
+    if best_fund is not None:
+        best_fund_line = "Best: {0} · {1:.2f}×".format(str(best_fund.get("fund_name", "")), float(best_fund.get("dpi")))
 
     st.markdown(
         """
     <div class="firm-card">
         <div class="firm-name">{0}</div>
         <div class="firm-meta">EST. {1} · {2}</div>
+        <div style="margin-bottom:8px"><span class="badge badge-utimco">UTIMCO</span></div>
         <div class="firm-aum-badge">{3}</div>
-        <div style="margin-bottom:12px"><span class="badge badge-estimated" style="margin-right:4px">{4}</span></div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div style="margin-bottom:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase">{4}</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px">
             <div>
-                <div class="firm-best-irr-label">BEST IRR (PUBLIC DATA)</div>
-                {5}
+                <div class="firm-best-irr-label">MEDIAN DPI</div>
+                <div class="firm-best-irr-value" style="color:{5}">{6}</div>
             </div>
             <div style="text-align:right">
-                <div class="firm-best-irr-label">FUNDS IN DATASET</div>
-                <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:500;color:#374151">{6}</div>
+                <div class="firm-best-irr-label">FUNDS · VINTAGE</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:500;color:#374151">{7} · {8}</div>
             </div>
         </div>
+        <div style="font-size:12px;color:#374151;line-height:1.5"><strong>{9}</strong></div>
+        <div style="font-size:11px;color:#6B7280;margin-top:6px;line-height:1.5">{10}</div>
     </div>
     """.format(
             html.escape(str(row.get("gp_display_name", gp_name))),
             founded,
-            html.escape(str(row.get("hq_city", "—")).upper()),
+            html.escape(hq.upper()),
             html.escape(aum_txt),
-            html.escape(categories if categories else "N/A"),
-            best_irr_html,
+            html.escape(strategy if strategy else "N/A"),
+            dpi_color,
+            "—" if pd.isna(med_dpi) else "{0:.2f}×".format(float(med_dpi)),
             fund_count,
+            html.escape(vintage_range),
+            html.escape(best_fund_line),
+            html.escape(notable_short),
         ),
         unsafe_allow_html=True,
     )
@@ -1408,69 +1648,82 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         {
             "number": "01",
             "label": "DPI DROUGHT",
-            "headline": "Post-2017 = paper",
-            "body": "Every fund vintage 2017+ in this dataset — LP and market intel — has DPI < 0.5×. CA median DPI for 2017 vintage historically reaches ~1.0× by year 8. This cohort is running late.",
+            "headline": "Every 2017+ fund: DPI < 0.5×",
+            "body": "Across LP-disclosed and market-intel sources, every 2017+ vintage remains cash-light. ARCH XI (2017) has 26.2% IRR with 0.00× DPI; True Ventures VI (2019) is 0.01× DPI.",
         },
         {
             "number": "02",
-            "label": "HIGHEST DPI",
-            "headline": "Founders Fund II: 18.6×",
-            "body": "On a $227M 2007 vehicle. CA top-quartile DPI for 2007 vintage is ~2.1×. FFII at 18.6× is roughly 9× above top quartile — extreme concentration in Palantir and SpaceX.",
+            "label": "HIGHEST LP-DISCLOSED DPI",
+            "headline": "USV 2012 Fund: 22.86×",
+            "body": "Union Square Ventures 2012 Fund returned 22.86× DPI and 24.88× TVPI on ~$26M contributed. It is now the highest cash-return multiple in LP-disclosed data.",
         },
         {
             "number": "03",
-            "label": "BENCHMARK BEATER",
-            "headline": "a16z Fund III",
-            "body": "Net TVPI 11.3× vs CA Q1 of ~4.2× for 2012 vintage. Net DPI 5.5× vs CA Q1 of ~3.1×. Beats top quartile on both dimensions at $1B+ scale — exceptional.",
+            "label": "LP BENCHMARK BEATER",
+            "headline": "USV 2012: 24.88× TVPI",
+            "body": "Against an approximate 2012 CA Q1 TVPI near 4.0×, USV 2012 is a clear outlier. IA Ventures Fund II at 20.6× TVPI is another under-the-radar benchmark beater.",
         },
         {
             "number": "04",
             "label": "FEE DRAG",
-            "headline": "28% taken in carry",
-            "body": "AH Fund III: Gross TVPI 15.7× → Net 11.3×. 28% of gross returns transferred to GP in fees and carry on a $997M fund ≈ $4.4B. Standard structure, rarely shown directly.",
+            "headline": "a16z Fund III",
+            "body": "Gross 15.7× to net 11.3× implies meaningful carry and fee drag at scale. The gross/net gap remains one of the most important LP realities.",
         },
         {
             "number": "05",
             "label": "SELECTION BIAS",
-            "headline": "Intel funds skew high",
-            "body": "Market intelligence funds (a16z, Founders, Social Capital) in this dataset all sit above the CA Q1 line in IRR. The source of the leak may itself have been selective.",
+            "headline": "Intel sample skews high",
+            "body": "Market-intelligence funds cluster above benchmark lines. That may indicate real alpha, but it may also reflect selection effects in what gets circulated.",
         },
         {
             "number": "06",
             "label": "CHINA RISK",
-            "headline": "HongShan collapse",
-            "body": "HongShan 2010 vintage: 5.7× TVPI, 4.7× DPI. HongShan 2020 vintage: sub-1× TVPI, negative IRR. Same manager. China regulatory intervention erased the edge in 5 years.",
+            "headline": "HongShan regime shift",
+            "body": "2010 vintage HongShan funds show strong realized outcomes; 2020 vintage funds sit near/sub-1× with weaker IRR. Same platform, very different macro regime.",
+        },
+        {
+            "number": "07",
+            "label": "MANAGER VARIANCE",
+            "headline": "Same GP, wide dispersion",
+            "body": "USV, ARCH, and True Ventures show dramatic fund-to-fund spread across vintages. Vintage timing and distribution cycles can matter as much as manager brand.",
+        },
+        {
+            "number": "08",
+            "label": "DARK HORSE",
+            "headline": "IA Ventures Fund II",
+            "body": "20.6× TVPI and 9.64× DPI from a smaller, less-visible manager. LP-level records often surface leaders missed by reputation-first narratives.",
         },
     ]
 
-    row1 = st.columns(3)
-    row2 = st.columns(3)
-    all_cols = row1 + row2
-    for col, card in zip(all_cols, insight_cards):
-        with col:
-            st.markdown(
-                """
-            <div style="border:1px solid #E5E7EB;border-radius:6px;padding:16px;background:#fff;height:100%">
-                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.15em;
-                    text-transform:uppercase;color:#9CA3AF;margin-bottom:4px">
-                    {0} / {1}
+    # Render in 2 rows x 4 columns
+    chunks = [insight_cards[i : i + 4] for i in range(0, len(insight_cards), 4)]
+    for chunk in chunks:
+        cols = st.columns(4)
+        for col, card in zip(cols, chunk):
+            with col:
+                st.markdown(
+                    """
+                <div style="border:1px solid #E5E7EB;border-radius:6px;padding:16px;background:#fff;height:100%">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.15em;
+                        text-transform:uppercase;color:#9CA3AF;margin-bottom:4px">
+                        {0} / {1}
+                    </div>
+                    <div style="font-family:'Inter',sans-serif;font-size:15px;font-weight:700;
+                        color:#111827;margin-bottom:8px;line-height:1.2">
+                        {2}
+                    </div>
+                    <div style="font-family:'Inter',sans-serif;font-size:12px;color:#6B7280;line-height:1.5">
+                        {3}
+                    </div>
                 </div>
-                <div style="font-family:'Inter',sans-serif;font-size:15px;font-weight:700;
-                    color:#111827;margin-bottom:8px;line-height:1.2">
-                    {2}
-                </div>
-                <div style="font-family:'Inter',sans-serif;font-size:12px;color:#6B7280;line-height:1.5">
-                    {3}
-                </div>
-            </div>
-            """.format(
-                    html.escape(card["number"]),
-                    html.escape(card["label"]),
-                    html.escape(card["headline"]),
-                    html.escape(card["body"]),
-                ),
-                unsafe_allow_html=True,
-            )
+                """.format(
+                        html.escape(card["number"]),
+                        html.escape(card["label"]),
+                        html.escape(card["headline"]),
+                        html.escape(card["body"]),
+                    ),
+                    unsafe_allow_html=True,
+                )
 
     df = df_master.copy()
     lp_df = df[(df["irr_meaningful"] == True) & (df["data_source_type"] == "LP-Disclosed")].copy()
@@ -1744,6 +1997,33 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         ax=80,
         ay=-50,
     )
+
+    # High-signal UTIMCO outlier annotations.
+    for pat, label, ax, ay in [
+        (r"Union Square Ventures 2012 Fund", "USV 2012<br>24.9× TVPI", 35, -55),
+        (r"Spark Capital II", "Spark II", -20, -45),
+        (r"Union Square Ventures 2004", "USV 2004", 20, -55),
+    ]:
+        sub_lp = lp_df[lp_df["fund_name"].astype(str).str.contains(pat, case=False, na=False)]
+        if not sub_lp.empty:
+            r0 = sub_lp.iloc[0]
+            if pd.notna(r0.get("vintage_year")) and pd.notna(r0.get("net_irr")):
+                fig.add_annotation(
+                    x=float(r0["vintage_year"]),
+                    y=float(r0["net_irr"]) * 100.0,
+                    text=label,
+                    showarrow=True,
+                    arrowhead=2,
+                    arrowcolor="#E8571F",
+                    arrowwidth=1.2,
+                    font=dict(size=9, color="#E8571F", family="IBM Plex Mono"),
+                    bgcolor="#FFF4EF",
+                    bordercolor="#E8571F",
+                    borderwidth=1,
+                    borderpad=5,
+                    ax=ax,
+                    ay=ay,
+                )
     fig.update_layout(
         title=dict(
             text="NET IRR BY VINTAGE — LP-DISCLOSED vs MARKET INTEL vs CA BENCHMARK",
@@ -1793,7 +2073,86 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
                 hide_index=True,
             )
 
-    st.markdown('<div class="section-label" style="margin-top:2rem">02A / THE GROSS vs NET GAP — FEES QUANTIFIED</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label" style="margin-top:2rem">02B / DPI LEADERBOARD — TOP LP-DISCLOSED CASH RETURNS</div>', unsafe_allow_html=True)
+    dpi_df = df[(df["data_source_type"] == "LP-Disclosed") & pd.to_numeric(df["dpi"], errors="coerce").gt(0)].copy()
+    dpi_df["dpi"] = pd.to_numeric(dpi_df["dpi"], errors="coerce")
+    dpi_df["tvpi"] = pd.to_numeric(dpi_df["tvpi"], errors="coerce")
+    dpi_df["net_irr"] = pd.to_numeric(dpi_df["net_irr"], errors="coerce")
+    dpi_df = dpi_df.sort_values("dpi", ascending=False).head(15).reset_index(drop=True)
+
+    rows_html = ""
+    for i, row in dpi_df.iterrows():
+        source_badge_class = SOURCE_BADGE_CLASS.get(str(row.get("source")), "badge-estimated")
+        source_label = SOURCE_SHORT.get(str(row.get("source")), str(row.get("source")).upper()[:12])
+        dpi_val = row.get("dpi")
+        if pd.isna(dpi_val):
+            dpi_color = "#9CA3AF"
+        elif dpi_val >= 5:
+            dpi_color = "#E8571F"
+        elif dpi_val >= 2:
+            dpi_color = "#16A34A"
+        else:
+            dpi_color = "#D97706"
+        rows_html += """
+        <tr>
+            <td style="color:#9CA3AF;font-family:'IBM Plex Mono',monospace;font-size:10px">{0:02d}</td>
+            <td style="font-size:12px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{1}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B7280">{2}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B7280">{3}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{4};font-weight:700">{5}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B7280">{6}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B7280">{7}</td>
+            <td><span class="badge {8}">{9}</span></td>
+        </tr>
+        """.format(
+            i + 1,
+            html.escape(str(row.get("fund_name", ""))),
+            html.escape(str(row.get("canonical_gp", ""))),
+            "—" if pd.isna(row.get("vintage_year")) else int(row.get("vintage_year")),
+            dpi_color,
+            "—" if pd.isna(row.get("dpi")) else "{0:.2f}×".format(row.get("dpi")),
+            "—" if pd.isna(row.get("tvpi")) else "{0:.2f}×".format(row.get("tvpi")),
+            "—" if pd.isna(row.get("net_irr")) else "{0:.1f}%".format(row.get("net_irr") * 100),
+            source_badge_class,
+            html.escape(source_label),
+        )
+
+    _render_html(
+        """
+<table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif">
+  <thead>
+    <tr style="border-bottom:2px solid #E5E7EB">
+      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">#</th>
+      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">FUND</th>
+      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">GP</th>
+      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">VTG</th>
+      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#E8571F;font-family:'IBM Plex Mono',monospace">DPI</th>
+      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">TVPI</th>
+      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">NET IRR</th>
+      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">SOURCE</th>
+    </tr>
+  </thead>
+  <tbody>{0}</tbody>
+</table>
+        """.format(rows_html)
+    )
+
+    st.markdown(
+        """
+    <div class="insight-box">
+        <div class="insight-label">● ANALYST INSIGHT — THE DPI LEADERBOARD</div>
+        <div class="insight-body">
+            <strong>USV 2012 Fund now leads LP-disclosed DPI in this dataset.</strong>
+            The top cohort is concentrated in smaller vintage funds where realization cycles have fully played out.
+            UTIMCO materially improves visibility into this segment and highlights how distribution outcomes can diverge
+            from brand-based expectations.
+        </div>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<div class="section-label" style="margin-top:2rem">02C / THE GROSS vs NET GAP — FEES QUANTIFIED</div>', unsafe_allow_html=True)
     st.markdown('<div class="chart-subtitle">a16z is the only firm in this dataset with both gross and net metrics in the circulated data. The gap = management fees + carry transferred from LP to GP.</div>', unsafe_allow_html=True)
     a16z_rows = [
         {"fund": "AH Fund I", "vintage": 2009, "size": 300, "gross_tvpi": 9.3, "net_tvpi": 6.9, "net_dpi": 6.0},
@@ -1850,7 +2209,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         unsafe_allow_html=True,
     )
 
-    st.markdown('<div class="section-label" style="margin-top:2rem">02B / THE REALIZATION MAP</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label" style="margin-top:2rem">02D / THE REALIZATION MAP</div>', unsafe_allow_html=True)
     st.markdown('<div class="chart-subtitle">Each point = one fund. X = DPI (cash returned). Y = TVPI (total value including paper). Color = vintage era.</div>', unsafe_allow_html=True)
     plot_df = df[df["tvpi"].notna() & df["dpi"].notna()].copy()
     plot_df["vintage_bucket"] = pd.cut(
@@ -1949,7 +2308,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     style_chart_readability(fig_map)
     st.plotly_chart(fig_map, use_container_width=True)
 
-    st.markdown('<div class="section-label" style="margin-top:2rem">02C / NET IRR RANKING — HOVER FOR vs BENCHMARK</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label" style="margin-top:2rem">02E / NET IRR RANKING — HOVER FOR vs BENCHMARK</div>', unsafe_allow_html=True)
     rank_df = lp_df.copy()
     rank_df = rank_df.merge(bench[["vintage_year", "median_net_irr", "q1_net_irr"]], on="vintage_year", how="left")
     rank_df["irr_pct"] = rank_df["net_irr"] * 100
@@ -2171,6 +2530,93 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         st.plotly_chart(fig_strat, use_container_width=True)
         st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">Capital-weighted: larger funds influence the average proportionally. LP-disclosed funds only.</div>", unsafe_allow_html=True)
 
+    st.markdown('<div class="section-label">05 / WITHIN-GP VARIANCE — IRR RANGE (UTIMCO)</div>', unsafe_allow_html=True)
+    var_df = df[
+        (df["source"].astype(str) == "UTIMCO")
+        & df["net_irr"].notna()
+        & df["canonical_gp"].notna()
+    ].copy()
+    gp_stats = (
+        var_df.groupby("canonical_gp")
+        .agg(min_irr=("net_irr", "min"), max_irr=("net_irr", "max"), n=("fund_name", "count"))
+        .reset_index()
+    )
+    gp_stats = gp_stats[gp_stats["n"] >= 2].copy()
+    if not gp_stats.empty:
+        gp_stats["range"] = gp_stats["max_irr"] - gp_stats["min_irr"]
+        gp_stats = gp_stats.sort_values("range", ascending=True)
+        fig_var = go.Figure()
+        fig_var.add_trace(
+            go.Scatter(
+                x=(gp_stats["min_irr"] * 100),
+                y=gp_stats["canonical_gp"],
+                mode="markers",
+                marker=dict(color="#9CA3AF", size=8),
+                name="Min IRR",
+            )
+        )
+        fig_var.add_trace(
+            go.Scatter(
+                x=(gp_stats["max_irr"] * 100),
+                y=gp_stats["canonical_gp"],
+                mode="markers",
+                marker=dict(color="#E8571F", size=9),
+                name="Max IRR",
+            )
+        )
+        for _, r in gp_stats.iterrows():
+            fig_var.add_shape(
+                type="line",
+                x0=float(r["min_irr"]) * 100,
+                x1=float(r["max_irr"]) * 100,
+                y0=r["canonical_gp"],
+                y1=r["canonical_gp"],
+                line=dict(color="#CBD5E1", width=2),
+            )
+        variance_annotations = {
+            "Union Square Ventures": "USV: 22.86× DPI to near-zero DPI across vintages",
+            "ARCH Venture Partners": "ARCH: 4.64× DPI (Fund VII) vs 0.00× (Fund XII)",
+            "True Ventures": "True: 4.29× DPI (Fund IV) vs 0.01× (Fund VI)",
+        }
+        for gp, note in variance_annotations.items():
+            sub = gp_stats[gp_stats["canonical_gp"] == gp]
+            if sub.empty:
+                continue
+            r0 = sub.iloc[0]
+            fig_var.add_annotation(
+                x=float(r0["max_irr"]) * 100.0,
+                y=gp,
+                text=note,
+                showarrow=False,
+                xshift=10,
+                align="left",
+                font=dict(size=9, color="#6B7280", family="IBM Plex Mono"),
+                bgcolor="rgba(255,255,255,0.75)",
+            )
+        fig_var.update_layout(
+            height=max(320, 28 * len(gp_stats) + 120),
+            template="plotly_white",
+            xaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
+            yaxis=dict(title="", gridcolor="#FFFFFF"),
+            legend=dict(orientation="h"),
+            margin=dict(l=90, r=30, t=20, b=50),
+        )
+        style_chart_readability(fig_var)
+        st.plotly_chart(fig_var, use_container_width=True)
+
+        st.markdown(
+            """
+        <div class="insight-box">
+            <div class="insight-label">● VARIANCE READ</div>
+            <div class="insight-body">
+                UTIMCO fund-by-fund history shows large dispersion inside the same manager franchise.
+                USV, ARCH, and True Ventures each show wide internal ranges across vintages.
+            </div>
+        </div>
+        """,
+            unsafe_allow_html=True,
+        )
+
     st.markdown(
         """
     <div class="insight-box" style="margin-top:2rem">
@@ -2277,6 +2723,23 @@ def render_sources(df_unified: pd.DataFrame, df_master: pd.DataFrame):
     for cfg in SOURCES_CONFIG:
         row_count = int(src_counts.get(cfg["row_count_key"], 0))
         render_source_row(cfg, row_count)
+
+    st.markdown(
+        """
+    <div style="background:#F0F9FF;border-left:3px solid #BAE6FD;border-radius:0 6px 6px 0;
+        padding:12px 16px;margin:-8px 0 16px 0;font-size:12px;color:#075985;line-height:1.6">
+        <strong>Vintage year note:</strong> UTIMCO does not disclose vintage year in fund
+        performance reports. Vintages marked as inferred are derived from fund names and
+        cross-referenced close windows. Funds with unknown vintage are excluded from benchmark
+        comparisons.
+        <br><br>
+        <strong>Capital committed vs contributed:</strong> UTIMCO reports capital invested
+        (contributed/called capital) rather than original commitment. This value is used as
+        denominator for DPI/TVPI context in this source.
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown('<div class="section-label">03 / MARKET INTELLIGENCE SOURCES</div>', unsafe_allow_html=True)
     st.markdown(

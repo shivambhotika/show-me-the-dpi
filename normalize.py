@@ -31,7 +31,7 @@ SOURCE_FILES: Dict[str, str] = {
     "CalSTRS": "data/calstrs.csv",
     "Oregon Treasury": "data/oregon.csv",
     "WSIB": "data/wsib.csv",
-    "UTIMCO": "data/utimco_processed_for_openvc.csv",
+    "UTIMCO": "data/utimco_2023.csv",
     "PSERS": "data/psers.csv",
     "UC Regents": "data/uc_regents.csv",
     "Massachusetts PRIM": "data/massachusetts.csv",
@@ -247,54 +247,45 @@ def finalize_derived(df: pd.DataFrame, source_name: str, default_scraped: str) -
     return out
 
 
-def map_utimco(raw_df: pd.DataFrame, filepath: str) -> pd.DataFrame:
-    df = prepare_columns(raw_df)
+def normalize_utimco(raw: pd.DataFrame) -> pd.DataFrame:
+    """
+    UTIMCO 2023 data — pre-cleaned hardcoded CSV.
+    IRR already decimal. DPI/TVPI already multiples. Capital in USD.
+    irr_meaningful is retained for downstream datasets, but unified output keeps canonical columns only.
+    """
+    df = prepare_columns(raw)
 
     out = pd.DataFrame(index=df.index)
+    out["fund_name"] = df.get("fund_name", pd.Series(index=df.index, dtype="object"))
+    out["canonical_gp"] = df.get("canonical_gp", pd.Series(index=df.index, dtype="object"))
+    out["vintage_year"] = pd.to_numeric(df.get("vintage_year"), errors="coerce")
+    out["vintage_source"] = df.get("vintage_source", pd.Series(index=df.index, dtype="object"))
+    out["capital_committed"] = np.nan  # not reported by UTIMCO
+    out["capital_contributed"] = pd.to_numeric(df.get("capital_contributed"), errors="coerce")
+    out["capital_distributed"] = np.nan  # not provided in this canonical file
+    out["nav"] = np.nan  # not provided in this canonical file
+    out["net_irr"] = pd.to_numeric(df.get("net_irr"), errors="coerce")
+    out["tvpi"] = pd.to_numeric(df.get("tvpi"), errors="coerce")
+    out["dpi"] = pd.to_numeric(df.get("dpi"), errors="coerce")
+    out["fund_category"] = df.get("fund_category", pd.Series(index=df.index, dtype="object"))
+    out["reporting_period"] = df.get("reporting_period", pd.Series(index=df.index, dtype="object")).fillna("2023-02-28")
+    out["source"] = "UTIMCO"
+    out["scraped_date"] = df.get("scraped_date", pd.Series(index=df.index, dtype="object")).fillna(str(date.today()))
+    out["irr_meaningful"] = out["vintage_year"].notna() & (out["vintage_year"] <= 2020)
+    out["data_source_type"] = "LP-Disclosed"
 
-    fund_col = detect_column(df, ["fund_name", "description"])
-    out["fund_name"] = df[fund_col] if fund_col else np.nan
+    # If UTIMCO IRR column accidentally comes in percentage scale, normalize.
+    irr_vals = out["net_irr"].dropna()
+    if not irr_vals.empty and irr_vals.median() > 1.5:
+        out["net_irr"] = out["net_irr"] / 100.0
 
-    gp_col = detect_column(df, ["gp_name", "manager", "firm_name"])
-    if gp_col:
-        out["gp_name"] = df[gp_col]
-    else:
-        out["gp_name"] = out["fund_name"].map(infer_gp_name_from_fund)
-
-    vint_col = detect_column(df, ["vintage_year", "vintage", "initial_investment_date"])
-    out["vintage_year"] = df[vint_col] if vint_col else np.nan
-    out["vintage_year"] = pd.to_numeric(out["vintage_year"], errors="coerce")
-    out["vintage_year"] = out["vintage_year"].fillna(infer_vintage_from_name(out["fund_name"]))
-
-    commit_col = detect_column(df, ["capital_committed", "committed", "commitment"])
-    out["capital_committed"] = df[commit_col] if commit_col else np.nan
-
-    contrib_col = detect_column(df, ["capital_contributed", "cash_in", "cash in", "paid_in_capital", "contributed"])
-    out["capital_contributed"] = df[contrib_col] if contrib_col else np.nan
-
-    dist_col = detect_column(df, ["capital_distributed", "cash_out", "cash out", "distributed"])
-    out["capital_distributed"] = df[dist_col] if dist_col else np.nan
-
-    total_col = detect_column(df, ["total_value", "cash_out_and_remaining_value", "cash_out_remaining_value"])
-    out["total_value"] = df[total_col] if total_col else np.nan
-
-    nav_col = detect_column(df, ["nav", "market_value", "current_market_value"])
-    out["nav"] = df[nav_col] if nav_col else np.nan
-
-    irr_col = detect_column(df, ["net_irr", "irr", "netirr"])
-    out["net_irr"] = df[irr_col] if irr_col else np.nan
-
-    tvpi_col = detect_column(df, ["tvpi", "investment_multiple", "multiple"])
-    out["tvpi"] = df[tvpi_col] if tvpi_col else np.nan
-
-    scraped_col = detect_column(df, ["scraped_date", "as_of_date", "date"])
-    out["scraped_date"] = df[scraped_col] if scraped_col else source_file_scraped_date(filepath)
-
-    rp_col = detect_column(df, ["reporting_period", "period", "report_period"])
-    out["reporting_period"] = df[rp_col] if rp_col else "unknown"
-
-    out = finalize_derived(out, "UTIMCO", source_file_scraped_date(filepath))
+    out = finalize_derived(out, "UTIMCO", str(date.today()))
     return out
+
+
+def map_utimco(raw_df: pd.DataFrame, filepath: str) -> pd.DataFrame:
+    _ = filepath
+    return normalize_utimco(raw_df)
 
 
 def map_generic(raw_df: pd.DataFrame, source_name: str, filepath: str) -> pd.DataFrame:
