@@ -213,6 +213,26 @@ def inject_css():
 
     .record-count { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; color: #E8571F; margin-left: 12px; }
     .chart-subtitle { font-family: 'Inter', sans-serif; font-size: 12px; color: #9CA3AF; margin-bottom: 16px; }
+
+    /* Force light segmented nav across browsers/themes */
+    div[data-testid="stSegmentedControl"] {
+        background: #FFFFFF !important;
+    }
+    div[data-testid="stSegmentedControl"] [role="radiogroup"] {
+        background: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+    }
+    div[data-testid="stSegmentedControl"] [role="radio"] {
+        background: #FFFFFF !important;
+        color: #6B7280 !important;
+        border-right: 1px solid #F3F4F6 !important;
+    }
+    div[data-testid="stSegmentedControl"] [role="radio"][aria-checked="true"] {
+        background: #FFF4EF !important;
+        color: #E8571F !important;
+        font-weight: 600 !important;
+    }
     .footer-wrap { margin-top: 1.2rem; border-top: 1px solid #E5E7EB; padding-top: 12px; }
     .footer-text { font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280; line-height: 1.55; }
     .footer-links a { color: #E8571F; text-decoration: none; }
@@ -2111,63 +2131,19 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     dpi_df["tvpi"] = pd.to_numeric(dpi_df["tvpi"], errors="coerce")
     dpi_df["net_irr"] = pd.to_numeric(dpi_df["net_irr"], errors="coerce")
     dpi_df = dpi_df.sort_values("dpi", ascending=False).head(15).reset_index(drop=True)
-
-    rows_html = ""
-    for i, row in dpi_df.iterrows():
-        source_badge_class = SOURCE_BADGE_CLASS.get(str(row.get("source")), "badge-estimated")
-        source_label = SOURCE_SHORT.get(str(row.get("source")), str(row.get("source")).upper()[:12])
-        dpi_val = row.get("dpi")
-        if pd.isna(dpi_val):
-            dpi_color = "#9CA3AF"
-        elif dpi_val >= 5:
-            dpi_color = "#E8571F"
-        elif dpi_val >= 2:
-            dpi_color = "#16A34A"
-        else:
-            dpi_color = "#D97706"
-        rows_html += """
-        <tr>
-            <td style="color:#9CA3AF;font-family:'IBM Plex Mono',monospace;font-size:10px">{0:02d}</td>
-            <td style="font-size:12px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{1}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B7280">{2}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B7280">{3}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{4};font-weight:700">{5}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B7280">{6}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B7280">{7}</td>
-            <td><span class="badge {8}">{9}</span></td>
-        </tr>
-        """.format(
-            i + 1,
-            html.escape(str(row.get("fund_name", ""))),
-            html.escape(str(row.get("canonical_gp", ""))),
-            "—" if pd.isna(row.get("vintage_year")) else int(row.get("vintage_year")),
-            dpi_color,
-            "—" if pd.isna(row.get("dpi")) else "{0:.2f}×".format(row.get("dpi")),
-            "—" if pd.isna(row.get("tvpi")) else "{0:.2f}×".format(row.get("tvpi")),
-            "—" if pd.isna(row.get("net_irr")) else "{0:.1f}%".format(row.get("net_irr") * 100),
-            source_badge_class,
-            html.escape(source_label),
-        )
-
-    _render_html(
-        """
-<table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif">
-  <thead>
-    <tr style="border-bottom:2px solid #E5E7EB">
-      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">#</th>
-      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">FUND</th>
-      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">GP</th>
-      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">VTG</th>
-      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#E8571F;font-family:'IBM Plex Mono',monospace">DPI</th>
-      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">TVPI</th>
-      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">NET IRR</th>
-      <th style="text-align:left;padding:8px 4px;font-size:9px;color:#9CA3AF;font-family:'IBM Plex Mono',monospace">SOURCE</th>
-    </tr>
-  </thead>
-  <tbody>{0}</tbody>
-</table>
-        """.format(rows_html)
+    leaderboard = pd.DataFrame(
+        {
+            "#": [str(i + 1).zfill(2) for i in range(len(dpi_df))],
+            "Fund": dpi_df["fund_name"].astype(str),
+            "GP": dpi_df["canonical_gp"].astype(str),
+            "Vintage": dpi_df["vintage_year"].map(lambda v: "—" if pd.isna(v) else str(int(v))),
+            "DPI": dpi_df["dpi"].map(lambda v: "—" if pd.isna(v) else "{0:.2f}×".format(v)),
+            "TVPI": dpi_df["tvpi"].map(lambda v: "—" if pd.isna(v) else "{0:.2f}×".format(v)),
+            "Net IRR": dpi_df["net_irr"].map(lambda v: "—" if pd.isna(v) else "{0:.1f}%".format(v * 100)),
+            "Source": dpi_df["source"].astype(str).map(lambda s: SOURCE_SHORT.get(s, s)),
+        }
     )
+    st.dataframe(leaderboard, use_container_width=True, hide_index=True)
 
     st.markdown(
         """
