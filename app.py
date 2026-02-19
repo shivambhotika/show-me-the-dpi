@@ -515,16 +515,17 @@ def _infer_category_from_name(name: str) -> str:
 
 def style_chart_readability(fig: go.Figure):
     fig.update_layout(
-        font=dict(family="Inter", size=13, color="#111827"),
+        font=dict(family="Inter", size=14, color="#111827"),
         hoverlabel=dict(
             bgcolor="#FFFFFF",
             bordercolor="#D1D5DB",
-            font=dict(family="Inter", size=12, color="#111827"),
+            font=dict(family="Inter", size=13, color="#111827"),
+            align="left",
         ),
-        legend=dict(font=dict(size=11)),
+        legend=dict(font=dict(size=12)),
     )
-    fig.update_xaxes(title_font=dict(size=13), tickfont=dict(size=12))
-    fig.update_yaxes(title_font=dict(size=13), tickfont=dict(size=12))
+    fig.update_xaxes(title_font=dict(size=15), tickfont=dict(size=13))
+    fig.update_yaxes(title_font=dict(size=15), tickfont=dict(size=13))
 
 
 def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame) -> pd.DataFrame:
@@ -927,12 +928,8 @@ def _render_metric_card(label: str, value: str, dpi=False):
 
 def render_firms(df_master: pd.DataFrame):
     gps = sorted(df_master["canonical_gp"].dropna().astype(str).unique().tolist())
-    requested = [s["canonical_gp"] for s in FOCUS_FIRM_SPECS]
-    missing = [s["gp_display_name"] for s in FOCUS_FIRM_SPECS if s["canonical_gp"] not in gps]
 
     render_page_header("TOP FIRMS", "VC & GROWTH EQUITY MANAGERS — PUBLIC LP DATA", "{0:,} FIRMS TRACKED".format(len(gps)))
-    if missing:
-        st.info("No current records found for: {0}".format(", ".join(missing)))
 
     source_by_gp = (
         df_master.groupby("canonical_gp")["data_source_type"]
@@ -1265,19 +1262,43 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
                 }
             )
         firm_df = pd.DataFrame(firm_summary).dropna(subset=["median_dpi"])
+        firm_df["x_plot"] = pd.to_numeric(firm_df["meaningful_count"], errors="coerce").astype(float)
+        firm_df["y_plot"] = pd.to_numeric(firm_df["median_dpi"], errors="coerce").astype(float)
+        # Reduce visual dominance of very large firms while keeping relative scale.
+        firm_df["bubble_size"] = np.log1p(firm_df["total_capital_bn"].clip(lower=0) * 8.0)
+        if firm_df["bubble_size"].max() == 0:
+            firm_df["bubble_size"] = 1.0
+        # De-overlap dense cluster in lower-left region.
+        dense = (firm_df["x_plot"] <= 4.0) & (firm_df["y_plot"] <= 1.5)
+        if dense.any():
+            dense_df = firm_df[dense].sort_values(["x_plot", "y_plot", "firm"]).copy()
+            n = len(dense_df)
+            x_offsets = np.tile(np.array([-0.35, 0.0, 0.35]), int(np.ceil(n / 3)))[:n]
+            y_offsets = np.tile(np.array([0.14, 0.0, -0.14]), int(np.ceil(n / 3)))[:n]
+            firm_df.loc[dense_df.index, "x_plot"] = dense_df["x_plot"].values + x_offsets
+            firm_df.loc[dense_df.index, "y_plot"] = dense_df["y_plot"].values + y_offsets
+        # Label only high-signal firms to avoid text collisions.
+        firm_df["label_text"] = np.where(
+            (firm_df["y_plot"] >= 1.75)
+            | (firm_df["x_plot"] >= 8.0)
+            | (firm_df["source_type"] == "Market Intelligence"),
+            firm_df["firm"],
+            "",
+        )
+
         color_map = {"LP-Disclosed": "#2C3E50", "Market Intelligence": "#E8571F"}
         fig = px.scatter(
             firm_df,
-            x="meaningful_count",
-            y="median_dpi",
-            size="total_capital_bn",
-            text="firm",
+            x="x_plot",
+            y="y_plot",
+            size="bubble_size",
+            text="label_text",
             color="source_type",
             color_discrete_map=color_map,
-            size_max=45,
+            size_max=36,
             template="plotly_white",
             labels={"meaningful_count": "Funds with Meaningful Data", "median_dpi": "Median Net DPI (×)"},
-            custom_data=["canonical_gp", "total_capital_bn", "meaningful_count", "source_type"],
+            custom_data=["firm", "canonical_gp", "total_capital_bn", "meaningful_count", "median_dpi", "source_type"],
         )
         fig.add_hline(
             y=1.0,
@@ -1299,12 +1320,12 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
         )
         fig.update_traces(
             textposition="top center",
-            textfont_size=9,
-            marker=dict(line=dict(width=1, color="white")),
-            hovertemplate="<b>%{text}</b><br>Canonical GP: %{customdata[0]}<br>Meaningful Funds: %{customdata[2]}<br>Median DPI: %{y:.2f}×<br>Total Capital Represented: %{customdata[1]:.2f}B<br>Source Type: %{customdata[3]}<extra></extra>",
+            textfont_size=10,
+            marker=dict(line=dict(width=1.2, color="white"), opacity=0.8),
+            hovertemplate="<b>%{customdata[0]}</b><br>Canonical GP: %{customdata[1]}<br>Data Source Type: %{customdata[5]}<br>Funds with meaningful data: %{customdata[3]}<br>Median net DPI: %{customdata[4]:.2f}×<br>Total capital represented: %{customdata[2]:.2f}B<br><br><i>1.0× means LPs have gotten their invested capital back. 2.0× means strong realized cash performance.</i><extra></extra>",
         )
         fig.update_layout(
-            height=380,
+            height=400,
             showlegend=True,
             legend=dict(title="Source", orientation="h", y=-0.18, font=dict(size=9)),
             plot_bgcolor="#FFFFFF",
@@ -1314,6 +1335,8 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
             font=dict(family="Inter", size=11),
             margin=dict(l=40, r=40, t=30, b=40),
         )
+        fig.update_xaxes(title_text="Funds with Meaningful Data")
+        fig.update_yaxes(title_text="Median Net DPI (×)")
         style_chart_readability(fig)
         st.plotly_chart(fig, use_container_width=True)
 
@@ -2149,11 +2172,8 @@ def main():
                 <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#111827">SHOW ME THE </span>
                 <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#E8571F">DPI</span>
             </div>
-            <div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#9CA3AF">
-                PUBLIC LP DISCLOSURE RESEARCH · {0:,} FUNDS
-            </div>
         </div>
-        """.format(len(df_unified))
+        """
     )
 
     tab_about, tab_insights, tab_firms, tab_database, tab_sources = st.tabs(
