@@ -258,6 +258,23 @@ CATEGORY_COLORS = {
     "Company Creation": "#7B68EE",
 }
 
+
+FOCUS_FIRM_SPECS = [
+    {"canonical_gp": "a16z", "gp_display_name": "Andreessen Horowitz", "include": [r"ah fund", r"andreessen", r"\ba16z\b"], "exclude": []},
+    {"canonical_gp": "USV", "gp_display_name": "Union Square Ventures", "include": [r"union square ventures", r"\busv\b"], "exclude": []},
+    {"canonical_gp": "Spark Capital", "gp_display_name": "Spark Capital", "include": [r"spark capital"], "exclude": []},
+    {"canonical_gp": "Social Capital", "gp_display_name": "Social Capital", "include": [r"social capital"], "exclude": []},
+    {"canonical_gp": "NEA", "gp_display_name": "New Enterprise Associates", "include": [r"new enterprise associates", r"\bnea\b"], "exclude": []},
+    {"canonical_gp": "Kleiner Perkins", "gp_display_name": "Kleiner Perkins", "include": [r"kleiner", r"\bkpcb\b"], "exclude": []},
+    {"canonical_gp": "Greylock Partners", "gp_display_name": "Greylock Partners", "include": [r"greylock"], "exclude": []},
+    {"canonical_gp": "Battery Ventures", "gp_display_name": "Battery Ventures", "include": [r"battery ventures", r"\bbattery\b"], "exclude": []},
+    {"canonical_gp": "Index Ventures", "gp_display_name": "Index Ventures", "include": [r"index ventures", r"index venture"], "exclude": []},
+    {"canonical_gp": "Accel", "gp_display_name": "Accel", "include": [r"\baccel\b"], "exclude": [r"accel-kkr", r"acceleration"]},
+    {"canonical_gp": "Founders Fund", "gp_display_name": "Founders Fund", "include": [r"founders fund"], "exclude": []},
+    {"canonical_gp": "Insight Partners", "gp_display_name": "Insight Partners", "include": [r"insight venture", r"insight partners"], "exclude": []},
+    {"canonical_gp": "Coatue", "gp_display_name": "Coatue", "include": [r"coatue"], "exclude": []},
+]
+
 SOURCES_CONFIG = [
     {
         "name": "California Public Employees' (CalPERS)",
@@ -483,6 +500,147 @@ def bench_disclaimer():
     """,
         unsafe_allow_html=True,
     )
+
+
+def _infer_category_from_name(name: str) -> str:
+    s = str(name).lower()
+    if "opportun" in s:
+        return "Opportunities"
+    if "growth" in s:
+        return "Growth"
+    if any(k in s for k in ["buyout", "credit", "distress", "special situations", "structured"]):
+        return "PE"
+    return "Venture"
+
+
+def style_chart_readability(fig: go.Figure):
+    fig.update_layout(
+        font=dict(family="Inter", size=13, color="#111827"),
+        hoverlabel=dict(
+            bgcolor="#FFFFFF",
+            bordercolor="#D1D5DB",
+            font=dict(family="Inter", size=12, color="#111827"),
+        ),
+        legend=dict(font=dict(size=11)),
+    )
+    fig.update_xaxes(title_font=dict(size=13), tickfont=dict(size=12))
+    fig.update_yaxes(title_font=dict(size=13), tickfont=dict(size=12))
+
+
+def build_focus_master(df_master: pd.DataFrame, df_unified: pd.DataFrame) -> pd.DataFrame:
+    # Remove Accel-KKR globally; keep only Accel VC rows if/when available.
+    master = df_master.copy()
+    master_gp = master.get("canonical_gp", pd.Series(index=master.index, dtype="object")).astype(str)
+    master_fn = master.get("fund_name", pd.Series(index=master.index, dtype="object")).astype(str)
+    drop_mask = master_gp.str.contains("accel-kkr", case=False, na=False) | master_fn.str.contains("accel-kkr", case=False, na=False)
+    master = master[~drop_mask].copy()
+
+    u = df_unified.copy()
+    if u.empty:
+        return master
+
+    for col in ["fund_name", "source", "reporting_period"]:
+        if col not in u.columns:
+            u[col] = np.nan
+    for col in ["vintage_year", "capital_committed", "tvpi", "dpi", "net_irr"]:
+        u[col] = pd.to_numeric(u.get(col), errors="coerce")
+
+    rows = []
+    fund_names = u["fund_name"].astype(str)
+    for spec in FOCUS_FIRM_SPECS:
+        inc_mask = False
+        for p in spec["include"]:
+            inc_mask = inc_mask | fund_names.str.contains(p, case=False, na=False, regex=True)
+
+        exc_mask = False
+        for p in spec["exclude"]:
+            exc_mask = exc_mask | fund_names.str.contains(p, case=False, na=False, regex=True)
+
+        sub = u[inc_mask & ~exc_mask].copy()
+        if sub.empty:
+            continue
+
+        # Normalize IRR scale and useful numeric defaults.
+        irr = pd.to_numeric(sub["net_irr"], errors="coerce")
+        sub["net_irr"] = np.where(irr.abs() > 2, irr / 100.0, irr)
+        sub["fund_size_usd_m"] = pd.to_numeric(sub["capital_committed"], errors="coerce") / 1_000_000.0
+        sub["fund_category"] = sub["fund_name"].astype(str).map(_infer_category_from_name)
+        sub["sub_strategy"] = np.where(sub["fund_category"].eq("Growth"), "Growth Equity", "Venture")
+        sub["irr_meaningful"] = (
+            pd.to_numeric(sub["vintage_year"], errors="coerce").le(2020)
+            & sub["net_irr"].notna()
+            & sub["net_irr"].abs().ne(1.0)
+        )
+        sub["canonical_gp"] = spec["canonical_gp"]
+        sub["gp_display_name"] = spec["gp_display_name"]
+        sub["fund_size_confidence"] = "Derived from LP committed capital"
+        sub["firm_aum_usd_b"] = np.nan
+        sub["firm_founded"] = np.nan
+        sub["hq_city"] = ""
+        sub["investment_focus"] = ""
+        sub["stage_focus"] = ""
+        sub["notable_portfolio"] = ""
+        sub["performance_note"] = "Auto-added from LP-disclosed unified database matching."
+        sub["data_source_type"] = "LP-Disclosed"
+        sub["gross_tvpi"] = np.nan
+        sub["gross_dpi"] = np.nan
+
+        rows.append(
+            sub[
+                [
+                    "canonical_gp",
+                    "gp_display_name",
+                    "fund_name",
+                    "vintage_year",
+                    "fund_category",
+                    "sub_strategy",
+                    "fund_size_usd_m",
+                    "fund_size_confidence",
+                    "firm_aum_usd_b",
+                    "firm_founded",
+                    "hq_city",
+                    "investment_focus",
+                    "stage_focus",
+                    "notable_portfolio",
+                    "source",
+                    "reporting_period",
+                    "gross_tvpi",
+                    "tvpi",
+                    "gross_dpi",
+                    "dpi",
+                    "net_irr",
+                    "irr_meaningful",
+                    "performance_note",
+                    "data_source_type",
+                ]
+            ].copy()
+        )
+
+    if not rows:
+        return master
+
+    added = pd.concat(rows, ignore_index=True)
+    combined = pd.concat([master, added], ignore_index=True, sort=False)
+    combined["vintage_year"] = pd.to_numeric(combined.get("vintage_year"), errors="coerce").astype("Int64")
+
+    # De-dupe within a GP while preserving multi-source rows where reporting periods differ.
+    for col in ["source", "reporting_period"]:
+        if col not in combined.columns:
+            combined[col] = np.nan
+    combined = combined.drop_duplicates(
+        subset=["canonical_gp", "fund_name", "vintage_year", "source", "reporting_period"],
+        keep="first",
+    ).reset_index(drop=True)
+
+    # Final Accel-KKR safety filter.
+    gp2 = combined.get("canonical_gp", pd.Series(index=combined.index, dtype="object")).astype(str)
+    fn2 = combined.get("fund_name", pd.Series(index=combined.index, dtype="object")).astype(str)
+    combined = combined[
+        ~gp2.str.contains("accel-kkr", case=False, na=False)
+        & ~fn2.str.contains("accel-kkr", case=False, na=False)
+    ].copy()
+
+    return combined
 
 
 def render_page_header(title: str, subtitle: str, count: str = None):
@@ -769,8 +927,12 @@ def _render_metric_card(label: str, value: str, dpi=False):
 
 def render_firms(df_master: pd.DataFrame):
     gps = sorted(df_master["canonical_gp"].dropna().astype(str).unique().tolist())
+    requested = [s["canonical_gp"] for s in FOCUS_FIRM_SPECS]
+    missing = [s["gp_display_name"] for s in FOCUS_FIRM_SPECS if s["canonical_gp"] not in gps]
 
     render_page_header("TOP FIRMS", "VC & GROWTH EQUITY MANAGERS — PUBLIC LP DATA", "{0:,} FIRMS TRACKED".format(len(gps)))
+    if missing:
+        st.info("No current records found for: {0}".format(", ".join(missing)))
 
     source_by_gp = (
         df_master.groupby("canonical_gp")["data_source_type"]
@@ -1115,6 +1277,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
             size_max=45,
             template="plotly_white",
             labels={"meaningful_count": "Funds with Meaningful Data", "median_dpi": "Median Net DPI (×)"},
+            custom_data=["canonical_gp", "total_capital_bn", "meaningful_count", "source_type"],
         )
         fig.add_hline(
             y=1.0,
@@ -1134,7 +1297,12 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
             annotation_position="bottom right",
             annotation_font_size=9,
         )
-        fig.update_traces(textposition="top center", textfont_size=9, marker=dict(line=dict(width=1, color="white")))
+        fig.update_traces(
+            textposition="top center",
+            textfont_size=9,
+            marker=dict(line=dict(width=1, color="white")),
+            hovertemplate="<b>%{text}</b><br>Canonical GP: %{customdata[0]}<br>Meaningful Funds: %{customdata[2]}<br>Median DPI: %{y:.2f}×<br>Total Capital Represented: %{customdata[1]:.2f}B<br>Source Type: %{customdata[3]}<extra></extra>",
+        )
         fig.update_layout(
             height=380,
             showlegend=True,
@@ -1146,6 +1314,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
             font=dict(family="Inter", size=11),
             margin=dict(l=40, r=40, t=30, b=40),
         )
+        style_chart_readability(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
@@ -1212,6 +1381,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
             font=dict(family="Inter", size=10),
             margin=dict(l=10, r=20, t=30, b=40),
         )
+        style_chart_readability(fig2)
         st.plotly_chart(fig2, use_container_width=True)
 
     st.markdown('<div class="section-label">02 / RETURNS — LP-DISCLOSED + MARKET INTEL vs CA BENCHMARK</div>', unsafe_allow_html=True)
@@ -1311,6 +1481,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
         paper_bgcolor="#FFFFFF",
         font=dict(family="Inter", size=12),
     )
+    style_chart_readability(fig)
     st.plotly_chart(fig, use_container_width=True)
     bench_disclaimer()
     st.markdown(
@@ -1485,6 +1656,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
         paper_bgcolor="#FFFFFF",
         font=dict(family="Inter", size=12),
     )
+    style_chart_readability(fig_map)
     st.plotly_chart(fig_map, use_container_width=True)
 
     st.markdown('<div class="section-label" style="margin-top:2rem">02C / NET IRR RANKING — HOVER FOR vs BENCHMARK</div>', unsafe_allow_html=True)
@@ -1521,6 +1693,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
         font=dict(family="Inter", size=10),
         margin=dict(l=300, r=80, t=30, b=40),
     )
+    style_chart_readability(fig_rank)
     st.plotly_chart(fig_rank, use_container_width=True)
     bench_disclaimer()
 
@@ -1585,6 +1758,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
             font=dict(family="Inter", size=11),
             margin=dict(t=20, b=30),
         )
+        style_chart_readability(fig_tvpi)
         st.plotly_chart(fig_tvpi, use_container_width=True)
         n_per = tvpi_df.groupby("vintage_year").size().to_dict()
         n_str = "  ·  ".join(["{0}: n={1}".format(y, n) for y, n in sorted(n_per.items()) if y >= 2005])
@@ -1623,6 +1797,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
             font=dict(family="Inter", size=11),
             margin=dict(t=20, b=40),
         )
+        style_chart_readability(fig_cap)
         st.plotly_chart(fig_cap, use_container_width=True)
         st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">% = realization rate per vintage. Orange = cash distributed to LPs. Grey = unrealized paper value.</div>", unsafe_allow_html=True)
 
@@ -1668,6 +1843,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
             font=dict(family="Inter", size=11),
             margin=dict(t=20),
         )
+        style_chart_readability(fig_traj)
         st.plotly_chart(fig_traj, use_container_width=True)
         bench_disclaimer()
 
@@ -1701,6 +1877,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame):
             font=dict(family="Inter", size=11),
             margin=dict(t=20, l=20),
         )
+        style_chart_readability(fig_strat)
         st.plotly_chart(fig_strat, use_container_width=True)
         st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">Capital-weighted: larger funds influence the average proportionally. LP-disclosed funds only.</div>", unsafe_allow_html=True)
 
@@ -1960,6 +2137,8 @@ def main():
         st.error("Failed loading ca_benchmarks.csv: {0}".format(exc))
         return
 
+    df_focus_master = build_focus_master(df_master, df_unified)
+
     _render_html(
         """
         <div style="display:flex;align-items:center;gap:10px;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
@@ -1985,10 +2164,10 @@ def main():
         render_about()
 
     with tab_insights:
-        render_insights(df_master, bench)
+        render_insights(df_focus_master, bench)
 
     with tab_firms:
-        render_firms(df_master)
+        render_firms(df_focus_master)
 
     with tab_database:
         render_fund_database(df_unified, df_market_intel)
