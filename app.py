@@ -1199,8 +1199,18 @@ def render_firms(df_master: pd.DataFrame):
         st.info("No funds available for selected firm.")
         return
 
+    def _as_bool(v) -> bool:
+        if pd.isna(v):
+            return False
+        if isinstance(v, str):
+            return v.strip().lower() in {"true", "1", "yes", "y", "t"}
+        return bool(v)
+
     row = gp_df.iloc[0]
-    is_market_intel = bool((gp_df["data_source_type"] == "Market Intelligence").all())
+    if "data_source_type" in gp_df.columns:
+        is_market_intel = len(gp_df) > 0 and gp_df["data_source_type"].astype(str).str.strip().eq("Market Intelligence").all()
+    else:
+        is_market_intel = False
     source_chip = '<span class="badge badge-mi">MARKET INTEL</span>' if is_market_intel else '<span class="badge badge-lp-disclosed">LP-DISCLOSED</span>'
 
     st.markdown(
@@ -1292,7 +1302,7 @@ def render_firms(df_master: pd.DataFrame):
             _render_metric_card("FUNDS TRACKED", "{0}".format(len(gp_df)), dpi=False)
 
     def _status_badge(v):
-        if bool(v):
+        if _as_bool(v):
             return '<span class="badge" style="background:#ECFDF5;color:#166534;border-color:#86EFAC">MEANINGFUL</span>'
         return '<span class="badge" style="background:#F3F4F6;color:#6B7280;border-color:#D1D5DB">TOO EARLY</span>'
 
