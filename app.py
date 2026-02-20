@@ -215,24 +215,58 @@ def inject_css():
     .chart-subtitle { font-family: 'Inter', sans-serif; font-size: 12px; color: #9CA3AF; margin-bottom: 16px; }
 
     /* Force light segmented nav across browsers/themes */
-    div[data-testid="stSegmentedControl"] {
-        background: #FFFFFF !important;
+    div[data-testid="stSegmentedControl"], 
+    div[data-testid="stSegmentedControl"] * {
+        background: transparent !important;
     }
-    div[data-testid="stSegmentedControl"] [role="radiogroup"] {
+    div[data-testid="stSegmentedControl"] > div {
         background: #FFFFFF !important;
         border: 1px solid #E5E7EB !important;
         border-radius: 8px !important;
+        gap: 0 !important;
+        padding: 0 !important;
     }
-    div[data-testid="stSegmentedControl"] [role="radio"] {
-        background: #FFFFFF !important;
+    div[data-testid="stSegmentedControl"] button, 
+    div[data-testid="stSegmentedControl"] [role="radio"],
+    div[data-testid="stSegmentedControl"] label {
+        background-color: #FFFFFF !important;
         color: #6B7280 !important;
+        border: none !important;
         border-right: 1px solid #F3F4F6 !important;
+        font-family: 'IBM Plex Mono', monospace !important;
+        font-size: 11px !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+        padding: 6px 14px !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        cursor: pointer !important;
     }
-    div[data-testid="stSegmentedControl"] [role="radio"][aria-checked="true"] {
-        background: #FFF4EF !important;
+    div[data-testid="stSegmentedControl"] button:last-child {
+        border-right: none !important;
+        border-top-right-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+    }
+    div[data-testid="stSegmentedControl"] button:first-child {
+        border-top-left-radius: 8px !important;
+        border-bottom-left-radius: 8px !important;
+    }
+    div[data-testid="stSegmentedControl"] button[data-checked="true"], 
+    div[data-testid="stSegmentedControl"] [aria-checked="true"],
+    div[data-testid="stSegmentedControl"] [data-checked="true"] label {
+        background-color: #FFF4EF !important;
         color: #E8571F !important;
         font-weight: 600 !important;
     }
+    div[data-testid="stSegmentedControl"] button:hover, 
+    div[data-testid="stSegmentedControl"] label:hover {
+        color: #E8571F !important;
+        background-color: #FAFAFA !important;
+    }
+    /* Hide the "undefined" tag which is actually the modebar tooltip frame */
+    .js-plotly-plot .plotly .modebar { display: none !important; }
     .footer-wrap { margin-top: 1.2rem; border-top: 1px solid #E5E7EB; padding-top: 12px; }
     .footer-text { font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280; line-height: 1.55; }
     .footer-links a { color: #E8571F; text-decoration: none; }
@@ -907,6 +941,22 @@ def style_chart_readability(fig: go.Figure):
 
     fig.update_layout(
         font=dict(family="Inter", size=14, color="#111827"),
+        title_font=dict(color="#111827"),
+        xaxis=dict(
+            title_font=dict(color="#111827"),
+            tickfont=dict(color="#111827"),
+            gridcolor="#F3F4F6",
+        ),
+        yaxis=dict(
+            title_font=dict(color="#111827"),
+            tickfont=dict(color="#111827"),
+            gridcolor="#F3F4F6",
+        ),
+        legend=dict(
+            font=dict(color="#111827"),
+            title_font=dict(color="#111827"),
+        ),
+        hovermode="closest",
         hoverlabel=dict(
             bgcolor="#FFFFFF",
             bordercolor="#D1D5DB",
@@ -919,6 +969,9 @@ def style_chart_readability(fig: go.Figure):
             t=max(56, current_top),
             b=max(96, current_bottom),
         ),
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+        modebar=dict(remove=["zoom", "pan", "select", "lasso2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "hoverClosestCartesian", "hoverCompareCartesian"]),
     )
     if fig.layout.legend is not None:
         legend_orientation = getattr(fig.layout.legend, "orientation", None)
@@ -1755,16 +1808,16 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
             with col:
                 st.markdown(
                     """
-                <div style="border:1px solid #E5E7EB;border-radius:6px;padding:16px;background:#fff;height:100%">
+                <div style="border:1px solid #E5E7EB;border-radius:6px;padding:16px;background:#fff;height:100%;min-height:220px;display:flex;flex-direction:column">
                     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.15em;
                         text-transform:uppercase;color:#9CA3AF;margin-bottom:4px">
                         {0} / {1}
                     </div>
                     <div style="font-family:'Inter',sans-serif;font-size:15px;font-weight:700;
-                        color:#111827;margin-bottom:8px;line-height:1.2">
+                        color:#111827;margin-bottom:8px;line-height:1.2;flex-grow:0">
                         {2}
                     </div>
-                    <div style="font-family:'Inter',sans-serif;font-size:12px;color:#6B7280;line-height:1.5">
+                    <div style="font-family:'Inter',sans-serif;font-size:12px;color:#6B7280;line-height:1.5;flex-grow:1">
                         {3}
                     </div>
                 </div>
@@ -1878,7 +1931,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     fig.update_xaxes(title_text="Funds with Meaningful Data")
     fig.update_yaxes(title_text="Median Net DPI (×)")
     style_chart_readability(fig)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown(
         """
@@ -1926,7 +1979,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
 
     fig2 = go.Figure()
     fig2.add_trace(
-        go.Scattergl(
+        go.Scatter(
             x=tl["vintage_year"].astype(int),
             y=tl["firm_display"],
             mode="markers",
@@ -1964,7 +2017,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         margin=dict(l=120, r=30, t=30, b=60),
     )
     style_chart_readability(fig2)
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown('<div class="section-label">02 / RETURNS — LP-DISCLOSED + MARKET INTEL vs CA BENCHMARK</div>', unsafe_allow_html=True)
     fig = go.Figure()
@@ -2091,7 +2144,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         font=dict(family="Inter", size=12),
     )
     style_chart_readability(fig)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
     bench_disclaimer()
     st.markdown(
         """
@@ -2131,19 +2184,50 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     dpi_df["tvpi"] = pd.to_numeric(dpi_df["tvpi"], errors="coerce")
     dpi_df["net_irr"] = pd.to_numeric(dpi_df["net_irr"], errors="coerce")
     dpi_df = dpi_df.sort_values("dpi", ascending=False).head(15).reset_index(drop=True)
-    leaderboard = pd.DataFrame(
-        {
-            "#": [str(i + 1).zfill(2) for i in range(len(dpi_df))],
-            "Fund": dpi_df["fund_name"].astype(str),
-            "GP": dpi_df["canonical_gp"].astype(str),
-            "Vintage": dpi_df["vintage_year"].map(lambda v: "—" if pd.isna(v) else str(int(v))),
-            "DPI": dpi_df["dpi"].map(lambda v: "—" if pd.isna(v) else "{0:.2f}×".format(v)),
-            "TVPI": dpi_df["tvpi"].map(lambda v: "—" if pd.isna(v) else "{0:.2f}×".format(v)),
-            "Net IRR": dpi_df["net_irr"].map(lambda v: "—" if pd.isna(v) else "{0:.1f}%".format(v * 100)),
-            "Source": dpi_df["source"].astype(str).map(lambda s: SOURCE_SHORT.get(s, s)),
-        }
+
+    leaderboard_html = ""
+    for i, r in dpi_df.iterrows():
+        name = html.escape(str(r.get("fund_name", "")))
+        gp = html.escape(str(r.get("canonical_gp", "")))
+        vintage = "—" if pd.isna(r.get("vintage_year")) else str(int(r.get("vintage_year")))
+        dpi_val = r.get("dpi")
+        dpi_str = "—" if pd.isna(dpi_val) else "{0:.2f}×".format(dpi_val)
+        tvpi_str = "—" if pd.isna(r.get("tvpi")) else "{0:.2f}×".format(r.get("tvpi"))
+        irr_str = "—" if pd.isna(r.get("net_irr")) else "{0:.1f}%".format(r.get("net_irr") * 100)
+        source_raw = str(r.get("source", ""))
+        source_cls = SOURCE_BADGE_CLASS.get(source_raw, "badge-estimated")
+        source_lbl = SOURCE_SHORT.get(source_raw, source_raw[:10])
+
+        dpi_color = "#E8571F" if dpi_val and dpi_val >= 1.0 else "#111827"
+        
+        leaderboard_html += (
+            "<tr>"
+            '<td class="id-col">{0}</td>'
+            '<td style="font-weight:600">{1} <span style="font-weight:400;color:#6B7280;margin-left:4px">/ {2}</span></td>'
+            '<td class="numeric">{3}</td>'
+            '<td><span class="badge {4}">{5}</span></td>'
+            '<td class="numeric">{6}</td>'
+            '<td class="numeric" style="color:{7};font-weight:600">{8}</td>'
+            '<td class="numeric">{9}</td>'
+            "</tr>"
+        ).format(
+            str(i + 1).zfill(2), 
+            name, gp,
+            vintage,
+            source_cls, html.escape(source_lbl),
+            tvpi_str,
+            dpi_color, dpi_str,
+            irr_str
+        )
+
+    _render_html(
+        (
+            '<table class="fund-table"><thead><tr>'
+            "<th>#</th><th>FUND / GP</th><th class=\"right\">VINTAGE</th><th>SOURCE</th>"
+            '<th class="right">TVPI</th><th class="right" style="color:#E8571F">DPI ▲</th><th class="right">IRR</th>'
+            "</tr></thead><tbody>{0}</tbody></table>"
+        ).format(leaderboard_html)
     )
-    st.dataframe(leaderboard, use_container_width=True, hide_index=True)
 
     st.markdown(
         """
@@ -2314,7 +2398,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         font=dict(family="Inter", size=12),
     )
     style_chart_readability(fig_map)
-    st.plotly_chart(fig_map, use_container_width=True)
+    st.plotly_chart(fig_map, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown('<div class="section-label" style="margin-top:2rem">02E / NET IRR RANKING — HOVER FOR vs BENCHMARK</div>', unsafe_allow_html=True)
     rank_df = lp_df.copy()
@@ -2351,192 +2435,206 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         margin=dict(l=300, r=80, t=30, b=40),
     )
     style_chart_readability(fig_rank)
-    st.plotly_chart(fig_rank, use_container_width=True)
+    st.plotly_chart(fig_rank, use_container_width=True, config={"displayModeBar": False})
     bench_disclaimer()
 
     st.markdown('<div class="section-label">03 / VINTAGE COHORT ANALYSIS</div>', unsafe_allow_html=True)
-    col3a, col3b = st.columns(2)
-    with col3a:
-        st.markdown('<div class="chart-title">TVPI BY VINTAGE — vs CA BENCHMARK</div>', unsafe_allow_html=True)
-        tvpi_df = lp_df[lp_df["tvpi"].notna()].copy()
-        tvpi_df["x_jitter"] = tvpi_df["vintage_year"].astype(float) + np.random.uniform(-0.25, 0.25, len(tvpi_df))
-        fig_tvpi = go.Figure()
-        fig_tvpi.add_trace(
-            go.Scatter(
-                x=list(bench_meaningful["vintage_year"]) + list(bench_meaningful["vintage_year"])[::-1],
-                y=list(bench_meaningful["q1_tvpi"]) + list(bench_meaningful["q3_tvpi"])[::-1],
-                fill="toself",
-                fillcolor="rgba(16,185,129,0.07)",
-                line=dict(color="rgba(0,0,0,0)"),
-                name="CA Q3–Q1 TVPI Band",
-                hoverinfo="skip",
-            )
+    
+    # Chart 3A: TVPI by Vintage
+    st.markdown('<div class="chart-title">TVPI BY VINTAGE — vs CA BENCHMARK</div>', unsafe_allow_html=True)
+    tvpi_df = lp_df[lp_df["tvpi"].notna()].copy()
+    tvpi_df["x_jitter"] = tvpi_df["vintage_year"].astype(float) + np.random.uniform(-0.25, 0.25, len(tvpi_df))
+    fig_tvpi = go.Figure()
+    fig_tvpi.add_trace(
+        go.Scatter(
+            x=list(bench_meaningful["vintage_year"]) + list(bench_meaningful["vintage_year"])[::-1],
+            y=list(bench_meaningful["q1_tvpi"]) + list(bench_meaningful["q3_tvpi"])[::-1],
+            fill="toself",
+            fillcolor="rgba(16,185,129,0.07)",
+            line=dict(color="rgba(0,0,0,0)"),
+            name="CA Q3–Q1 TVPI Band",
+            hoverinfo="skip",
         )
-        fig_tvpi.add_trace(
-            go.Scatter(
-                x=bench_meaningful["vintage_year"],
-                y=bench_meaningful["median_tvpi"],
-                mode="lines",
-                line=dict(color="#9CA3AF", dash="dot", width=1.5),
-                name="CA Median TVPI",
-            )
+    )
+    fig_tvpi.add_trace(
+        go.Scatter(
+            x=bench_meaningful["vintage_year"],
+            y=bench_meaningful["median_tvpi"],
+            mode="lines",
+            line=dict(color="#9CA3AF", dash="dot", width=1.5),
+            name="CA Median TVPI",
         )
-        fig_tvpi.add_trace(
-            go.Scatter(
-                x=tvpi_df["x_jitter"],
-                y=tvpi_df["tvpi"],
-                mode="markers",
-                marker=dict(size=7, color="#2C3E50", opacity=0.6, line=dict(width=0.5, color="white")),
-                name="LP-Disclosed Fund",
-                customdata=tvpi_df[["fund_name", "canonical_gp", "dpi"]].values,
-                hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>TVPI: %{y:.2f}× | DPI: %{customdata[2]:.2f}×<extra></extra>",
-            )
+    )
+    fig_tvpi.add_trace(
+        go.Scatter(
+            x=tvpi_df["x_jitter"],
+            y=tvpi_df["tvpi"],
+            mode="markers",
+            marker=dict(size=7, color="#2C3E50", opacity=0.6, line=dict(width=0.5, color="white")),
+            name="LP-Disclosed Fund",
+            customdata=tvpi_df[["fund_name", "canonical_gp", "dpi"]].values,
+            hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>TVPI: %{y:.2f}× | DPI: %{customdata[2]:.2f}×<extra></extra>",
         )
-        medians = tvpi_df.groupby("vintage_year")["tvpi"].median().reset_index()
-        fig_tvpi.add_trace(
-            go.Scatter(
-                x=medians["vintage_year"],
-                y=medians["tvpi"],
-                mode="lines+markers",
-                line=dict(color="#E8571F", width=2),
-                marker=dict(size=6, color="#E8571F"),
-                name="This Dataset Median",
-            )
+    )
+    medians = tvpi_df.groupby("vintage_year")["tvpi"].median().reset_index()
+    fig_tvpi.add_trace(
+        go.Scatter(
+            x=medians["vintage_year"],
+            y=medians["tvpi"],
+            mode="lines+markers",
+            line=dict(color="#E8571F", width=2),
+            marker=dict(size=6, color="#E8571F"),
+            name="This Dataset Median",
         )
-        fig_tvpi.add_hline(y=1.0, line_dash="dot", line_color="#9CA3AF", line_width=1)
-        fig_tvpi.update_layout(
-            height=380,
-            template="plotly_white",
-            xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
-            yaxis=dict(title="Net TVPI (×)", gridcolor="#F3F4F6"),
-            legend=dict(font=dict(size=9)),
-            plot_bgcolor="#FFFFFF",
-            paper_bgcolor="#FFFFFF",
-            font=dict(family="Inter", size=11),
-            margin=dict(t=20, b=30),
-        )
-        style_chart_readability(fig_tvpi)
-        st.plotly_chart(fig_tvpi, use_container_width=True)
-        n_per = tvpi_df.groupby("vintage_year").size().to_dict()
-        n_str = "  ·  ".join(["{0}: n={1}".format(y, n) for y, n in sorted(n_per.items()) if y >= 2005])
-        st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">{0}</div>".format(html.escape(n_str)), unsafe_allow_html=True)
-        bench_disclaimer()
+    )
+    fig_tvpi.add_hline(y=1.0, line_dash="dot", line_color="#9CA3AF", line_width=1)
+    fig_tvpi.update_layout(
+        height=450,
+        template="plotly_white",
+        xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
+        yaxis=dict(title="Net TVPI (×)", gridcolor="#F3F4F6"),
+        legend=dict(font=dict(size=9)),
+        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="#FFFFFF",
+        font=dict(family="Inter", size=11, color="#111827"),
+        margin=dict(t=20, b=30),
+    )
+    style_chart_readability(fig_tvpi)
+    st.plotly_chart(fig_tvpi, use_container_width=True, config={"displayModeBar": False})
+    n_per = tvpi_df.groupby("vintage_year").size().to_dict()
+    n_str = "  ·  ".join(["{0}: n={1}".format(y, n) for y, n in sorted(n_per.items()) if y >= 2005])
+    st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">{0}</div>".format(html.escape(n_str)), unsafe_allow_html=True)
+    bench_disclaimer()
 
-    with col3b:
-        st.markdown('<div class="chart-title">CAPITAL REALIZATION BY VINTAGE</div>', unsafe_allow_html=True)
-        cohort = lp_df.copy()
-        cohort["cap"] = cohort["fund_size_usd_m"].fillna(0)
-        cohort["dist"] = cohort["dpi"].fillna(0) * cohort["cap"]
-        agg = cohort.groupby("vintage_year").agg(total=("cap", "sum"), distributed=("dist", "sum")).reset_index()
-        agg["unrealized"] = (agg["total"] - agg["distributed"]).clip(lower=0)
-        agg["pct"] = (agg["distributed"] / agg["total"].replace(0, np.nan) * 100).clip(0, 100).round(0)
-        agg = agg[agg["vintage_year"] >= 2005]
-        fig_cap = go.Figure()
-        fig_cap.add_trace(go.Bar(x=agg["vintage_year"], y=agg["distributed"] / 1000.0, name="Realized (DPI × Contributed)", marker_color="#E8571F"))
-        fig_cap.add_trace(go.Bar(x=agg["vintage_year"], y=agg["unrealized"] / 1000.0, name="Unrealized (Paper)", marker_color="#E5E7EB"))
-        for _, r in agg.iterrows():
-            fig_cap.add_annotation(
-                x=r["vintage_year"],
-                y=r["total"] / 1000.0 + 0.1,
-                text="{0:.0f}%".format(r["pct"]),
-                showarrow=False,
-                font=dict(size=8, color="#6B7280", family="IBM Plex Mono"),
-            )
-        fig_cap.update_layout(
-            barmode="stack",
-            height=380,
-            template="plotly_white",
-            xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
-            yaxis=dict(title="Capital ($B)", gridcolor="#F3F4F6"),
-            legend=dict(font=dict(size=9), orientation="h", y=-0.18),
-            plot_bgcolor="#FFFFFF",
-            paper_bgcolor="#FFFFFF",
-            font=dict(family="Inter", size=11),
-            margin=dict(t=20, b=40),
+    # Chart 3B: Capital Realization
+    st.markdown('<div class="chart-title" style="margin-top: 3rem;">CAPITAL REALIZATION BY VINTAGE</div>', unsafe_allow_html=True)
+    cohort = lp_df.copy()
+    cohort["cap"] = cohort["fund_size_usd_m"].fillna(0)
+    cohort["dist"] = cohort["dpi"].fillna(0) * cohort["cap"]
+    agg = cohort.groupby("vintage_year").agg(total=("cap", "sum"), distributed=("dist", "sum")).reset_index()
+    agg["unrealized"] = (agg["total"] - agg["distributed"]).clip(lower=0)
+    agg["pct"] = (agg["distributed"] / agg["total"].replace(0, np.nan) * 100).clip(0, 100).round(0)
+    agg = agg[agg["vintage_year"] >= 2005]
+    fig_cap = go.Figure()
+    fig_cap.add_trace(go.Bar(x=agg["vintage_year"], y=agg["distributed"] / 1000.0, name="Realized (DPI × Contributed)", marker_color="#E8571F"))
+    fig_cap.add_trace(go.Bar(x=agg["vintage_year"], y=agg["unrealized"] / 1000.0, name="Unrealized (Paper)", marker_color="#E5E7EB"))
+    for _, r in agg.iterrows():
+        fig_cap.add_annotation(
+            x=r["vintage_year"],
+            y=r["total"] / 1000.0 + 0.1,
+            text="{0:.0f}%".format(r["pct"]),
+            showarrow=False,
+            font=dict(size=9, color="#111827", family="IBM Plex Mono"),
         )
-        style_chart_readability(fig_cap)
-        st.plotly_chart(fig_cap, use_container_width=True)
-        st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">% = realization rate per vintage. Orange = cash distributed to LPs. Grey = unrealized paper value.</div>", unsafe_allow_html=True)
+    fig_cap.update_layout(
+        barmode="stack",
+        height=450,
+        template="plotly_white",
+        xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
+        yaxis=dict(title="Capital ($B)", gridcolor="#F3F4F6"),
+        legend=dict(font=dict(size=9), orientation="h", y=-0.15),
+        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="#FFFFFF",
+        font=dict(family="Inter", size=11, color="#111827"),
+        margin=dict(t=20, b=40),
+    )
+    style_chart_readability(fig_cap)
+    st.plotly_chart(fig_cap, use_container_width=True, config={"displayModeBar": False})
+    st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">% = realization rate per vintage. Orange = cash distributed to LPs. Grey = unrealized paper value.</div>", unsafe_allow_html=True)
 
     st.markdown('<div class="section-label">04 / GP PERFORMANCE TRAJECTORIES</div>', unsafe_allow_html=True)
-    col4a, col4b = st.columns(2)
-    with col4a:
-        st.markdown('<div class="chart-title">IRR TRAJECTORY — FIRMS WITH 3+ FUNDS</div>', unsafe_allow_html=True)
+    
+    try:
+        # Chart 4A: IRR Trajectory
         traj = lp_df[lp_df["net_irr"].notna()].copy()
-        eligible = traj.groupby("canonical_gp").size()
-        eligible = eligible[eligible >= 3].index
-        traj = traj[traj["canonical_gp"].isin(eligible)]
-        traj = traj.merge(bench[["vintage_year", "median_net_irr"]], on="vintage_year", how="left")
-        fig_traj = go.Figure()
-        for gp in traj["canonical_gp"].dropna().unique():
-            sub = traj[traj["canonical_gp"] == gp].sort_values("vintage_year")
-            fig_traj.add_trace(
-                go.Scatter(
-                    x=sub["vintage_year"],
-                    y=sub["net_irr"] * 100,
-                    mode="lines+markers",
-                    name=sub.iloc[0].get("gp_display_name", gp),
-                    line=dict(width=2),
-                    marker=dict(size=7),
+        if not traj.empty:
+            st.markdown('<div class="chart-title">IRR TRAJECTORY — FIRMS WITH 3+ FUNDS</div>', unsafe_allow_html=True)
+            eligible = traj.groupby("canonical_gp").size()
+            eligible = eligible[eligible >= 3].index
+            traj = traj[traj["canonical_gp"].isin(eligible)]
+            if not traj.empty:
+                traj = traj.merge(bench[["vintage_year", "median_net_irr"]], on="vintage_year", how="left")
+                fig_traj = go.Figure()
+                for gp in traj["canonical_gp"].dropna().unique():
+                    sub = traj[traj["canonical_gp"] == gp].sort_values("vintage_year")
+                    fig_traj.add_trace(
+                        go.Scatter(
+                            x=sub["vintage_year"],
+                            y=sub["net_irr"] * 100,
+                            mode="lines+markers",
+                            name=sub.iloc[0].get("gp_display_name", gp),
+                            line=dict(width=2),
+                            marker=dict(size=7),
+                        )
+                    )
+                fig_traj.add_trace(
+                    go.Scatter(
+                        x=bench_meaningful["vintage_year"],
+                        y=bench_meaningful["median_net_irr"] * 100,
+                        mode="lines",
+                        name="CA Median (approx.)",
+                        line=dict(color="#9CA3AF", dash="dot", width=1.5),
+                    )
+                )
+                fig_traj.update_layout(
+                    height=450,
+                    template="plotly_white",
+                    xaxis=dict(gridcolor="#F3F4F6", cursor="pointer"),
+                    yaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
+                    legend=dict(font=dict(size=9)),
+                    plot_bgcolor="#FFFFFF",
+                    paper_bgcolor="#FFFFFF",
+                    font=dict(family="Inter", size=11, color="#111827"),
+                    margin=dict(t=20),
+                )
+                style_chart_readability(fig_traj)
+                st.plotly_chart(fig_traj, use_container_width=True, config={"displayModeBar": False, "displaylogo": False})
+                bench_disclaimer()
+            else:
+                st.info("No firms in dataset with 3+ funds for trajectory analysis.")
+        else:
+            st.info("Insufficient data for IRR trajectories.")
+
+        # Chart 4B: Cash Returned by Strategy
+        strat = lp_df[lp_df["dpi"].notna() & lp_df["fund_size_usd_m"].notna()].copy()
+        if not strat.empty:
+            st.markdown('<div class="chart-title" style="margin-top: 3rem;">CASH RETURNED BY STRATEGY — CAPITAL-WEIGHTED DPI</div>', unsafe_allow_html=True)
+            strat["weighted"] = strat["dpi"] * strat["fund_size_usd_m"]
+            agg_s = strat.groupby("fund_category").agg(weighted_sum=("weighted", "sum"), total_cap=("fund_size_usd_m", "sum"), n=("fund_name", "count")).reset_index()
+            agg_s["wtd_dpi"] = agg_s["weighted_sum"] / agg_s["total_cap"]
+            agg_s = agg_s.sort_values("wtd_dpi", ascending=True)
+            colors = [CATEGORY_COLORS.get(c, "#9CA3AF") for c in agg_s["fund_category"]]
+            fig_strat = go.Figure()
+            fig_strat.add_trace(
+                go.Bar(
+                    y=agg_s["fund_category"],
+                    x=agg_s["wtd_dpi"],
+                    orientation="h",
+                    marker_color=colors,
+                    customdata=agg_s[["total_cap", "n"]].values,
+                    hovertemplate="<b>%{y}</b><br>Wtd DPI: %{x:.2f}×<br>Capital: $%{customdata[0]:.0f}M<br>Funds: %{customdata[1]}<extra></extra>",
                 )
             )
-        fig_traj.add_trace(
-            go.Scatter(
-                x=bench_meaningful["vintage_year"],
-                y=bench_meaningful["median_net_irr"] * 100,
-                mode="lines",
-                name="CA Median (approx.)",
-                line=dict(color="#9CA3AF", dash="dot", width=1.5),
+            fig_strat.add_vline(x=1.0, line_dash="dash", line_color="#9CA3AF", annotation_text="1.0×", annotation_font_size=9)
+            fig_strat.update_layout(
+                height=450,
+                template="plotly_white",
+                xaxis=dict(title="Capital-Weighted Avg Net DPI (×)", gridcolor="#F3F4F6"),
+                yaxis=dict(gridcolor="#F3F4F6"),
+                plot_bgcolor="#FFFFFF",
+                paper_bgcolor="#FFFFFF",
+                font=dict(family="Inter", size=11, color="#111827"),
+                margin=dict(t=20, l=20),
             )
-        )
-        fig_traj.update_layout(
-            height=380,
-            template="plotly_white",
-            xaxis=dict(gridcolor="#F3F4F6"),
-            yaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
-            legend=dict(font=dict(size=9)),
-            plot_bgcolor="#FFFFFF",
-            paper_bgcolor="#FFFFFF",
-            font=dict(family="Inter", size=11),
-            margin=dict(t=20),
-        )
-        style_chart_readability(fig_traj)
-        st.plotly_chart(fig_traj, use_container_width=True)
-        bench_disclaimer()
+            style_chart_readability(fig_strat)
+            st.plotly_chart(fig_strat, use_container_width=True, config={"displayModeBar": False, "displaylogo": False})
+            st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">Capital-weighted: larger funds influence the average proportionally. LP-disclosed funds only.</div>", unsafe_allow_html=True)
+        else:
+            st.info("Insufficient data for strategy returns analysis.")
 
-    with col4b:
-        st.markdown('<div class="chart-title">CASH RETURNED BY STRATEGY — CAPITAL-WEIGHTED DPI</div>', unsafe_allow_html=True)
-        strat = lp_df[lp_df["dpi"].notna() & lp_df["fund_size_usd_m"].notna()].copy()
-        strat["weighted"] = strat["dpi"] * strat["fund_size_usd_m"]
-        agg_s = strat.groupby("fund_category").agg(weighted_sum=("weighted", "sum"), total_cap=("fund_size_usd_m", "sum"), n=("fund_name", "count")).reset_index()
-        agg_s["wtd_dpi"] = agg_s["weighted_sum"] / agg_s["total_cap"]
-        agg_s = agg_s.sort_values("wtd_dpi", ascending=True)
-        colors = [CATEGORY_COLORS.get(c, "#9CA3AF") for c in agg_s["fund_category"]]
-        fig_strat = go.Figure()
-        fig_strat.add_trace(
-            go.Bar(
-                y=agg_s["fund_category"],
-                x=agg_s["wtd_dpi"],
-                orientation="h",
-                marker_color=colors,
-                customdata=agg_s[["total_cap", "n"]].values,
-                hovertemplate="<b>%{y}</b><br>Wtd DPI: %{x:.2f}×<br>Capital: $%{customdata[0]:.0f}M<br>Funds: %{customdata[1]}<extra></extra>",
-            )
-        )
-        fig_strat.add_vline(x=1.0, line_dash="dash", line_color="#9CA3AF", annotation_text="1.0×", annotation_font_size=9)
-        fig_strat.update_layout(
-            height=380,
-            template="plotly_white",
-            xaxis=dict(title="Capital-Weighted Avg Net DPI (×)", gridcolor="#F3F4F6"),
-            yaxis=dict(gridcolor="#F3F4F6"),
-            plot_bgcolor="#FFFFFF",
-            paper_bgcolor="#FFFFFF",
-            font=dict(family="Inter", size=11),
-            margin=dict(t=20, l=20),
-        )
-        style_chart_readability(fig_strat)
-        st.plotly_chart(fig_strat, use_container_width=True)
-        st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">Capital-weighted: larger funds influence the average proportionally. LP-disclosed funds only.</div>", unsafe_allow_html=True)
+    except Exception as e:
+        st.warning("Additional GP Performance Trajectories are not available for this data slice.")
+
 
     st.markdown('<div class="section-label">05 / WITHIN-GP VARIANCE — IRR RANGE (UTIMCO)</div>', unsafe_allow_html=True)
     var_df = df[
@@ -2608,9 +2706,12 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
             yaxis=dict(title="", gridcolor="#FFFFFF"),
             legend=dict(orientation="h"),
             margin=dict(l=90, r=30, t=20, b=50),
+            plot_bgcolor="#FFFFFF",
+            paper_bgcolor="#FFFFFF",
+            font=dict(color="#111827"),
         )
         style_chart_readability(fig_var)
-        st.plotly_chart(fig_var, use_container_width=True)
+        st.plotly_chart(fig_var, use_container_width=True, config={"displayModeBar": False})
 
         st.markdown(
             """
@@ -2826,8 +2927,7 @@ def render_about():
 
     _render_html(
         """
-        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#374151;line-height:1.75;
-                    padding:18px 20px;background:#FAFAFA;border-radius:8px;border:1px solid #E5E7EB;">
+        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#374151;line-height:1.75; margin-bottom: 2rem;">
             <strong>Show Me the DPI</strong> is a research project focused on one practical question:
             how much cash VC/PE funds have actually returned to LPs. The dataset combines public LP disclosures
             from pension systems and endowments with clearly-labeled market intelligence performance where available.
