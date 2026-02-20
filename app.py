@@ -3053,7 +3053,7 @@ def main():
     if SHOW_AUDIT:
         nav_options.append("⚙ AUDIT")
     
-    # Logo and navigation on same line
+    # Logo and navigation on same line using styled buttons
     header_cols = st.columns([3.5, 6.5])
     
     with header_cols[0]:
@@ -3071,12 +3071,27 @@ def main():
     )
     
     with header_cols[1]:
-        active_page = st.radio(
-            "Navigate",
-            nav_options,
-            horizontal=True,
-            label_visibility="collapsed",
-        )
+        nav_items = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
+        if SHOW_AUDIT:
+            nav_items.append("⚙ AUDIT")
+        
+        # Use columns for horizontal layout
+        nav_cols = st.columns([1, 1, 1, 1, 1, 3])
+        for i, opt in enumerate(nav_items):
+            with nav_cols[i]:
+                is_active = opt == active_page
+                if is_active:
+                    # Active: red, underlined, italicized
+                    label_html = f"<span style='color:#E8571F;text-decoration:underline;font-style:italic;font-family:DM Mono,monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;'>{opt}</span>"
+                else:
+                    # Inactive: gray
+                    label_html = f"<span style='color:#6B7280;font-family:DM Mono,monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;'>{opt}</span>"
+                
+                # Use st.button with markdown label - no new tab
+                if st.button(label_html, key=f"nav_{opt}", use_container_width=False):
+                    # Update active page
+                    st.query_params.page = opt
+                    st.rerun()
 
     if not active_page:
         active_page = nav_options[0]
