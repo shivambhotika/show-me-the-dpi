@@ -40,9 +40,8 @@ def _render_html(html_text: str):
 
 
 def _get_logo_url(company_name: str) -> str:
-    """Get logo URL from logo-dev API."""
+    """Get logo URL from logo-dev API or clearbit fallback."""
     try:
-        api_key = "pk_aX9c7b3FQ7KXuL9Tq0UWaQ"
         # Map common company names to domain names
         domain_map = {
             "Union Square Ventures": "usv.com",
@@ -56,17 +55,26 @@ def _get_logo_url(company_name: str) -> str:
             "Forerunner Ventures": "forerunnerventures.com",
             "ARCH Venture Partners": "archventure.com",
             "Morgenthaler Ventures": "morgenthaler.com",
+            "Spark Capital": "sparkcapital.com",
+            "NEA": "nea.com",
+            "Kleiner Perkins": "kpcb.com",
+            "Greylock Partners": "greylock.com",
+            "Battery Ventures": "battery.com",
+            "Index Ventures": "indexventures.com",
+            "Accel": "accel.com",
+            "Insight Partners": "insightpartners.com",
+            "Coatue": "coatue.com",
         }
         
         # Try domain map first
         domain = domain_map.get(company_name, "")
         if not domain:
             # Fallback: try clearbit with cleaned name
-            clean_name = company_name.lower().replace(" ", "").replace("&", "").replace(",", "")
+            clean_name = company_name.lower().replace(" ", "").replace("&", "").replace(",", "").replace(".", "")
             domain = f"{clean_name}.com"
         
-        # Use logo-dev API
-        url = f"https://api.logo.dev/v1/{domain}"
+        # Use clearbit (free, no API key needed) - logo.dev requires different format
+        url = f"https://logo.clearbit.com/{domain}"
         return url
     except:
         return ""
