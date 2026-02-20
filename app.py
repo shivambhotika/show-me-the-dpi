@@ -776,9 +776,11 @@ def load_data():
     # Calculate missing DPI and TVPI from capital columns if missing
     if 'capital_contributed' in df.columns and 'capital_distributed' in df.columns:
         valid_contrib = (df['capital_contributed'] > 0)
-        df['dpi'] = df['dpi'].fillna(np.where(valid_contrib, df['capital_distributed'] / df['capital_contributed'], np.nan))
+        dpi_calc = pd.Series(np.where(valid_contrib, df['capital_distributed'] / df['capital_contributed'], np.nan), index=df.index)
+        df['dpi'] = df['dpi'].fillna(dpi_calc)
         if 'nav' in df.columns:
-            df['tvpi'] = df['tvpi'].fillna(np.where(valid_contrib, (df['capital_distributed'] + df['nav']) / df['capital_contributed'], np.nan))
+            tvpi_calc = pd.Series(np.where(valid_contrib, (df['capital_distributed'] + df['nav']) / df['capital_contributed'], np.nan), index=df.index)
+            df['tvpi'] = df['tvpi'].fillna(tvpi_calc)
             
     # CalPERS Fix: net_irr 1.0 is often a placeholder for "Not Meaningful"
     if 'source' in df.columns and 'net_irr' in df.columns:
