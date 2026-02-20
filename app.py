@@ -2544,6 +2544,12 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
       <div class="ins-real-pct" style="color:{pct_color}">{display_val}</div>
     </div>"""
     
+    st.markdown("""
+    <div style="background: #E8571F; color: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <strong>TEST:</strong> If you can see this styled box, HTML rendering is working!
+    </div>
+    """, unsafe_allow_html=True)
+    
     st.markdown(f"""
     <div style="margin-top: 36px;">
       <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
