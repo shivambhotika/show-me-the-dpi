@@ -1725,13 +1725,6 @@ def render_firms(df_master: pd.DataFrame):
             with cols[j]:
                 render_firm_card(gp, df_master[df_master["canonical_gp"] == gp])
 
-    st.markdown('<div class="section-label">MARKET INTELLIGENCE — CIRCULATED DATA</div>', unsafe_allow_html=True)
-    for i in range(0, len(gp_only_gps), 3):
-        cols = st.columns(3)
-        for j, gp in enumerate(gp_only_gps[i : i + 3]):
-            with cols[j]:
-                render_firm_card(gp, df_master[df_master["canonical_gp"] == gp])
-
     st.markdown('<div class="section-label">FUND PERFORMANCE DETAIL</div>', unsafe_allow_html=True)
     selected_gp = st.selectbox("SELECT FIRM", gps, label_visibility="collapsed")
     gp_df = df_master[df_master["canonical_gp"] == selected_gp].copy().sort_values(["vintage_year", "fund_name"], na_position="last")
@@ -2292,9 +2285,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         yaxis=dict(gridcolor="#F3F4F6", title="", ticksuffix="×", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
         bargap=0.25,
     )
-    st.markdown('<div class="ins-chart-frame">', unsafe_allow_html=True)
     st.plotly_chart(fig1, use_container_width=True, config={"displayModeBar": False})
-    st.markdown('</div>', unsafe_allow_html=True)
     
     _render_html("""
     <div class="ins-takeaway">
@@ -2498,9 +2489,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         xaxis=dict(gridcolor="#F3F4F6", title="", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
         yaxis=dict(gridcolor="#F3F4F6", title="", ticksuffix="×", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
     )
-    st.markdown('<div class="ins-chart-frame">', unsafe_allow_html=True)
     st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
-    st.markdown('</div>', unsafe_allow_html=True)
     
     _render_html("""
     <div class="ins-takeaway">
@@ -2616,9 +2605,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         yaxis=dict(gridcolor="#F3F4F6", title="", ticksuffix="×", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
         bargap=0.2, bargroupgap=0.05,
     )
-    st.markdown('<div class="ins-chart-frame">', unsafe_allow_html=True)
     st.plotly_chart(fig4, use_container_width=True, config={"displayModeBar": False})
-    st.markdown('</div>', unsafe_allow_html=True)
     
     _render_html("""
     <div class="ins-takeaway">
