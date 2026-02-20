@@ -215,30 +215,30 @@ def inject_css():
     .chart-subtitle { font-family: 'Inter', sans-serif; font-size: 12px; color: #9CA3AF; margin-bottom: 16px; }
 
     /* Force light segmented nav across browsers/themes */
-    div[data-testid="stSegmentedControl"], 
-    div[data-testid="stSegmentedControl"] * {
-        background: transparent !important;
+    div[data-testid="stSegmentedControl"] {
+        background: white !important;
     }
     div[data-testid="stSegmentedControl"] > div {
         background: #FFFFFF !important;
-        border: 1px solid #E5E7EB !important;
-        border-radius: 8px !important;
+        border: 1px solid #FCE7DE !important;
+        border-radius: 6px !important;
         gap: 0 !important;
         padding: 0 !important;
     }
     div[data-testid="stSegmentedControl"] button, 
     div[data-testid="stSegmentedControl"] [role="radio"],
-    div[data-testid="stSegmentedControl"] label {
-        background-color: #FFFFFF !important;
-        color: #6B7280 !important;
+    div[data-testid="stSegmentedControl"] label,
+    div[data-testid="stSegmentedControl"] [data-baseweb="button"] {
+        background-color: white !important;
+        color: #E8571F !important;
         border: none !important;
-        border-right: 1px solid #F3F4F6 !important;
+        border-right: 1px solid #FCE7DE !important;
         font-family: 'IBM Plex Mono', monospace !important;
         font-size: 11px !important;
         font-weight: 500 !important;
         letter-spacing: 0.05em !important;
         text-transform: uppercase !important;
-        padding: 6px 14px !important;
+        padding: 8px 16px !important;
         box-shadow: none !important;
         margin: 0 !important;
         border-radius: 0 !important;
@@ -246,24 +246,20 @@ def inject_css():
     }
     div[data-testid="stSegmentedControl"] button:last-child {
         border-right: none !important;
-        border-top-right-radius: 8px !important;
-        border-bottom-right-radius: 8px !important;
-    }
-    div[data-testid="stSegmentedControl"] button:first-child {
-        border-top-left-radius: 8px !important;
-        border-bottom-left-radius: 8px !important;
     }
     div[data-testid="stSegmentedControl"] button[data-checked="true"], 
     div[data-testid="stSegmentedControl"] [aria-checked="true"],
     div[data-testid="stSegmentedControl"] [data-checked="true"] label {
         background-color: #FFF4EF !important;
         color: #E8571F !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
+        text-decoration: underline !important;
+        text-underline-offset: 4px !important;
     }
     div[data-testid="stSegmentedControl"] button:hover, 
     div[data-testid="stSegmentedControl"] label:hover {
+        background-color: #FEF2EE !important;
         color: #E8571F !important;
-        background-color: #FAFAFA !important;
     }
     /* Hide the "undefined" tag which is actually the modebar tooltip frame */
     .js-plotly-plot .plotly .modebar { display: none !important; }
