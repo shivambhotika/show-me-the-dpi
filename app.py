@@ -11,6 +11,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
+import requests
 
 
 st.set_page_config(
@@ -36,6 +37,47 @@ DeltaGenerator.markdown = _dg_markdown_dedent
 
 def _render_html(html_text: str):
     st.markdown(dedent(html_text).strip(), unsafe_allow_html=True)
+
+
+def _get_logo_url(company_name: str) -> str:
+    """Get logo URL from logo-dev API."""
+    try:
+        api_key = "pk_aX9c7b3FQ7KXuL9Tq0UWaQ"
+        # Map common company names to domain names
+        domain_map = {
+            "Union Square Ventures": "usv.com",
+            "Andreessen Horowitz": "a16z.com",
+            "a16z": "a16z.com",
+            "Founders Fund": "foundersfund.com",
+            "Social Capital": "socialcapital.com",
+            "TLV Partners": "tlvpartners.com",
+            "Foundry Group": "foundrygroup.com",
+            "True Ventures": "trueventures.com",
+            "Forerunner Ventures": "forerunnerventures.com",
+            "ARCH Venture Partners": "archventure.com",
+            "Morgenthaler Ventures": "morgenthaler.com",
+        }
+        
+        # Try domain map first
+        domain = domain_map.get(company_name, "")
+        if not domain:
+            # Fallback: try clearbit with cleaned name
+            clean_name = company_name.lower().replace(" ", "").replace("&", "").replace(",", "")
+            domain = f"{clean_name}.com"
+        
+        # Use logo-dev API
+        url = f"https://api.logo.dev/v1/{domain}"
+        return url
+    except:
+        return ""
+
+
+def _get_logo_html(company_name: str, size: int = 24) -> str:
+    """Get logo HTML img tag."""
+    logo_url = _get_logo_url(company_name)
+    if logo_url:
+        return f'<img src="{logo_url}" alt="{html.escape(company_name)}" class="ins-logo" style="width:{size}px;height:{size}px;" onerror="this.style.display=\'none\'">'
+    return ""
 
 
 def inject_css():
@@ -346,17 +388,20 @@ def inject_css():
     .ins-chart-headline {
       font-family: 'Lora', serif; font-size: 21px; font-weight: 700;
       color: #111827; letter-spacing: -0.015em; line-height: 1.25;
-      margin-bottom: 8px;
+      margin-bottom: 8px; margin-top: 0;
     }
     .ins-chart-headline em { font-style: italic; color: #E8571F; }
     .ins-chart-standfirst {
       font-family: 'Inter', sans-serif; font-size: 14px; color: #374151;
-      line-height: 1.65; max-width: 620px; margin-bottom: 22px;
+      line-height: 1.65; max-width: 620px; margin-bottom: 22px; margin-top: 0;
     }
     .ins-chart-frame {
       background: #FAFAFA; border: 1px solid #E5E7EB;
-      border-radius: 10px; padding: 24px 24px 16px;
-      margin-bottom: 14px;
+      border-radius: 10px; padding: 24px 24px 20px;
+      margin-bottom: 14px; margin-top: 0;
+    }
+    .ins-chart-frame .js-plotly-plot {
+      margin-bottom: 0 !important;
     }
     .ins-takeaway {
       background: #FFF4EF; border-left: 3px solid #E8571F;
@@ -462,6 +507,82 @@ def inject_css():
     .ins-mgr-val { font-family: 'DM Mono', monospace; font-size: 12px; text-align: right; }
     .ins-mgr-val.max { color: #E8571F; font-weight: 600; }
     .ins-mgr-val.min { color: #9CA3AF; }
+
+    /* Logo styles */
+    .ins-logo { 
+        width: 24px; height: 24px; object-fit: contain; 
+        vertical-align: middle; margin-right: 8px; 
+        border-radius: 4px; display: inline-block;
+    }
+    .ins-logo-small { 
+        width: 16px; height: 16px; object-fit: contain; 
+        vertical-align: middle; margin-right: 6px; 
+        border-radius: 3px; display: inline-block;
+    }
+
+    /* Firm card styles */
+    .firm-card {
+        background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 8px;
+        padding: 24px; margin-bottom: 20px; height: 100%;
+    }
+    .firm-name {
+        font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700;
+        color: #111827; margin-bottom: 6px;
+    }
+    .firm-meta {
+        font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+        color: #9CA3AF; letter-spacing: 0.05em; margin-bottom: 12px;
+    }
+    .firm-aum-badge {
+        font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+        color: #6B7280; margin-bottom: 8px;
+    }
+    .firm-best-irr-label {
+        font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+        letter-spacing: 0.08em; text-transform: uppercase; color: #9CA3AF;
+        margin-bottom: 4px;
+    }
+    .firm-best-irr-value {
+        font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 700;
+        color: #111827; line-height: 1;
+    }
+
+    /* Source row styles */
+    .source-row {
+        display: grid; grid-template-columns: 2fr 120px 180px 140px 2fr;
+        gap: 20px; align-items: start; padding: 16px 0;
+        border-bottom: 1px solid #F3F4F6;
+    }
+    @media (max-width: 1200px) {
+        .source-row {
+            grid-template-columns: 1fr; gap: 12px;
+        }
+    }
+    .source-name {
+        font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+        color: #111827;
+    }
+    .source-sync {
+        font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+        color: #6B7280;
+    }
+    .source-notes {
+        font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280;
+        line-height: 1.5;
+    }
+    .coverage-bar-wrap {
+        display: flex; align-items: center; gap: 8px;
+    }
+    .coverage-bar-bg {
+        flex: 1; height: 6px; background: #F3F4F6; border-radius: 3px;
+        overflow: hidden;
+    }
+    .coverage-bar-fill {
+        height: 6px; border-radius: 3px;
+    }
+    .coverage-bar-fill.high { background: #16A34A; }
+    .coverage-bar-fill.medium { background: #D97706; }
+    .coverage-bar-fill.low { background: #EF4444; }
 
     </style>
     """,
@@ -1519,10 +1640,12 @@ def render_firm_card(gp_name: str, gp_data: pd.DataFrame):
         if best_fund_dpi is not None:
             best_fund_line = "Best: {0} · {1:.2f}×".format(best_fund_name, best_fund_dpi)
 
+    gp_display_name = str(_safe_get_scalar(row.get("gp_display_name", gp_name), gp_name))
+    logo_html = _get_logo_html(gp_display_name, size=32)
     st.markdown(
         """
     <div class="firm-card">
-        <div class="firm-name">{0}</div>
+        <div class="firm-name">{11}{0}</div>
         <div class="firm-meta">EST. {1} · {2}</div>
         <div style="margin-bottom:8px"><span class="badge badge-utimco">UTIMCO</span></div>
         <div class="firm-aum-badge">{3}</div>
@@ -1541,7 +1664,7 @@ def render_firm_card(gp_name: str, gp_data: pd.DataFrame):
         <div style="font-size:11px;color:#6B7280;margin-top:6px;line-height:1.5">{10}</div>
     </div>
     """.format(
-            html.escape(str(_safe_get_scalar(row.get("gp_display_name", gp_name), gp_name))),
+            html.escape(gp_display_name),
             founded,
             html.escape(hq.upper()),
             html.escape(aum_txt),
@@ -1552,6 +1675,7 @@ def render_firm_card(gp_name: str, gp_data: pd.DataFrame):
             html.escape(vintage_range),
             html.escape(best_fund_line),
             html.escape(notable_short),
+            logo_html,
         ),
         unsafe_allow_html=True,
     )
@@ -2141,6 +2265,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         width=0.55,
         hovertemplate="<b>Vintage %{x}</b><br>Median DPI: %{y:.2f}×<br><i>n=%{customdata} funds</i><extra></extra>",
         customdata=vy["n"],
+        showlegend=True,
     ))
     fig1.add_trace(go.Scatter(
         x=vy["vintage_year"].astype(str),
@@ -2150,13 +2275,14 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         line=dict(color="#CBD5E1", width=2, dash="dot"),
         marker=dict(size=5, color="#CBD5E1"),
         hovertemplate="Vintage %{x}<br>Median TVPI: %{y:.2f}×<extra></extra>",
+        showlegend=True,
     ))
     fig1.update_layout(
-        height=240,
+        height=260,
         plot_bgcolor="#FAFAFA", paper_bgcolor="#FAFAFA",
-        margin=dict(l=10, r=10, t=10, b=10),
+        margin=dict(l=50, r=20, t=10, b=50),
         legend=dict(
-            orientation="h", y=1.12, x=1, xanchor="right",
+            orientation="h", y=-0.15, x=0.5, xanchor="center",
             font=dict(family="DM Mono, monospace", size=10),
             bgcolor="rgba(0,0,0,0)",
         ),
@@ -2257,11 +2383,12 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         irr_cls    = "green-col" if irr_val is not None and irr_val > 0.15 else "mono"
         bar_pct    = int((dpi_val / max_leader_dpi) * 100) if dpi_val is not None and max_leader_dpi > 0 else 0
         
+        logo_html = _get_logo_html(gp, size=18) if gp else ""
         lb_rows_html += f"""
         <tr>
           <td class="num">{str(i+1).zfill(2)}</td>
           <td>
-            <div class="ins-fund-name">{fund_name}</div>
+            <div class="ins-fund-name">{logo_html}{fund_name}</div>
             <div class="ins-fund-gp">{gp} · {vintage}</div>
             <div class="ins-bar-wrap"><div class="ins-bar-fill" style="width:{bar_pct}%"></div></div>
           </td>
@@ -2346,6 +2473,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         marker_color="#E8571F",
         marker_line_width=0,
         hovertemplate="<b>Vintage %{x}</b><br>Median DPI: %{y:.2f}×<extra></extra>",
+        showlegend=True,
     ))
     fig3.add_trace(go.Bar(
         x=pr["vintage_year"].astype(str),
@@ -2354,13 +2482,14 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         marker_color="#E5E7EB",
         marker_line_width=0,
         hovertemplate="Vintage %{x}<br>Unrealized: %{y:.2f}×<extra></extra>",
+        showlegend=True,
     ))
     fig3.update_layout(
-        barmode="stack", height=260,
+        barmode="stack", height=280,
         plot_bgcolor="#FAFAFA", paper_bgcolor="#FAFAFA",
-        margin=dict(l=10, r=10, t=10, b=10),
+        margin=dict(l=50, r=20, t=10, b=50),
         legend=dict(
-            orientation="h", y=1.12, x=1, xanchor="right",
+            orientation="h", y=-0.15, x=0.5, xanchor="center",
             font=dict(family="DM Mono, monospace", size=10),
             bgcolor="rgba(0,0,0,0)",
         ),
@@ -2405,7 +2534,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
           <div class="ins-real-pct" style="color:{pct_color}">{rate}%</div>
         </div>"""
     
-    _render_html(f"""
+    st.markdown(f"""
     <div style="margin-top: 36px;">
       <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
         What percentage of capital has actually been returned?
@@ -2423,7 +2552,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
       </div>
       <div class="ins-footnote">LP-disclosed funds · Orange = strong realization · Gray = minimal distributions yet</div>
     </div>
-    """)
+    """, unsafe_allow_html=True)
     
     # I. SECTION 4 — FEE DRAG
     _render_html("""
@@ -2446,7 +2575,11 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     gross_vals = [f["gross_tvpi"] for f in A16Z_FUNDS]
     net_vals   = [f["net_tvpi"]   for f in A16Z_FUNDS]
     dpi_vals   = [f["net_dpi"]    for f in A16Z_FUNDS]
-    fund_labels= [f"{f['fund']}\n{f['vintage']} · ${f['size_m']:,}M" for f in A16Z_FUNDS]
+    # Create two-line labels for x-axis
+    fund_labels = []
+    for f in A16Z_FUNDS:
+        label = f"{f['fund']}<br>{f['vintage']} · ${f['size_m']:,}M"
+        fund_labels.append(label)
     
     fig4 = go.Figure()
     fig4.add_trace(go.Bar(
@@ -2454,29 +2587,37 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         x=fund_labels, y=gross_vals,
         marker_color="#E5E7EB", marker_line_width=0,
         hovertemplate="<b>%{x}</b><br>Gross TVPI: %{y:.1f}×<extra></extra>",
+        showlegend=True,
     ))
     fig4.add_trace(go.Bar(
         name="Net TVPI",
         x=fund_labels, y=net_vals,
         marker_color="#E8571F", marker_line_width=0,
         hovertemplate="<b>%{x}</b><br>Net TVPI: %{y:.1f}×<extra></extra>",
+        showlegend=True,
     ))
     fig4.add_trace(go.Bar(
         name="Net DPI",
         x=fund_labels, y=dpi_vals,
         marker_color="#2C3E50", marker_line_width=0,
         hovertemplate="<b>%{x}</b><br>Net DPI: %{y:.1f}×<extra></extra>",
+        showlegend=True,
     ))
     fig4.update_layout(
-        barmode="group", height=260,
+        barmode="group", height=280,
         plot_bgcolor="#FAFAFA", paper_bgcolor="#FAFAFA",
-        margin=dict(l=10, r=10, t=10, b=10),
+        margin=dict(l=50, r=20, t=10, b=80),
         legend=dict(
-            orientation="h", y=1.12, x=1, xanchor="right",
+            orientation="h", y=-0.2, x=0.5, xanchor="center",
             font=dict(family="DM Mono, monospace", size=10),
             bgcolor="rgba(0,0,0,0)",
         ),
-        xaxis=dict(gridcolor="#F3F4F6", title="", tickfont=dict(family="DM Mono, monospace", size=9), fixedrange=True),
+        xaxis=dict(
+            gridcolor="#F3F4F6", title="", 
+            tickfont=dict(family="DM Mono, monospace", size=9),
+            fixedrange=True,
+            tickangle=0,
+        ),
         yaxis=dict(gridcolor="#F3F4F6", title="", ticksuffix="×", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
         bargap=0.2, bargroupgap=0.05,
     )
@@ -2526,9 +2667,10 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
             min_str = f"{min_irr*100:.1f}%"
             max_str = f"{max_irr*100:.1f}%"
             
+            logo_html = _get_logo_html(gp_name, size=20)
             mgr_rows_html += f"""
             <div class="ins-mgr-row">
-              <div class="ins-mgr-name">{gp_name}</div>
+              <div class="ins-mgr-name">{logo_html}{gp_name}</div>
               <div class="ins-mgr-range">
                 <div class="ins-mgr-track"></div>
                 <div class="ins-mgr-fill" style="left:{left_pct:.1f}%;width:{fill_w:.1f}%"></div>
@@ -2539,7 +2681,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
               <div class="ins-mgr-val min">{min_str}</div>
             </div>"""
         
-        _render_html(f"""
+        st.markdown(f"""
         <div class="ins-chart-frame" style="padding: 20px 28px;">
           <div class="ins-mgr-row header">
             <div class="ins-mgr-hdr">Manager</div>
@@ -2549,7 +2691,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
           </div>
           {mgr_rows_html}
         </div>
-        """)
+        """, unsafe_allow_html=True)
         
         _render_html("""
         <div class="ins-takeaway">
@@ -2653,12 +2795,12 @@ def render_sources(df_unified: pd.DataFrame, df_master: pd.DataFrame):
 
     st.markdown(
         """
-    <div class="source-row" style="border-bottom:1px solid #E5E7EB;padding:8px 0">
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">SOURCE</span>
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">CLASS</span>
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">COVERAGE</span>
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">PERIOD</span>
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">NOTES</span>
+    <div class="source-row" style="border-bottom:2px solid #111827;padding:12px 0;font-weight:600;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">SOURCE</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">CLASS</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">COVERAGE</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">PERIOD</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">NOTES</div>
     </div>
     """,
         unsafe_allow_html=True,
@@ -2697,6 +2839,19 @@ def render_sources(df_unified: pd.DataFrame, df_master: pd.DataFrame):
         Unlike LP-disclosed FOIA data, this data was not independently submitted under legal
         obligation. Provenance is unverified and mark vintage may vary. Figures are
         directionally useful but should not be treated as audited performance records.
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+    <div class="source-row" style="border-bottom:2px solid #111827;padding:12px 0;font-weight:600;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">SOURCE</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">CLASS</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">COVERAGE</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">PERIOD</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9CA3AF">NOTES</div>
     </div>
     """,
         unsafe_allow_html=True,
