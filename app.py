@@ -1726,17 +1726,6 @@ def render_firms(df_master: pd.DataFrame):
                 render_firm_card(gp, df_master[df_master["canonical_gp"] == gp])
 
     st.markdown('<div class="section-label">MARKET INTELLIGENCE — CIRCULATED DATA</div>', unsafe_allow_html=True)
-    st.markdown(
-        """
-    <div style="font-family:'Inter',sans-serif;font-size:13px;color:#6B7280;margin-bottom:1rem;
-        padding:12px 16px;background:#FFFBEB;border-radius:6px;border:1px solid #FDE68A">
-        Performance data below comes from market intelligence channels (circulated LP packages,
-        secondary processes, and investor community sources), not independent FOIA filing.
-        Provenance is not fully verifiable.
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
     for i in range(0, len(gp_only_gps), 3):
         cols = st.columns(3)
         for j, gp in enumerate(gp_only_gps[i : i + 3]):
@@ -2555,7 +2544,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
       <div class="ins-real-pct" style="color:{pct_color}">{display_val}</div>
     </div>"""
     
-    st.markdown(f"""
+    _render_html(f"""
     <div style="margin-top: 36px;">
       <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
         What percentage of capital has actually been returned?
@@ -2574,7 +2563,7 @@ Orange = 2×+ DPI · Amber = 1–2× · Gray = below 1×.
       </div>
       <div class="ins-footnote">LP-disclosed funds (n ≥ 2 per vintage). Values = median DPI multiple for that vintage cohort. Orange = 2×+ · Amber = 1–2× · Gray = &lt;1× · Bar width scaled to dataset maximum.</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
     
     # I. SECTION 4 — FEE DRAG
     _render_html("""
