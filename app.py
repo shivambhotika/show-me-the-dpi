@@ -2550,6 +2550,11 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     </div>
     """, unsafe_allow_html=True)
     
+    # DEBUG: Show data status
+    st.write(f"DEBUG: real_rates = {real_rates}")
+    st.write(f"DEBUG: _real_max_dpi = {_real_max_dpi}")
+    st.write(f"DEBUG: real_bar_rows length = {len(real_bar_rows)}")
+    
     st.markdown(f"""
     <div style="margin-top: 36px;">
       <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
