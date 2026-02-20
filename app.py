@@ -3047,18 +3047,9 @@ def render_footer():
 
 def main():
     st.sidebar.success("✅ Ver: 0.9.5-PROD ACTIVE")
-    
-    SHOW_AUDIT = os.environ.get('SHOW_AUDIT', '0') == '1'
-    nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
-    if SHOW_AUDIT:
-        nav_options.append("⚙ AUDIT")
-    
-    # Logo and navigation on same line using styled buttons
-    header_cols = st.columns([3.5, 6.5])
-    
-    with header_cols[0]:
-        _render_html("""
-        <div style="display:flex;align-items:center;gap:10px;">
+    _render_html(
+        """
+        <div style="display:flex;align-items:center;gap:10px;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
             <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center;">
                 <span style="color:white;font-size:14px;font-weight:800">D</span>
             </div>
@@ -3069,29 +3060,26 @@ def main():
         </div>
         """
     )
-    
-    with header_cols[1]:
-        nav_items = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
-        if SHOW_AUDIT:
-            nav_items.append("⚙ AUDIT")
-        
-        # Use columns for horizontal layout
-        nav_cols = st.columns([1, 1, 1, 1, 1, 3])
-        for i, opt in enumerate(nav_items):
-            with nav_cols[i]:
-                is_active = opt == active_page
-                if is_active:
-                    # Active: red, underlined, italicized
-                    label_html = f"<span style='color:#E8571F;text-decoration:underline;font-style:italic;font-family:DM Mono,monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;'>{opt}</span>"
-                else:
-                    # Inactive: gray
-                    label_html = f"<span style='color:#6B7280;font-family:DM Mono,monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;'>{opt}</span>"
-                
-                # Use st.button with markdown label - no new tab
-                if st.button(label_html, key=f"nav_{opt}", use_container_width=False):
-                    # Update active page
-                    st.query_params.page = opt
-                    st.rerun()
+
+    SHOW_AUDIT = os.environ.get('SHOW_AUDIT', '0') == '1'
+    nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
+    if SHOW_AUDIT:
+        nav_options.append("⚙ AUDIT")
+
+    if hasattr(st, "segmented_control"):
+        active_page = st.segmented_control(
+            "Navigate",
+            nav_options,
+            default=nav_options[0],
+            label_visibility="collapsed",
+        )
+    else:
+        active_page = st.radio(
+            "Navigate",
+            nav_options,
+            horizontal=True,
+            label_visibility="collapsed",
+        )
 
     if not active_page:
         active_page = nav_options[0]
