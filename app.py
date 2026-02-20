@@ -3047,9 +3047,18 @@ def render_footer():
 
 def main():
     st.sidebar.success("✅ Ver: 0.9.5-PROD ACTIVE")
-    _render_html(
-        """
-        <div style="display:flex;align-items:center;gap:10px;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
+    
+    SHOW_AUDIT = os.environ.get('SHOW_AUDIT', '0') == '1'
+    nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
+    if SHOW_AUDIT:
+        nav_options.append("⚙ AUDIT")
+    
+    # Logo and navigation on same line
+    header_cols = st.columns([3.5, 6.5])
+    
+    with header_cols[0]:
+        _render_html("""
+        <div style="display:flex;align-items:center;gap:10px;">
             <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center;">
                 <span style="color:white;font-size:14px;font-weight:800">D</span>
             </div>
@@ -3060,20 +3069,8 @@ def main():
         </div>
         """
     )
-
-    SHOW_AUDIT = os.environ.get('SHOW_AUDIT', '0') == '1'
-    nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
-    if SHOW_AUDIT:
-        nav_options.append("⚙ AUDIT")
-
-    if hasattr(st, "segmented_control"):
-        active_page = st.segmented_control(
-            "Navigate",
-            nav_options,
-            default=nav_options[0],
-            label_visibility="collapsed",
-        )
-    else:
+    
+    with header_cols[1]:
         active_page = st.radio(
             "Navigate",
             nav_options,
