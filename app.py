@@ -100,6 +100,33 @@ def inject_css():
     .stApp { background-color: #FFFFFF; color: #111827; font-family: 'Inter', sans-serif; }
     #MainMenu, footer, header { visibility: hidden; }
     .stDeployButton { display: none; }
+    
+    /* Navigation text buttons */
+    .nav-text-btn {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        font-family: 'DM Mono', monospace !important;
+        font-size: 11px !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        color: #6B7280 !important;
+        padding: 0 !important;
+        margin: 0 18px 0 0 !important;
+        cursor: pointer;
+    }
+    .nav-text-btn:hover {
+        color: #374151 !important;
+    }
+    .nav-text-btn.active {
+        color: #E8571F !important;
+        text-decoration: underline !important;
+        font-style: italic !important;
+    }
+    div[data-testid="stHorizontalBlock"] {
+        gap: 0 !important;
+    }
 
     /* Editorial Headings */
     .editorial-header {
@@ -3020,40 +3047,46 @@ def main():
     if "active_page" not in st.session_state:
         st.session_state.active_page = nav_options[0]
     
-    _render_html(
-        f"""
-        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center;">
-                    <span style="color:white;font-size:14px;font-weight:800">D</span>
-                </div>
-                <div>
-                    <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#111827">SHOW ME THE </span>
-                    <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#E8571F">DPI</span>
-                </div>
+    # Single row header with logo and navigation
+    header_cols = st.columns([4, 6])
+    
+    with header_cols[0]:
+        _render_html("""
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                <span style="color:white;font-size:14px;font-weight:800">D</span>
+            </div>
+            <div>
+                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#111827">SHOW ME THE </span>
+                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#E8571F">DPI</span>
             </div>
         </div>
         """
     )
     
-    # Navigation in columns below header - same page navigation
-    nav_cols = st.columns([1.2, 1.2, 1.2, 1.2, 1, 3])
-    nav_items = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
-    if SHOW_AUDIT:
-        nav_items.append("⚙ AUDIT")
+    with header_cols[1]:
+        # Navigation as styled buttons in a row
+        nav_items = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
+        if SHOW_AUDIT:
+            nav_items.append("⚙ AUDIT")
+        
+        nav_cols = st.columns([1, 1, 1, 1, 1, 3])
+        for i, opt in enumerate(nav_items):
+            with nav_cols[i]:
+                is_active = opt == st.session_state.active_page
+                btn_class = "nav-text-btn active" if is_active else "nav-text-btn"
+                
+                if st.button(
+                    opt,
+                    key=f"nav_btn_{opt}",
+                    use_container_width=False,
+                    type="secondary"
+                ):
+                    st.session_state.active_page = opt
+                    st.rerun()
     
-    for i, opt in enumerate(nav_items):
-        with nav_cols[i]:
-            is_active = opt == st.session_state.active_page
-            
-            if st.button(
-                opt,
-                key=f"nav_btn_{opt}",
-                use_container_width=False,
-                type="tertiary"
-            ):
-                st.session_state.active_page = opt
-                st.rerun()
+    # Divider line
+    _render_html('<div style="border-bottom:1px solid #E5E7EB;margin-bottom:0.5rem;"></div>')
     
     active_page = st.session_state.active_page
 
