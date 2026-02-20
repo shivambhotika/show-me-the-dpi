@@ -208,89 +208,60 @@ def inject_css():
         -webkit-text-fill-color: #111827 !important;
     }
     .stTextInput input::placeholder { color: #9CA3AF !important; }
-    .stTextInput input:focus { border-color: #E8571F !important; box-shadow: 0 0 0 2px rgba(232, 87, 31, 0.1) !important; }
-    .stRadio label, .stRadio div, .stSelectbox label, .stTextInput label { color: #111827 !important; }
+    /* Force White App Theme regardless of browser settings */
+    .stApp { background-color: white !important; color: #111827 !important; }
 
-    /* Global Theme Overrides to combat dark mode defaults */
-    [data-testid="stAppViewContainer"] {
-        --primary-color: #E8571F;
-        --background-color: #FFFFFF;
-        --secondary-background-color: #F9FAFB;
-        --text-color: #111827;
-    }
-
-    .stTextInput input::placeholder { color: #9CA3AF !important; }
-    .stTextInput input:focus { border-color: #E8571F !important; box-shadow: 0 0 0 2px rgba(232, 87, 31, 0.1) !important; }
-    .stRadio label, .stRadio div, .stSelectbox label, .stTextInput label { color: #111827 !important; }
-
-    .record-count { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; color: #E8571F; margin-left: 12px; }
-    .chart-subtitle { font-family: 'Inter', sans-serif; font-size: 12px; color: #9CA3AF; margin-bottom: 16px; }
-
-    /* Ultra-Premium Navigation Bar - v4 - THEME-PROOF */
+    /* Elegant Navigation Pill Redesign */
     div[data-testid="stSegmentedControl"] {
-        background: white !important;
         margin-bottom: 2rem !important;
-        border-radius: 12px !important;
     }
     div[data-testid="stSegmentedControl"] > div {
         background: #F3F4F6 !important;
         border: 1px solid #E5E7EB !important;
+        border-radius: 999px !important; /* Full pill shape */
         padding: 4px !important;
-        border-radius: 12px !important;
-        gap: 4px !important;
     }
-    div[data-testid="stSegmentedControl"] button, 
-    div[data-testid="stSegmentedControl"] [data-baseweb="button"],
-    div[data-testid="stSegmentedControl"] [role="radio"] {
-        background-color: transparent !important;
+    div[data-testid="stSegmentedControl"] button {
         background: transparent !important;
-        color: #4B5563 !important;
+        color: #6B7280 !important;
         border: none !important;
-        border-radius: 8px !important;
+        border-radius: 999px !important;
         font-family: 'IBM Plex Mono', monospace !important;
         font-size: 11px !important;
         font-weight: 600 !important;
-        letter-spacing: 0.05em !important;
         text-transform: uppercase !important;
-        padding: 8px 18px !important;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 8px 24px !important;
+        box-shadow: none !important;
     }
-    div[data-testid="stSegmentedControl"] button[data-checked="true"], 
-    div[data-testid="stSegmentedControl"] [aria-checked="true"],
-    div[data-testid="stSegmentedControl"] [data-checked="true"] label {
-        background-color: white !important;
+    div[data-testid="stSegmentedControl"] button[data-checked="true"] {
         background: white !important;
         color: #E8571F !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
         font-weight: 700 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
         text-decoration: underline !important;
         text-underline-offset: 4px !important;
     }
     div[data-testid="stSegmentedControl"] button:hover {
-        background-color: rgba(255,255,255,0.5) !important;
         color: #111827 !important;
     }
 
-    /* NUCLEAR OPTION FOR PLOTLY "UNDEFINED" & INTERFACE BLUTTER */
-    .js-plotly-plot .plotly .modebar, 
-    .js-plotly-plot .plotly .modebar-container,
-    .js-plotly-plot .plotly .notifier-container,
-    .js-plotly-plot .plotly .plotly-notifier,
-    .js-plotly-plot .plotly .hoverlayer,
-    div[data-testid="stPlotlyChart"] .modebar,
-    .modebar-container, .plotly-notifier {
+    /* TOTAL WIPEOUT OF PLOTLY CHROME AND "UNDEFINED" TAGS */
+    .modebar, .modebar-container, .plotly-notifier, .notifier-note, .hoverlayer, .js-plotly-plot .plotly .modebar {
         display: none !important;
         visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
         opacity: 0 !important;
         pointer-events: none !important;
     }
-    /* Specifically target any tooltip frame that might be leaking */
-    div.svg-container + div { display: none !important; }
-
+    /* Hide the specific "undefined" frame which often appears as a tooltip sibling to the plot */
+    .svg-container + div, .plotly-notifier + div { display: none !important; }
+    
     .footer-wrap { margin-top: 1.2rem; border-top: 1px solid #E5E7EB; padding-top: 12px; }
     .footer-text { font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280; line-height: 1.55; }
     .footer-links a { color: #E8571F; text-decoration: none; }
     .footer-links a:hover { text-decoration: underline; }
+
 
 
     </style>
