@@ -2572,8 +2572,7 @@ Orange = 2×+ DPI · Amber = 1–2× · Gray = below 1×.
         </div>
         {real_bar_rows}
       </div>
-      <div class="ins-footnote">LP-disclosed funds (n ≥ 2 per vintage). Values = median DPI multiple for that vintage cohort.
-Orange = 2×+ · Amber = 1–2× · Gray = &lt;1× · Bar width scaled to dataset maximum.</div>
+      <div class="ins-footnote">LP-disclosed funds (n ≥ 2 per vintage). Values = median DPI multiple for that vintage cohort. Orange = 2×+ · Amber = 1–2× · Gray = &lt;1× · Bar width scaled to dataset maximum.</div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -2687,9 +2686,9 @@ Orange = 2×+ · Amber = 1–2× · Gray = &lt;1× · Bar width scaled to datase
             right_pct = ((max_irr - gp_irr_axis_min) / irr_span * 100)
             fill_w    = right_pct - left_pct
             
-            # Clamp positions to prevent clipping
-            dot_left_pct  = max(0.0, min(left_pct,  98.0))   # clamp: never go below 0 or above 98
-            dot_right_pct = max(2.0, min(right_pct, 100.0))  # right dot always at least 2% from left
+            # Clamp positions to prevent clipping (account for 4px dot radius)
+            dot_left_pct  = max(4.0, min(left_pct,  96.0))   # clamp: never go below 4px or above 96%
+            dot_right_pct = max(4.0, min(right_pct, 100.0))  # right dot always at least 4px from left
             fill_w_clamped = dot_right_pct - dot_left_pct
             
             min_str = f"{min_irr*100:.1f}%"
