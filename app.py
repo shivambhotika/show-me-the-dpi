@@ -214,53 +214,77 @@ def inject_css():
     .record-count { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; color: #E8571F; margin-left: 12px; }
     .chart-subtitle { font-family: 'Inter', sans-serif; font-size: 12px; color: #9CA3AF; margin-bottom: 16px; }
 
-    /* Force light segmented nav across browsers/themes - NUCLEAR OPTION */
-    div[data-testid="stSegmentedControl"], 
-    div[data-testid="stSegmentedControl"] > div,
-    div[data-testid="stSegmentedControl"] button,
-    div[data-testid="stSegmentedControl"] [role="radio"],
-    div[data-testid="stSegmentedControl"] [data-baseweb="button"],
-    div[data-testid="stSegmentedControl"] label {
-        background-color: white !important;
+    /* Premium Navigation Bar Styling */
+    div[data-testid="stSegmentedControl"] {
         background: white !important;
-        color: #E8571F !important;
-        border: none !important;
-        box-shadow: none !important;
+        margin-bottom: 2rem !important;
+        width: 100% !important;
     }
     div[data-testid="stSegmentedControl"] > div {
-        border: 1px solid #FCE7DE !important;
-        border-radius: 6px !important;
+        background: #F9FAFB !important;
+        border: 1px solid #E5E7EB !important;
+        padding: 4px !important;
+        border-radius: 12px !important;
+        width: fit-content !important;
+        display: flex !important;
+        gap: 4px !important;
     }
     div[data-testid="stSegmentedControl"] button, 
-    div[data-testid="stSegmentedControl"] [role="radio"] {
-        border-right: 1px solid #FCE7DE !important;
-        border-radius: 0 !important;
-        padding: 8px 16px !important;
-    }
-    div[data-testid="stSegmentedControl"] button:last-child {
-        border-right: none !important;
+    div[data-testid="stSegmentedControl"] [role="radio"],
+    div[data-testid="stSegmentedControl"] label {
+        background-color: transparent !important;
+        background: transparent !important;
+        color: #6B7280 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-family: 'IBM Plex Mono', monospace !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+        padding: 8px 18px !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
     }
     div[data-testid="stSegmentedControl"] button[data-checked="true"], 
     div[data-testid="stSegmentedControl"] [aria-checked="true"],
     div[data-testid="stSegmentedControl"] [data-checked="true"] label {
-        background-color: #FFF4EF !important;
-        background: #FFF4EF !important;
+        background-color: white !important;
+        background: white !important;
         color: #E8571F !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
         font-weight: 700 !important;
         text-decoration: underline !important;
         text-underline-offset: 4px !important;
     }
-    div[data-testid="stSegmentedControl"] button:hover, 
-    div[data-testid="stSegmentedControl"] label:hover {
-        background-color: #FEF2EE !important;
-        background: #FEF2EE !important;
+    div[data-testid="stSegmentedControl"] button:hover {
+        background-color: rgba(0,0,0,0.03) !important;
+        color: #111827 !important;
     }
-    /* Hide the "undefined" tag which is actually the modebar tooltip frame */
-    .js-plotly-plot .plotly .modebar { display: none !important; }
+    div[data-testid="stSegmentedControl"] button[data-checked="true"]:hover {
+        background-color: white !important;
+        color: #E8571F !important;
+    }
+
+    /* Aggressive Plotly "Undefined" & Modebar Fix */
+    .js-plotly-plot .plotly .modebar, 
+    .js-plotly-plot .plotly .modebar-container,
+    .js-plotly-plot .plotly .modebar-btn,
+    div[data-testid="stPlotlyChart"] .modebar {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+    /* Stop the "undefined" tooltip frame from appearing when hovering modebar area */
+    .plotly-notifier, .modebar-container { display: none !important; }
+
     .footer-wrap { margin-top: 1.2rem; border-top: 1px solid #E5E7EB; padding-top: 12px; }
     .footer-text { font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280; line-height: 1.55; }
     .footer-links a { color: #E8571F; text-decoration: none; }
     .footer-links a:hover { text-decoration: underline; }
+
     </style>
     """,
         unsafe_allow_html=True,
