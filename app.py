@@ -2554,6 +2554,14 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     st.write(f"DEBUG: real_rates = {real_rates}")
     st.write(f"DEBUG: _real_max_dpi = {_real_max_dpi}")
     st.write(f"DEBUG: real_bar_rows length = {len(real_bar_rows)}")
+    st.write(f"DEBUG: real_bar_rows first 200 chars = {real_bar_rows[:200]!r}")
+    
+    # Test with simple HTML
+    st.markdown("<div style='color:red;'>TEST: Simple red text</div>", unsafe_allow_html=True)
+    
+    # Test with one bar
+    test_bar = """<div class="ins-real-row"><div class="ins-real-year">2010</div><div class="ins-real-track"><div class="ins-real-fill" style="width:60%; background:#D97706"></div></div><div class="ins-real-pct" style="color:#D97706">1.73×</div></div>"""
+    st.markdown(test_bar, unsafe_allow_html=True)
     
     st.markdown(f"""
     <div style="margin-top: 36px;">
