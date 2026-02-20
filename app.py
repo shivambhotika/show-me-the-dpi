@@ -2550,39 +2550,27 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     </div>
     """, unsafe_allow_html=True)
     
-    # DEBUG: Show data status
-    st.write(f"DEBUG: real_rates = {real_rates}")
-    st.write(f"DEBUG: _real_max_dpi = {_real_max_dpi}")
-    st.write(f"DEBUG: real_bar_rows length = {len(real_bar_rows)}")
-    st.write(f"DEBUG: real_bar_rows first 200 chars = {real_bar_rows[:200]!r}")
-    
-    # Test with simple HTML
-    st.markdown("<div style='color:red;'>TEST: Simple red text</div>", unsafe_allow_html=True)
-    
-    # Test with one bar
-    test_bar = """<div class="ins-real-row"><div class="ins-real-year">2010</div><div class="ins-real-track"><div class="ins-real-fill" style="width:60%; background:#D97706"></div></div><div class="ins-real-pct" style="color:#D97706">1.73×</div></div>"""
-    st.markdown(test_bar, unsafe_allow_html=True)
-    
-    st.markdown(f"""
-    <div style="margin-top: 36px;">
-      <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
-        What percentage of capital has actually been returned?
-      </div>
-      <div class="ins-chart-standfirst" style="margin-bottom:16px;">
-        Median DPI per vintage. Bar length is scaled to the best-performing vintage in the dataset.
-Orange = 2×+ DPI · Amber = 1–2× · Gray = below 1×.
-      </div>
-      <div class="ins-chart-frame" style="padding: 18px 24px;">
-        <div class="ins-real-row" style="padding-bottom:8px; border-bottom:2px solid #111827; margin-bottom:6px;">
-          <div class="ins-footnote" style="margin:0">Vintage</div>
-          <div class="ins-footnote" style="margin:0">Realization Rate</div>
-          <div class="ins-footnote" style="margin:0;text-align:right">%</div>
-        </div>
-        {real_bar_rows}
-      </div>
-      <div class="ins-footnote">LP-disclosed funds (n ≥ 2 per vintage). Values = median DPI multiple for that vintage cohort. Orange = 2×+ · Amber = 1–2× · Gray = &lt;1× · Bar width scaled to dataset maximum.</div>
+    # Build complete HTML string
+    chart_html = f"""<div style="margin-top: 36px;">
+  <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
+    What percentage of capital has actually been returned?
+  </div>
+  <div class="ins-chart-standfirst" style="margin-bottom:16px;">
+    Median DPI per vintage. Bar length is scaled to the best-performing vintage in the dataset.
+    Orange = 2×+ DPI · Amber = 1–2× · Gray = below 1×.
+  </div>
+  <div class="ins-chart-frame" style="padding: 18px 24px;">
+    <div class="ins-real-row" style="padding-bottom:8px; border-bottom:2px solid #111827; margin-bottom:6px;">
+      <div class="ins-footnote" style="margin:0">Vintage</div>
+      <div class="ins-footnote" style="margin:0">Realization Rate</div>
+      <div class="ins-footnote" style="margin:0;text-align:right">%</div>
     </div>
-    """, unsafe_allow_html=True)
+    {real_bar_rows}
+  </div>
+  <div class="ins-footnote">LP-disclosed funds (n ≥ 2 per vintage). Values = median DPI multiple for that vintage cohort. Orange = 2×+ · Amber = 1–2× · Gray = &lt;1× · Bar width scaled to dataset maximum.</div>
+</div>"""
+    
+    st.markdown(chart_html, unsafe_allow_html=True)
     
     # I. SECTION 4 — FEE DRAG
     _render_html("""
