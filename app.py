@@ -2544,7 +2544,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
       <div class="ins-real-pct" style="color:{pct_color}">{display_val}</div>
     </div>"""
     
-    _render_html(f"""
+    st.markdown(f"""
     <div style="margin-top: 36px;">
       <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
         What percentage of capital has actually been returned?
@@ -2563,7 +2563,7 @@ Orange = 2×+ DPI · Amber = 1–2× · Gray = below 1×.
       </div>
       <div class="ins-footnote">LP-disclosed funds (n ≥ 2 per vintage). Values = median DPI multiple for that vintage cohort. Orange = 2×+ · Amber = 1–2× · Gray = &lt;1× · Bar width scaled to dataset maximum.</div>
     </div>
-    """)
+    """, unsafe_allow_html=True)
     
     # I. SECTION 4 — FEE DRAG
     _render_html("""
