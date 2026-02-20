@@ -976,7 +976,7 @@ def style_chart_readability(fig: go.Figure):
                 legend=dict(
                     orientation="h",
                     yanchor="top",
-                    y=-0.24,
+                    y=-0.14,
                     xanchor="left",
                     x=0,
                     font=dict(size=12),
@@ -1307,21 +1307,7 @@ def render_fund_database(df_unified: pd.DataFrame, df_market_intel: pd.DataFrame
         "{0:,} FUNDS INDEXED".format(len(lp_df) + len(mi_df)),
     )
 
-    with st.expander("ℹ About Market Intelligence Data (a16z, Founders Fund, Social Capital)", expanded=False):
-        st.markdown(
-            """
-        <div class="insight-body" style="padding:4px 0">
-            Performance data for <strong>Andreessen Horowitz</strong>, <strong>Founders Fund</strong>,
-            and <strong>Social Capital</strong> circulated through industry channels — secondary
-            market processes, LP reporting packages, and investor community sources.
-            These are <em>not</em> formally published figures, and provenance cannot be fully
-            verified. The vintage of marks is approximate. Treat as directional data,
-            not audited performance records. LP-disclosed (FOIA) data from pension funds
-            is independently reported and more reliable.
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
+
 
     base_df = pd.concat([lp_df, mi_df], ignore_index=True)
 
@@ -2831,16 +2817,17 @@ def render_sources(df_unified: pd.DataFrame, df_master: pd.DataFrame):
 
     st.markdown(
         """
-    <div style="background:#F0F9FF;border-left:3px solid #BAE6FD;border-radius:0 6px 6px 0;
-        padding:12px 16px;margin:-8px 0 16px 0;font-size:12px;color:#075985;line-height:1.6">
-        <strong>Vintage year note:</strong> UTIMCO does not disclose vintage year in fund
-        performance reports. Vintages marked as inferred are derived from fund names and
-        cross-referenced close windows. Funds with unknown vintage are excluded from benchmark
-        comparisons.
-        <br><br>
-        <strong>Capital committed vs contributed:</strong> UTIMCO reports capital invested
-        (contributed/called capital) rather than original commitment. This value is used as
-        denominator for DPI/TVPI context in this source.
+    <div class="insight-box" style="margin-top:-0.5rem; margin-bottom:1.5rem">
+        <div class="insight-label">● UTIMCO DATA NOTES</div>
+        <div class="insight-body">
+            <strong>Vintage year note:</strong> UTIMCO does not disclose vintage year in fund
+            performance reports. Vintages marked as inferred are derived from fund names and
+            cross-referenced close windows. Funds with unknown vintage are excluded from benchmark
+            comparisons.<br><br>
+            <strong>Capital committed vs contributed:</strong> UTIMCO reports capital invested
+            (contributed/called capital) rather than original commitment. This value is used as
+            denominator for DPI/TVPI context in this source.
+        </div>
     </div>
     """,
         unsafe_allow_html=True,
@@ -2849,8 +2836,7 @@ def render_sources(df_unified: pd.DataFrame, df_master: pd.DataFrame):
     st.markdown('<div class="section-label">03 / MARKET INTELLIGENCE SOURCES</div>', unsafe_allow_html=True)
     st.markdown(
         """
-    <div style="font-family:'Inter',sans-serif;font-size:14px;color:#374151;line-height:1.7;
-        padding:16px 20px;background:#FFF7ED;border-radius:6px;border:1px solid #FED7AA;margin-bottom:1.5rem">
+    <div style="font-family:'Inter',sans-serif;font-size:14px;color:#374151;line-height:1.7; margin-bottom:1.5rem">
         <strong>Market Intelligence</strong> refers to performance data that circulates through
         the private markets ecosystem — via secondary market processes, LP quarterly reports
         that get forwarded, placement agent materials, and investor community channels.
