@@ -2546,29 +2546,12 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     
     st.markdown("""
     <div style="background: #E8571F; color: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <strong>TEST:</strong> If you can see this styled box, HTML rendering is working!
+        <strong>TEST:</strong> HTML rendering works!
     </div>
     """, unsafe_allow_html=True)
     
-    # Build complete HTML string
-    chart_html = f"""<div style="margin-top: 36px;">
-  <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
-    What percentage of capital has actually been returned?
-  </div>
-  <div class="ins-chart-standfirst" style="margin-bottom:16px;">
-    Median DPI per vintage. Bar length is scaled to the best-performing vintage in the dataset.
-    Orange = 2×+ DPI · Amber = 1–2× · Gray = below 1×.
-  </div>
-  <div class="ins-chart-frame" style="padding: 18px 24px;">
-    <div class="ins-real-row" style="padding-bottom:8px; border-bottom:2px solid #111827; margin-bottom:6px;">
-      <div class="ins-footnote" style="margin:0">Vintage</div>
-      <div class="ins-footnote" style="margin:0">Realization Rate</div>
-      <div class="ins-footnote" style="margin:0;text-align:right">%</div>
-    </div>
-    {real_bar_rows}
-  </div>
-  <div class="ins-footnote">LP-disclosed funds (n ≥ 2 per vintage). Values = median DPI multiple for that vintage cohort. Orange = 2×+ · Amber = 1–2× · Gray = &lt;1× · Bar width scaled to dataset maximum.</div>
-</div>"""
+    # Build chart HTML as single line
+    chart_html = '<div style="margin-top: 36px;"><div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">What percentage of capital has actually been returned?</div><div class="ins-chart-standfirst" style="margin-bottom:16px;">Median DPI per vintage. Bar length scaled to dataset max. Orange = 2×+ · Amber = 1–2× · Gray = below 1×.</div><div class="ins-chart-frame" style="padding: 18px 24px;"><div class="ins-real-row" style="padding-bottom:8px; border-bottom:2px solid #111827; margin-bottom:6px;"><div class="ins-footnote" style="margin:0">Vintage</div><div class="ins-footnote" style="margin:0">Realization</div><div class="ins-footnote" style="margin:0;text-align:right">DPI</div></div>' + real_bar_rows.replace('\n', '') + '</div><div class="ins-footnote">LP-disclosed funds. Orange = 2×+ · Amber = 1–2× · Gray = &lt;1×</div></div>'
     
     st.markdown(chart_html, unsafe_allow_html=True)
     
