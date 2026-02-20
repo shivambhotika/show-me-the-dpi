@@ -214,35 +214,28 @@ def inject_css():
     .record-count { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; color: #E8571F; margin-left: 12px; }
     .chart-subtitle { font-family: 'Inter', sans-serif; font-size: 12px; color: #9CA3AF; margin-bottom: 16px; }
 
-    /* Force light segmented nav across browsers/themes */
-    div[data-testid="stSegmentedControl"] {
-        background: white !important;
-    }
-    div[data-testid="stSegmentedControl"] > div {
-        background: #FFFFFF !important;
-        border: 1px solid #FCE7DE !important;
-        border-radius: 6px !important;
-        gap: 0 !important;
-        padding: 0 !important;
-    }
-    div[data-testid="stSegmentedControl"] button, 
+    /* Force light segmented nav across browsers/themes - NUCLEAR OPTION */
+    div[data-testid="stSegmentedControl"], 
+    div[data-testid="stSegmentedControl"] > div,
+    div[data-testid="stSegmentedControl"] button,
     div[data-testid="stSegmentedControl"] [role="radio"],
-    div[data-testid="stSegmentedControl"] label,
-    div[data-testid="stSegmentedControl"] [data-baseweb="button"] {
+    div[data-testid="stSegmentedControl"] [data-baseweb="button"],
+    div[data-testid="stSegmentedControl"] label {
         background-color: white !important;
+        background: white !important;
         color: #E8571F !important;
         border: none !important;
-        border-right: 1px solid #FCE7DE !important;
-        font-family: 'IBM Plex Mono', monospace !important;
-        font-size: 11px !important;
-        font-weight: 500 !important;
-        letter-spacing: 0.05em !important;
-        text-transform: uppercase !important;
-        padding: 8px 16px !important;
         box-shadow: none !important;
-        margin: 0 !important;
+    }
+    div[data-testid="stSegmentedControl"] > div {
+        border: 1px solid #FCE7DE !important;
+        border-radius: 6px !important;
+    }
+    div[data-testid="stSegmentedControl"] button, 
+    div[data-testid="stSegmentedControl"] [role="radio"] {
+        border-right: 1px solid #FCE7DE !important;
         border-radius: 0 !important;
-        cursor: pointer !important;
+        padding: 8px 16px !important;
     }
     div[data-testid="stSegmentedControl"] button:last-child {
         border-right: none !important;
@@ -251,6 +244,7 @@ def inject_css():
     div[data-testid="stSegmentedControl"] [aria-checked="true"],
     div[data-testid="stSegmentedControl"] [data-checked="true"] label {
         background-color: #FFF4EF !important;
+        background: #FFF4EF !important;
         color: #E8571F !important;
         font-weight: 700 !important;
         text-decoration: underline !important;
@@ -259,7 +253,7 @@ def inject_css():
     div[data-testid="stSegmentedControl"] button:hover, 
     div[data-testid="stSegmentedControl"] label:hover {
         background-color: #FEF2EE !important;
-        color: #E8571F !important;
+        background: #FEF2EE !important;
     }
     /* Hide the "undefined" tag which is actually the modebar tooltip frame */
     .js-plotly-plot .plotly .modebar { display: none !important; }
@@ -963,7 +957,7 @@ def style_chart_readability(fig: go.Figure):
             l=max(72, current_left),
             r=max(36, current_right),
             t=max(56, current_top),
-            b=max(96, current_bottom),
+            b=max(50, current_bottom),
         ),
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#FFFFFF",
@@ -976,7 +970,7 @@ def style_chart_readability(fig: go.Figure):
                 legend=dict(
                     orientation="h",
                     yanchor="top",
-                    y=-0.14,
+                    y=-0.08,
                     xanchor="left",
                     x=0,
                     font=dict(size=12),
