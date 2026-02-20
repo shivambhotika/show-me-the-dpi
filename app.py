@@ -509,7 +509,7 @@ def inject_css():
     .ins-mgr-name { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; }
     .ins-mgr-hdr { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #9CA3AF; }
     .ins-mgr-hdr.r { text-align: right; }
-    .ins-mgr-range { position: relative; height: 10px; }
+    .ins-mgr-range { position: relative; height: 10px; overflow: visible; }
     .ins-mgr-track { position: absolute; top: 2px; left: 0; right: 0; height: 6px; background: #F3F4F6; border-radius: 3px; }
     .ins-mgr-fill { position: absolute; top: 2px; height: 6px; background: #E8571F; border-radius: 3px; opacity: 0.65; }
     .ins-mgr-dot { position: absolute; top: -1px; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid white; }
@@ -2131,9 +2131,13 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     for yr in REAL_YEARS:
         rows = lp_full[lp_full["vintage_year"] == yr]["dpi"].dropna()
         if len(rows) >= 2:
-            real_rates[yr] = min(int(float(rows.median()) * 100), 100)
+            real_rates[yr] = round(float(rows.median()), 2)   # store raw DPI multiple, e.g. 3.1
         else:
             real_rates[yr] = None
+
+    # Scale bar widths to the max DPI across all displayed years (floor at 1.0 to avoid div-by-zero)
+    _real_max_dpi = max((v for v in real_rates.values() if v is not None), default=1.0)
+    _real_max_dpi = max(_real_max_dpi, 1.0)
     
     # ── Section 4: a16z Fee Drag ─────────────────
     A16Z_FUNDS = [
@@ -2524,24 +2528,32 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         rate = real_rates.get(yr)
         if rate is None:
             continue
-        if rate >= 80:
+
+        bar_pct = min(int((rate / _real_max_dpi) * 100), 100)   # scale to max, not 100% cap
+
+        if rate >= 2.0:
             fill_color = "#E8571F"
             pct_color  = "#E8571F"
-        elif rate >= 40:
+        elif rate >= 1.0:
             fill_color = "#D97706"
             pct_color  = "#D97706"
+        elif rate >= 0.3:
+            fill_color = "#9CA3AF"
+            pct_color  = "#6B7280"
         else:
             fill_color = "#E5E7EB"
             pct_color  = "#9CA3AF"
-        
+
+        display_val = f"{rate:.2f}×"   # show DPI multiple, not a misleading %
+
         real_bar_rows += f"""
-        <div class="ins-real-row">
-          <div class="ins-real-year">{yr}</div>
-          <div class="ins-real-track">
-            <div class="ins-real-fill" style="width:{rate}%; background:{fill_color}"></div>
-          </div>
-          <div class="ins-real-pct" style="color:{pct_color}">{rate}%</div>
-        </div>"""
+    <div class="ins-real-row">
+      <div class="ins-real-year">{yr}</div>
+      <div class="ins-real-track">
+        <div class="ins-real-fill" style="width:{bar_pct}%; background:{fill_color}"></div>
+      </div>
+      <div class="ins-real-pct" style="color:{pct_color}">{display_val}</div>
+    </div>"""
     
     st.markdown(f"""
     <div style="margin-top: 36px;">
@@ -2549,7 +2561,8 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         What percentage of capital has actually been returned?
       </div>
       <div class="ins-chart-standfirst" style="margin-bottom:16px;">
-        Realization rate = median DPI per vintage expressed as % (1.0× DPI = 100%). Capped at 100%.
+        Median DPI per vintage. Bar length is scaled to the best-performing vintage in the dataset.
+Orange = 2×+ DPI · Amber = 1–2× · Gray = below 1×.
       </div>
       <div class="ins-chart-frame" style="padding: 18px 24px;">
         <div class="ins-real-row" style="padding-bottom:8px; border-bottom:2px solid #111827; margin-bottom:6px;">
@@ -2559,7 +2572,8 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         </div>
         {real_bar_rows}
       </div>
-      <div class="ins-footnote">LP-disclosed funds · Orange = strong realization · Gray = minimal distributions yet</div>
+      <div class="ins-footnote">LP-disclosed funds (n ≥ 2 per vintage). Values = median DPI multiple for that vintage cohort.
+Orange = 2×+ · Amber = 1–2× · Gray = &lt;1× · Bar width scaled to dataset maximum.</div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -2673,6 +2687,11 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
             right_pct = ((max_irr - gp_irr_axis_min) / irr_span * 100)
             fill_w    = right_pct - left_pct
             
+            # Clamp positions to prevent clipping
+            dot_left_pct  = max(0.0, min(left_pct,  98.0))   # clamp: never go below 0 or above 98
+            dot_right_pct = max(2.0, min(right_pct, 100.0))  # right dot always at least 2% from left
+            fill_w_clamped = dot_right_pct - dot_left_pct
+            
             min_str = f"{min_irr*100:.1f}%"
             max_str = f"{max_irr*100:.1f}%"
             
@@ -2682,9 +2701,9 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
               <div class="ins-mgr-name">{logo_html}{gp_name}</div>
               <div class="ins-mgr-range">
                 <div class="ins-mgr-track"></div>
-                <div class="ins-mgr-fill" style="left:{left_pct:.1f}%;width:{fill_w:.1f}%"></div>
-                <div class="ins-mgr-dot" style="left:calc({left_pct:.1f}% - 4px);background:#9CA3AF"></div>
-                <div class="ins-mgr-dot" style="left:calc({right_pct:.1f}% - 4px);background:#E8571F"></div>
+                <div class="ins-mgr-fill" style="left:{dot_left_pct:.1f}%;width:{fill_w_clamped:.1f}%"></div>
+                <div class="ins-mgr-dot" style="left:calc({dot_left_pct:.1f}% - 4px);background:#9CA3AF"></div>
+                <div class="ins-mgr-dot" style="left:calc({dot_right_pct:.1f}% - 4px);background:#E8571F"></div>
               </div>
               <div class="ins-mgr-val max">{max_str}</div>
               <div class="ins-mgr-val min">{min_str}</div>
