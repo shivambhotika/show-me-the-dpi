@@ -3020,18 +3020,6 @@ def main():
     if "active_page" not in st.session_state:
         st.session_state.active_page = nav_options[0]
     
-    # Create navigation links with current active state
-    nav_links = []
-    for opt in nav_options:
-        if opt == st.session_state.active_page:
-            # Active: red, underlined, italicized
-            nav_links.append(f'<a href="?page={opt}" style="color:#E8571F;text-decoration:underline;font-style:italic;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;margin-right:18px;">{opt}</a>')
-        else:
-            # Inactive: normal gray
-            nav_links.append(f'<a href="?page={opt}" style="color:#6B7280;text-decoration:none;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;margin-right:18px;">{opt}</a>')
-    
-    nav_html = " ".join(nav_links)
-    
     _render_html(
         f"""
         <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
@@ -3044,17 +3032,28 @@ def main():
                     <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#E8571F">DPI</span>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;">
-                {nav_html}
-            </div>
         </div>
         """
     )
     
-    # Handle navigation via query params
-    query_params = st.query_params
-    if "page" in query_params and query_params["page"] in nav_options:
-        st.session_state.active_page = query_params["page"]
+    # Navigation in columns below header - same page navigation
+    nav_cols = st.columns([1.2, 1.2, 1.2, 1.2, 1, 3])
+    nav_items = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
+    if SHOW_AUDIT:
+        nav_items.append("⚙ AUDIT")
+    
+    for i, opt in enumerate(nav_items):
+        with nav_cols[i]:
+            is_active = opt == st.session_state.active_page
+            
+            if st.button(
+                opt,
+                key=f"nav_btn_{opt}",
+                use_container_width=False,
+                type="tertiary"
+            ):
+                st.session_state.active_page = opt
+                st.rerun()
     
     active_page = st.session_state.active_page
 
