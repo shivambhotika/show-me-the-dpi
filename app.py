@@ -1188,10 +1188,33 @@ def render_page_header(title: str, subtitle: str, count: str = None):
     )
 
 
+def _safe_get_scalar(series_or_value, default=None):
+    """Safely extract a scalar value from a pandas Series or value, handling arrays."""
+    if series_or_value is None:
+        return default
+    if isinstance(series_or_value, (np.ndarray, list, tuple)):
+        if len(series_or_value) == 0:
+            return default
+        val = series_or_value[0]
+    elif isinstance(series_or_value, pd.Series):
+        if len(series_or_value) == 0:
+            return default
+        val = series_or_value.iloc[0]
+    else:
+        val = series_or_value
+    
+    if pd.isna(val):
+        return default
+    return val
+
+
 def _fmt_multiple(v):
     if v is None or pd.isna(v):
         return "—"
     try:
+        v = _safe_get_scalar(v)
+        if v is None or pd.isna(v):
+            return "—"
         return "{0:.2f}×".format(float(v))
     except (ValueError, TypeError):
         return "—"
@@ -1201,6 +1224,9 @@ def _fmt_irr(v):
     if v is None or pd.isna(v):
         return "—"
     try:
+        v = _safe_get_scalar(v)
+        if v is None or pd.isna(v):
+            return "—"
         return "{0:.1f}%".format(float(v) * 100)
     except (ValueError, TypeError):
         return "—"
@@ -1210,6 +1236,9 @@ def _fmt_committed(v):
     if v is None or pd.isna(v):
         return "—"
     try:
+        v = _safe_get_scalar(v)
+        if v is None or pd.isna(v):
+            return "—"
         return "${0:.0f}M".format(float(v) / 1_000_000)
     except (ValueError, TypeError):
         return "—"
@@ -1243,21 +1272,32 @@ def _to_database_lp_df(lp_df: pd.DataFrame) -> pd.DataFrame:
 
 def render_fund_table(df_display: pd.DataFrame, show_source_type: bool = False):
     def irr_html(v):
-        if pd.isna(v):
+        v = _safe_get_scalar(v)
+        if v is None or pd.isna(v):
             return '<span class="irr-na">—</span>'
-        pct = v * 100
-        cls = "irr-high" if pct >= 20 else "irr-mid" if pct >= 10 else "irr-low"
-        return '<span class="{0}">{1:.1f}%</span>'.format(cls, pct)
+        try:
+            pct = float(v) * 100
+            cls = "irr-high" if pct >= 20 else "irr-mid" if pct >= 10 else "irr-low"
+            return '<span class="{0}">{1:.1f}%</span>'.format(cls, pct)
+        except (ValueError, TypeError):
+            return '<span class="irr-na">—</span>'
 
     def dpi_html(v):
-        if pd.isna(v) or v == 0:
+        v = _safe_get_scalar(v)
+        if v is None or pd.isna(v) or v == 0:
             return '<span class="irr-na">0.00×</span>'
-        color = "#E8571F" if v > 0.5 else "#9CA3AF"
-        return "<span style=\"color:{0};font-family:'IBM Plex Mono',monospace;font-weight:500\">{1:.2f}×</span>".format(color, v)
+        try:
+            v_float = float(v)
+            color = "#E8571F" if v_float > 0.5 else "#9CA3AF"
+            return "<span style=\"color:{0};font-family:'IBM Plex Mono',monospace;font-weight:500\">{1:.2f}×</span>".format(color, v_float)
+        except (ValueError, TypeError):
+            return '<span class="irr-na">0.00×</span>'
 
     def source_type_badge(row: pd.Series):
-        v = str(row.get("data_source_type", ""))
-        source = str(row.get("source", ""))
+        v_val = _safe_get_scalar(row.get("data_source_type", ""), "")
+        v = str(v_val)
+        source_val = _safe_get_scalar(row.get("source", ""), "")
+        source = str(source_val)
         if v == "Market Intelligence":
             if source == "a16z Firm Disclosure":
                 return '<span class="badge badge-mi-a16z">INTEL ▸ A16Z</span>'
@@ -1270,28 +1310,30 @@ def render_fund_table(df_display: pd.DataFrame, show_source_type: bool = False):
 
     rows_html = ""
     for i, (_, row) in enumerate(df_display.iterrows()):
-        source = str(row.get("source", "")) if pd.notna(row.get("source")) else ""
+        source_val = _safe_get_scalar(row.get("source", ""), "")
+        source = str(source_val) if source_val else ""
         badge_class = SOURCE_BADGE_CLASS.get(source, "badge-estimated")
         badge_label = SOURCE_SHORT.get(source, str(source).upper()[:12])
         
-        tvpi_val = row.get("tvpi")
-        tvpi_val = float(tvpi_val) if pd.notna(tvpi_val) else None
+        tvpi_val = _safe_get_scalar(row.get("tvpi"))
+        tvpi_val = float(tvpi_val) if tvpi_val is not None and pd.notna(tvpi_val) else None
         tvpi = _fmt_multiple(tvpi_val)
         
-        committed_val = row.get("capital_committed")
-        committed_val = float(committed_val) if pd.notna(committed_val) else None
+        committed_val = _safe_get_scalar(row.get("capital_committed"))
+        committed_val = float(committed_val) if committed_val is not None and pd.notna(committed_val) else None
         committed = _fmt_committed(committed_val)
         
-        name = html.escape(str(row.get("fund_name", "")))
+        name_val = _safe_get_scalar(row.get("fund_name", ""), "")
+        name = html.escape(str(name_val))
         
-        vintage_val = row.get("vintage_year")
-        vintage = "—" if pd.isna(vintage_val) else str(int(float(vintage_val)))
+        vintage_val = _safe_get_scalar(row.get("vintage_year"))
+        vintage = "—" if vintage_val is None or pd.isna(vintage_val) else str(int(float(vintage_val)))
         
-        dpi_val = row.get("dpi")
-        dpi_val = float(dpi_val) if pd.notna(dpi_val) else None
+        dpi_val = _safe_get_scalar(row.get("dpi"))
+        dpi_val = float(dpi_val) if dpi_val is not None and pd.notna(dpi_val) else None
         
-        irr_val = row.get("net_irr")
-        irr_val = float(irr_val) if pd.notna(irr_val) else None
+        irr_val = _safe_get_scalar(row.get("net_irr"))
+        irr_val = float(irr_val) if irr_val is not None and pd.notna(irr_val) else None
 
         source_type_cell = ""
         if show_source_type:
@@ -1420,7 +1462,7 @@ def render_firm_card(gp_name: str, gp_data: pd.DataFrame):
     if vintage_series.empty:
         vintage_range = "—"
     else:
-        vintage_range = "{0}–{1}".format(int(vintage_series.min()), int(vintage_series.max()))
+        vintage_range = "{0}–{1}".format(int(float(vintage_series.min())), int(float(vintage_series.max())))
 
     dpi_series = pd.to_numeric(gp_data["dpi"], errors="coerce").dropna()
     med_dpi = float(dpi_series.median()) if not dpi_series.empty else np.nan
@@ -1440,19 +1482,20 @@ def render_firm_card(gp_name: str, gp_data: pd.DataFrame):
     if best_dpi_idx is not None and best_dpi_idx in gp_data.index and pd.notna(gp_data.loc[best_dpi_idx, "dpi"]):
         best_fund = gp_data.loc[best_dpi_idx]
 
-    founded_val = row.get("firm_founded")
-    if pd.isna(founded_val) and "founded" in meta:
+    founded_val = _safe_get_scalar(row.get("firm_founded"))
+    if (founded_val is None or pd.isna(founded_val)) and "founded" in meta:
         founded_val = meta["founded"]
-    founded_val = float(founded_val) if pd.notna(founded_val) else None
+    founded_val = float(founded_val) if founded_val is not None and pd.notna(founded_val) else None
     founded = "—" if founded_val is None else str(int(founded_val))
 
-    aum_val = row.get("firm_aum_usd_b")
-    if pd.isna(aum_val) and "aum_approx" in meta:
+    aum_val = _safe_get_scalar(row.get("firm_aum_usd_b"))
+    if (aum_val is None or pd.isna(aum_val)) and "aum_approx" in meta:
         aum_val = meta["aum_approx"]
-    aum_val = float(aum_val) if pd.notna(aum_val) else None
+    aum_val = float(aum_val) if aum_val is not None and pd.notna(aum_val) else None
     aum_txt = "—" if aum_val is None else "${0:.1f}B AUM".format(aum_val)
 
-    hq = str(row.get("hq_city", "")).strip()
+    hq_val = _safe_get_scalar(row.get("hq_city", ""), "")
+    hq = str(hq_val).strip()
     if (not hq or hq.lower() in {"nan", "none"}) and meta.get("hq"):
         hq = meta["hq"]
     if not hq:
@@ -1461,15 +1504,16 @@ def render_firm_card(gp_name: str, gp_data: pd.DataFrame):
     strategy = meta.get("strategy", "")
     if not strategy:
         strategy = " / ".join(gp_data["fund_category"].dropna().astype(str).unique()[:2])
-    notable = meta.get("notable", str(row.get("notable_portfolio", "")))
+    notable_val = _safe_get_scalar(row.get("notable_portfolio", ""), "")
+    notable = meta.get("notable", str(notable_val))
     notable_tokens = [t.strip() for t in str(notable).split(",") if t.strip()]
     notable_short = ", ".join(notable_tokens[:4]) if notable_tokens else "—"
 
     best_fund_line = "Best: —"
     if best_fund is not None:
-        best_fund_name = str(best_fund.get("fund_name", ""))
-        best_fund_dpi = best_fund.get("dpi")
-        best_fund_dpi = float(best_fund_dpi) if pd.notna(best_fund_dpi) else None
+        best_fund_name = str(_safe_get_scalar(best_fund.get("fund_name", ""), ""))
+        best_fund_dpi = _safe_get_scalar(best_fund.get("dpi"))
+        best_fund_dpi = float(best_fund_dpi) if best_fund_dpi is not None and pd.notna(best_fund_dpi) else None
         if best_fund_dpi is not None:
             best_fund_line = "Best: {0} · {1:.2f}×".format(best_fund_name, best_fund_dpi)
 
@@ -1495,7 +1539,7 @@ def render_firm_card(gp_name: str, gp_data: pd.DataFrame):
         <div style="font-size:11px;color:#6B7280;margin-top:6px;line-height:1.5">{10}</div>
     </div>
     """.format(
-            html.escape(str(row.get("gp_display_name", gp_name))),
+            html.escape(str(_safe_get_scalar(row.get("gp_display_name", gp_name), gp_name))),
             founded,
             html.escape(hq.upper()),
             html.escape(aum_txt),
@@ -1586,6 +1630,12 @@ def render_firms(df_master: pd.DataFrame):
         is_market_intel = False
     source_chip = '<span class="badge badge-mi">MARKET INTEL</span>' if is_market_intel else '<span class="badge badge-lp-disclosed">LP-DISCLOSED</span>'
 
+    gp_display = _safe_get_scalar(row.get("gp_display_name", selected_gp), selected_gp)
+    investment_focus = _safe_get_scalar(row.get("investment_focus", "—"), "—")
+    stage_focus = _safe_get_scalar(row.get("stage_focus", "—"), "—")
+    aum_val = _safe_get_scalar(row.get("firm_aum_usd_b"))
+    aum_str = "—" if aum_val is None or pd.isna(aum_val) else "{0:.1f}".format(float(aum_val))
+
     st.markdown(
         """
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;padding:20px;background:#FAFAFA;border-radius:8px;border:1px solid #E5E7EB">
@@ -1600,11 +1650,11 @@ def render_firms(df_master: pd.DataFrame):
         </div>
     </div>
     """.format(
-            html.escape(str(row.get("gp_display_name", selected_gp))),
+            html.escape(str(gp_display)),
             source_chip,
-            html.escape(str(row.get("investment_focus", "—"))),
-            html.escape(str(row.get("stage_focus", "—"))),
-            "—" if pd.isna(row.get("firm_aum_usd_b")) else "{0:.1f}".format(float(row.get("firm_aum_usd_b"))),
+            html.escape(str(investment_focus)),
+            html.escape(str(stage_focus)),
+            aum_str,
         ),
         unsafe_allow_html=True,
     )
@@ -1681,15 +1731,31 @@ def render_firms(df_master: pd.DataFrame):
 
     rows_html = ""
     for _, r in gp_df.iterrows():
-        vintage_val = r.get("vintage_year")
-        vintage = "—" if pd.isna(vintage_val) else str(int(float(vintage_val)))
+        vintage_val = _safe_get_scalar(r.get("vintage_year"))
+        vintage = "—" if vintage_val is None or pd.isna(vintage_val) else str(int(float(vintage_val)))
         gross_col = ""
         gross_cell = ""
         if is_market_intel:
             gross_col = "<th class='right'>GROSS TVPI</th>"
-            gross_tvpi_val = r.get("gross_tvpi")
-            gross_tvpi_val = float(gross_tvpi_val) if pd.notna(gross_tvpi_val) else None
+            gross_tvpi_val = _safe_get_scalar(r.get("gross_tvpi"))
+            gross_tvpi_val = float(gross_tvpi_val) if gross_tvpi_val is not None and pd.notna(gross_tvpi_val) else None
             gross_cell = "<td class='numeric'>{0}</td>".format(_fmt_multiple(gross_tvpi_val))
+
+        fund_name_val = _safe_get_scalar(r.get("fund_name", ""), "")
+        fund_category_val = _safe_get_scalar(r.get("fund_category", "—"), "—")
+        fund_size_val = _safe_get_scalar(r.get("fund_size_usd_m"))
+        fund_size_str = "—" if fund_size_val is None or pd.isna(fund_size_val) else "${0:.0f}M".format(float(fund_size_val))
+        
+        tvpi_val = _safe_get_scalar(r.get("tvpi"))
+        tvpi_val = float(tvpi_val) if tvpi_val is not None and pd.notna(tvpi_val) else None
+        
+        dpi_val = _safe_get_scalar(r.get("dpi"))
+        dpi_val = float(dpi_val) if dpi_val is not None and pd.notna(dpi_val) else None
+        
+        irr_val = _safe_get_scalar(r.get("net_irr"))
+        irr_val = float(irr_val) if irr_val is not None and pd.notna(irr_val) else None
+        
+        irr_meaningful_val = _safe_get_scalar(r.get("irr_meaningful"), False)
 
         rows_html += (
             "<tr>"
@@ -1704,15 +1770,15 @@ def render_firms(df_master: pd.DataFrame):
             "<td>{8}</td>"
             "</tr>"
         ).format(
-            html.escape(str(r.get("fund_name", ""))),
+            html.escape(str(fund_name_val)),
             vintage,
-            html.escape(str(r.get("fund_category", "—"))),
-            "—" if pd.isna(r.get("fund_size_usd_m")) else "${0:.0f}M".format(float(r.get("fund_size_usd_m"))),
+            html.escape(str(fund_category_val)),
+            fund_size_str,
             gross_cell,
-            _fmt_multiple(float(r.get("tvpi")) if pd.notna(r.get("tvpi")) else None),
-            _fmt_multiple(float(r.get("dpi")) if pd.notna(r.get("dpi")) else None),
-            _fmt_irr(float(r.get("net_irr")) if pd.notna(r.get("net_irr")) else None),
-            _status_badge(r.get("irr_meaningful")),
+            _fmt_multiple(tvpi_val),
+            _fmt_multiple(dpi_val),
+            _fmt_irr(irr_val),
+            _status_badge(irr_meaningful_val),
         )
 
     gross_header = "<th class='right'>GROSS TVPI</th>" if is_market_intel else ""
@@ -1730,12 +1796,13 @@ def render_firms(df_master: pd.DataFrame):
         f3 = gp_df[gp_df["fund_name"].astype(str).str.contains("Fund III", case=False, na=False)]
         if not f3.empty:
             r = f3.iloc[0]
-            gross_tvpi_val = r.get("gross_tvpi")
-            tvpi_val = r.get("tvpi")
-            if pd.notna(gross_tvpi_val) and pd.notna(tvpi_val):
+            gross_tvpi_val = _safe_get_scalar(r.get("gross_tvpi"))
+            tvpi_val = _safe_get_scalar(r.get("tvpi"))
+            if gross_tvpi_val is not None and pd.notna(gross_tvpi_val) and tvpi_val is not None and pd.notna(tvpi_val):
                 gross_tvpi_val = float(gross_tvpi_val)
                 tvpi_val = float(tvpi_val)
                 drag = gross_tvpi_val - tvpi_val
+                fund_name_val = _safe_get_scalar(r.get("fund_name", ""), "")
                 st.markdown(
                     """
                 <div class="insight-box">
@@ -1746,7 +1813,7 @@ def render_firms(df_master: pd.DataFrame):
                     </div>
                 </div>
                 """.format(
-                        html.escape(str(r.get("fund_name"))),
+                        html.escape(str(fund_name_val)),
                         _fmt_multiple(gross_tvpi_val),
                         _fmt_multiple(tvpi_val),
                         _fmt_multiple(drag),
@@ -1754,7 +1821,8 @@ def render_firms(df_master: pd.DataFrame):
                     unsafe_allow_html=True,
                 )
 
-    notable = str(row.get("notable_portfolio", "—"))
+    notable_val = _safe_get_scalar(row.get("notable_portfolio", ""), "—")
+    notable = str(notable_val)
     st.markdown(
         """
     <div class="insight-box">
@@ -2168,12 +2236,18 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     
     lb_rows_html = ""
     for i, row in leaders.iterrows():
-        fund_name  = html.escape(str(row.get("fund_name", ""))[:40])
-        gp         = html.escape(str(row.get("canonical_gp", ""))[:30])
-        vintage    = "—" if pd.isna(row.get("vintage_year")) else str(int(float(row["vintage_year"])))
-        dpi_val    = float(row.get("dpi")) if pd.notna(row.get("dpi")) else None
-        tvpi_val   = float(row.get("tvpi")) if pd.notna(row.get("tvpi")) else None
-        irr_val    = float(row.get("net_irr")) if pd.notna(row.get("net_irr")) else None
+        fund_name_val = _safe_get_scalar(row.get("fund_name", ""), "")
+        fund_name  = html.escape(str(fund_name_val)[:40])
+        gp_val = _safe_get_scalar(row.get("canonical_gp", ""), "")
+        gp         = html.escape(str(gp_val)[:30])
+        vintage_val = _safe_get_scalar(row.get("vintage_year"))
+        vintage    = "—" if vintage_val is None or pd.isna(vintage_val) else str(int(float(vintage_val)))
+        dpi_val_raw = _safe_get_scalar(row.get("dpi"))
+        dpi_val    = float(dpi_val_raw) if dpi_val_raw is not None and pd.notna(dpi_val_raw) else None
+        tvpi_val_raw = _safe_get_scalar(row.get("tvpi"))
+        tvpi_val   = float(tvpi_val_raw) if tvpi_val_raw is not None and pd.notna(tvpi_val_raw) else None
+        irr_val_raw = _safe_get_scalar(row.get("net_irr"))
+        irr_val    = float(irr_val_raw) if irr_val_raw is not None and pd.notna(irr_val_raw) else None
         
         dpi_str    = f"{dpi_val:.2f}×"  if dpi_val is not None  else "—"
         tvpi_str   = f"{tvpi_val:.2f}×" if tvpi_val is not None else "—"
@@ -2215,10 +2289,14 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     top2 = leaders.iloc[1] if len(leaders) >= 2 else None
     
     if top1 is not None and top2 is not None:
-        t1_name = html.escape(str(top1.get("canonical_gp",""))[:30])
-        t1_dpi  = f"{float(top1['dpi']):.2f}×"
-        t2_name = html.escape(str(top2.get("canonical_gp",""))[:30])
-        t2_dpi  = f"{float(top2['dpi']):.2f}×"
+        t1_gp_val = _safe_get_scalar(top1.get("canonical_gp",""), "")
+        t1_name = html.escape(str(t1_gp_val)[:30])
+        t1_dpi_val = _safe_get_scalar(top1.get("dpi"))
+        t1_dpi  = f"{float(t1_dpi_val):.2f}×" if t1_dpi_val is not None and pd.notna(t1_dpi_val) else "—"
+        t2_gp_val = _safe_get_scalar(top2.get("canonical_gp",""), "")
+        t2_name = html.escape(str(t2_gp_val)[:30])
+        t2_dpi_val = _safe_get_scalar(top2.get("dpi"))
+        t2_dpi  = f"{float(t2_dpi_val):.2f}×" if t2_dpi_val is not None and pd.notna(t2_dpi_val) else "—"
         _render_html(f"""
         <div class="ins-callouts">
           <div class="ins-callout featured">
