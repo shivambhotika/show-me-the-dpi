@@ -2,7 +2,7 @@ import html
 import os
 import re
 from difflib import SequenceMatcher
-from datetime import date
+from datetime import date, datetime
 from textwrap import dedent
 
 import numpy as np
@@ -42,7 +42,7 @@ def inject_css():
     st.markdown(
         """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
 
     :root, html, body, .stApp { color-scheme: light !important; }
     .main .block-container { padding: 1rem 1.8rem 1.1rem 1.8rem; max-width: 100%; }
@@ -50,16 +50,84 @@ def inject_css():
     #MainMenu, footer, header { visibility: hidden; }
     .stDeployButton { display: none; }
 
+    /* Editorial Headings */
+    .editorial-header {
+        font-family: 'Lora', serif;
+        font-size: 42px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.5rem;
+        line-height: 1.1;
+    }
+    .editorial-subtitle {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #E8571F;
+        margin-bottom: 2rem;
+    }
+
     .stTabs [data-baseweb="tab-list"] {
-        background: #FFFFFF; border-bottom: 1px solid #E5E7EB; gap: 0; padding: 0; margin-bottom: 1.3rem;
+        background: #FFFFFF !important; border-bottom: 1px solid #E5E7EB !important; gap: 0; padding: 0; margin-bottom: 1.3rem;
     }
     .stTabs [data-baseweb="tab"] {
-        font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500;
-        letter-spacing: 0.08em; text-transform: uppercase; color: #9CA3AF;
-        padding: 12px 20px; border-bottom: 2px solid transparent; background: transparent;
+        font-family: 'IBM Plex Mono', monospace !important; font-size: 11px !important; font-weight: 500 !important;
+        letter-spacing: 0.08em !important; text-transform: uppercase !important; 
+        color: #9CA3AF !important;
+        padding: 12px 20px !important; border-bottom: 2px solid transparent !important; 
+        background: transparent !important;
     }
-    .stTabs [aria-selected="true"] { color: #111827; border-bottom: 2px solid #E8571F; background: transparent; }
+    .stTabs [data-baseweb="tab"] button,
+    .stTabs [data-baseweb="tab"] span,
+    .stTabs [data-baseweb="tab"] p,
+    .stTabs [data-baseweb="tab"] div {
+        color: #9CA3AF !important;
+        background: transparent !important;
+    }
+    .stTabs [aria-selected="true"] { 
+        color: #111827 !important; 
+        border-bottom: 2px solid #E8571F !important; 
+        background: transparent !important; 
+    }
+    .stTabs [aria-selected="true"] button,
+    .stTabs [aria-selected="true"] span,
+    .stTabs [aria-selected="true"] p,
+    .stTabs [aria-selected="true"] div {
+        color: #111827 !important;
+        background: transparent !important;
+    }
     .stTabs [data-baseweb="tab-panel"] { padding-top: 0; }
+
+    .hero-stat-card {
+        padding: 24px;
+        background: #FAFAFA;
+        border: 1px solid #E5E7EB;
+        border-radius: 4px;
+        height: 100%;
+    }
+    .hero-stat-label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        color: #9CA3AF;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+    .hero-stat-value {
+        font-family: 'Inter', sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        color: #111827;
+        line-height: 1.2;
+    }
+    .hero-stat-sub {
+        font-family: 'Lora', serif;
+        font-size: 13px;
+        font-style: italic;
+        color: #6B7280;
+        margin-top: 4px;
+    }
 
     .metric-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 6px; padding: 20px 24px; }
     .metric-card-dpi { background: #FFF4EF; border: 2px solid #E8571F; border-radius: 6px; padding: 20px 24px; }
@@ -84,16 +152,31 @@ def inject_css():
         text-transform: uppercase; color: #9CA3AF; margin-bottom: 2rem;
     }
     .section-label {
-        font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500;
+        font-family: 'Lora', serif; font-size: 11px; font-weight: 700;
         letter-spacing: 0.15em; text-transform: uppercase; color: #E8571F;
-        border-top: 1px solid #E8571F; padding-top: 8px; margin: 2rem 0 1.25rem 0;
+        border-top: 2px solid #E8571F; padding-top: 8px; margin: 3rem 0 1.25rem 0;
+    }
+    .chart-title {
+        font-family: 'Lora', serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+        margin: 1.5rem 0 0.5rem 0;
+    }
+    .chart-subtitle {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.07em;
+        color: #9CA3AF;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
     }
 
     .fund-table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; }
     .fund-table th {
-        font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500;
+        font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
         letter-spacing: 0.1em; text-transform: uppercase; color: #9CA3AF;
-        padding: 8px 12px; border-bottom: 1px solid #E5E7EB; text-align: left; background: #FAFAFA;
+        padding: 10px 12px; border-bottom: 1px solid #E5E7EB; text-align: left; background: #FAFAFA;
     }
     .fund-table th.right { text-align: right; }
     .fund-table td {
@@ -107,7 +190,7 @@ def inject_css():
         font-family: 'IBM Plex Mono', monospace; font-size: 13px; text-align: right;
     }
     .fund-table td.dpi-col {
-        font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500;
+        font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600;
         color: #E8571F; text-align: right;
     }
     .fund-table tr:hover td { background: #FFF8F5; }
@@ -117,6 +200,11 @@ def inject_css():
         font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
         padding: 3px 8px; border-radius: 4px; border: 1px solid;
     }
+    .badge-realized { background:#ECFDF5; color:#065F46; border-color:#86EFAC; }
+    .badge-returning { background:#EFF6FF; color:#1D4ED8; border-color:#BFDBFE; }
+    .badge-early { background:#FFFBEB; color:#92400E; border-color:#FDE68A; }
+    .badge-cashlight { background:#FEF2F2; color:#991B1B; border-color:#FECACA; }
+
     .badge-calpers   { background:#EEF2FF; color:#4F46E5; border-color:#C7D2FE; }
     .badge-calstrs   { background:#F0FDF4; color:#15803D; border-color:#BBF7D0; }
     .badge-oregon    { background:#FFF7ED; color:#C2410C; border-color:#FED7AA; }
@@ -132,137 +220,248 @@ def inject_css():
     .badge-founders  { background:#F9F0FF; color:#6B21A8; border-color:#E9D5FF; }
     .badge-social    { background:#F0FFFE; color:#0F766E; border-color:#99F6E4; }
     .badge-mi { background:#FFF7ED; color:#C2410C; border-color:#FED7AA; font-style:italic; }
-    .badge-mi-a16z { background:#FFF7ED; color:#C2410C; border-color:#FED7AA; }
-    .badge-mi-ff { background:#FAF5FF; color:#7E22CE; border-color:#E9D5FF; }
-    .badge-mi-sc { background:#F0FDFA; color:#0F766E; border-color:#99F6E4; }
-    .badge-lp-disclosed { background:#EEF2FF; color:#1D4ED8; border-color:#BFDBFE; }
+    .badge-lp-disclosed { border: 1px solid #E5E7EB; color: #6B7280; background: transparent; }
 
     .insight-box {
-        background: #FFF4EF; border-left: 3px solid #E8571F;
-        border-radius: 6px; padding: 20px 24px; margin: 1.5rem 0;
+        background: #FAFAFA; border-left: 3px solid #E8571F;
+        border-radius: 4px; padding: 20px 24px; margin: 1.5rem 0;
     }
     .insight-label {
-        font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500;
-        letter-spacing: 0.12em; text-transform: uppercase; color: #E8571F; margin-bottom: 10px;
+        font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+        letter-spacing: 0.12em; text-transform: uppercase; color: #111827; margin-bottom: 10px;
     }
-    .insight-body { font-family: 'Inter', sans-serif; font-size: 14px; color: #111827; line-height: 1.6; }
-    .insight-body strong { font-weight: 600; }
-    .insight-body em { color: #6B7280; font-style: italic; }
+    .insight-body { font-family: 'Lora', serif; font-size: 15px; color: #374151; line-height: 1.6; }
+    .insight-body strong { font-weight: 700; color: #111827; }
 
-    .coverage-bar-wrap { display: flex; align-items: center; gap: 10px; }
-    .coverage-bar-bg { flex: 1; height: 6px; background: #E5E7EB; border-radius: 3px; }
-    .coverage-bar-fill { height: 6px; border-radius: 3px; }
-    .coverage-bar-fill.high { background: #16A34A; }
-    .coverage-bar-fill.medium { background: #D97706; }
-    .coverage-bar-fill.low { background: #DC2626; }
+    .footer-wrap { margin-top: 4rem; border-top: 1px solid #E5E7EB; padding-top: 24px; padding-bottom: 2rem; }
+    .footer-text { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #9CA3AF; line-height: 1.6; }
 
-    .irr-high { color: #16A34A; font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
-    .irr-mid { color: #D97706; font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
-    .irr-low { color: #DC2626; font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
-    .irr-na { color: #9CA3AF; font-family: 'IBM Plex Mono', monospace; }
+    /* Plotly Clean Overrides */
+    .modebar, .modebar-container, .plotly-notifier { display: none !important; }
 
-    .firm-card {
-        border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px;
-        background: #FFFFFF; transition: border-color 0.15s; min-height: 220px;
+    /* ── CARTA-STYLE INSIGHTS ── */
+    /* Loading animation */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    .firm-card:hover { border-color: #E8571F; }
-    .firm-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 2px; }
-    .firm-meta {
-        font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #9CA3AF;
-        letter-spacing: 0.05em; margin-bottom: 12px;
+    @keyframes shimmer {
+      0%   { background-position: -600px 0; }
+      100% { background-position: 600px 0; }
     }
-    .firm-aum-badge {
-        display: inline-block; background: #F3F4F6; border-radius: 4px;
-        padding: 4px 10px; font-family: 'IBM Plex Mono', monospace;
-        font-size: 11px; font-weight: 500; color: #374151; margin-bottom: 12px;
-    }
-    .firm-best-irr-label {
-        font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
-        text-transform: uppercase; color: #9CA3AF;
-    }
-    .firm-best-irr-value {
-        font-family: 'IBM Plex Mono', monospace; font-size: 20px;
-        font-weight: 500; color: #E8571F;
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50%       { opacity: 1;   transform: scale(1.1); }
     }
 
-    .source-row {
-        display: grid; grid-template-columns: 220px 130px 220px 130px 1fr;
-        align-items: center; padding: 18px 0; border-bottom: 1px solid #F3F4F6; gap: 16px;
+    .ins-loader {
+      display: flex; align-items: center; gap: 14px;
+      padding: 28px 0 40px;
     }
-    .source-name { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: #111827; }
-    .source-notes { font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280; line-height: 1.5; }
-    .source-sync { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #9CA3AF; }
-
-    .stTextInput input,
-    .stSelectbox select,
-    .stSelectbox [data-baseweb="select"] > div,
-    .stSelectbox [data-baseweb="select"] div,
-    .stNumberInput input,
-    .stButton > button {
-        font-family: 'IBM Plex Mono', monospace !important;
-        font-size: 12px !important;
-        border: 1px solid #E5E7EB !important;
-        border-radius: 6px !important;
-        background: #FFFFFF !important;
-        color: #111827 !important;
-        -webkit-text-fill-color: #111827 !important;
+    .ins-loader-mark {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: #E8571F; color: white;
+      font-family: 'Lora', serif; font-size: 18px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
     }
-    .stTextInput input::placeholder { color: #9CA3AF !important; }
-    /* Force White App Theme regardless of browser settings */
-    .stApp { background-color: white !important; color: #111827 !important; }
-
-    /* Elegant Navigation Pill Redesign */
-    div[data-testid="stSegmentedControl"] {
-        margin-bottom: 2rem !important;
+    .ins-loader-dots { display: flex; gap: 5px; }
+    .ins-loader-dots span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #E8571F; display: block;
+      animation: pulse-dot 1.2s ease-in-out infinite;
     }
-    div[data-testid="stSegmentedControl"] > div {
-        background: #F3F4F6 !important;
-        border: 1px solid #E5E7EB !important;
-        border-radius: 999px !important; /* Full pill shape */
-        padding: 4px !important;
-    }
-    div[data-testid="stSegmentedControl"] button {
-        background: transparent !important;
-        color: #6B7280 !important;
-        border: none !important;
-        border-radius: 999px !important;
-        font-family: 'IBM Plex Mono', monospace !important;
-        font-size: 11px !important;
-        font-weight: 600 !important;
-        text-transform: uppercase !important;
-        padding: 8px 24px !important;
-        box-shadow: none !important;
-    }
-    div[data-testid="stSegmentedControl"] button[data-checked="true"] {
-        background: white !important;
-        color: #E8571F !important;
-        font-weight: 700 !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-        text-decoration: underline !important;
-        text-underline-offset: 4px !important;
-    }
-    div[data-testid="stSegmentedControl"] button:hover {
-        color: #111827 !important;
+    .ins-loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .ins-loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+    .ins-loader-text {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase; color: #9CA3AF;
     }
 
-    /* TOTAL WIPEOUT OF PLOTLY CHROME AND "UNDEFINED" TAGS */
-    .modebar, .modebar-container, .plotly-notifier, .notifier-note, .hoverlayer, .js-plotly-plot .plotly .modebar {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        width: 0 !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
+    /* Section entry animations */
+    .ins-section {
+      animation: fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    /* Hide the specific "undefined" frame which often appears as a tooltip sibling to the plot */
-    .svg-container + div, .plotly-notifier + div { display: none !important; }
-    
-    .footer-wrap { margin-top: 1.2rem; border-top: 1px solid #E5E7EB; padding-top: 12px; }
-    .footer-text { font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280; line-height: 1.55; }
-    .footer-links a { color: #E8571F; text-decoration: none; }
-    .footer-links a:hover { text-decoration: underline; }
+    .ins-section:nth-child(1) { animation-delay: 0.05s; }
+    .ins-section:nth-child(2) { animation-delay: 0.12s; }
+    .ins-section:nth-child(3) { animation-delay: 0.19s; }
+    .ins-section:nth-child(4) { animation-delay: 0.26s; }
+    .ins-section:nth-child(5) { animation-delay: 0.33s; }
 
+    /* Page hero */
+    .ins-eyebrow {
+      font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+      letter-spacing: 0.15em; text-transform: uppercase; color: #E8571F;
+      margin-bottom: 10px;
+    }
+    .ins-headline {
+      font-family: 'Lora', serif; font-size: 34px; font-weight: 700;
+      color: #111827; letter-spacing: -0.02em; line-height: 1.18;
+      margin-bottom: 14px;
+    }
+    .ins-headline em { font-style: italic; color: #E8571F; }
+    .ins-deck {
+      font-family: 'Inter', sans-serif; font-size: 15px; color: #374151;
+      line-height: 1.7; max-width: 620px;
+      border-left: 3px solid #E8571F; padding-left: 18px;
+      margin-bottom: 40px;
+    }
 
+    /* Hero stat grid */
+    .ins-stat-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1px; background: #E5E7EB;
+      border: 1px solid #E5E7EB; border-radius: 10px;
+      overflow: hidden; margin-bottom: 64px;
+    }
+    .ins-stat-cell {
+      background: #FFFFFF; padding: 22px 26px 18px;
+    }
+    .ins-stat-cell.accent { background: #FFF4EF; }
+    .ins-stat-label {
+      font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #9CA3AF; margin-bottom: 8px;
+    }
+    .ins-stat-cell.accent .ins-stat-label { color: #E8571F; }
+    .ins-stat-value {
+      font-family: 'Lora', serif; font-size: 32px; font-weight: 700;
+      color: #111827; line-height: 1; margin-bottom: 5px;
+    }
+    .ins-stat-cell.accent .ins-stat-value { color: #E8571F; }
+    .ins-stat-sub { font-family: 'Inter', sans-serif; font-size: 12px; color: #9CA3AF; line-height: 1.4; }
+
+    /* Section structure */
+    .ins-section-rule {
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-bottom: 30px;
+    }
+    .ins-section-num {
+      font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+      letter-spacing: 0.15em; text-transform: uppercase; color: #E8571F;
+      border-top: 2px solid #E8571F; padding-top: 8px; flex-shrink: 0;
+    }
+    .ins-section-line { flex: 1; height: 1px; background: #E5E7EB; margin-top: 13px; }
+
+    /* Chart block */
+    .ins-chart-headline {
+      font-family: 'Lora', serif; font-size: 21px; font-weight: 700;
+      color: #111827; letter-spacing: -0.015em; line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .ins-chart-headline em { font-style: italic; color: #E8571F; }
+    .ins-chart-standfirst {
+      font-family: 'Inter', sans-serif; font-size: 14px; color: #374151;
+      line-height: 1.65; max-width: 620px; margin-bottom: 22px;
+    }
+    .ins-chart-frame {
+      background: #FAFAFA; border: 1px solid #E5E7EB;
+      border-radius: 10px; padding: 24px 24px 16px;
+      margin-bottom: 14px;
+    }
+    .ins-takeaway {
+      background: #FFF4EF; border-left: 3px solid #E8571F;
+      border-radius: 0 6px 6px 0; padding: 14px 18px;
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      color: #374151; line-height: 1.6; margin-top: 12px;
+    }
+    .ins-takeaway strong { color: #111827; }
+    .ins-footnote {
+      font-family: 'DM Mono', monospace; font-size: 9px;
+      color: #9CA3AF; letter-spacing: 0.04em; margin-top: 8px;
+    }
+
+    /* Vintage pills */
+    .ins-pill-grid {
+      display: grid; grid-template-columns: repeat(8, 1fr);
+      gap: 8px; margin-bottom: 12px;
+    }
+    .ins-pill {
+      text-align: center; border-radius: 8px;
+      padding: 14px 6px 12px; border: 1px solid #E5E7EB;
+      background: #FAFAFA;
+    }
+    .ins-pill.p-strong { background: #FFF4EF; border-color: #FED7AA; }
+    .ins-pill.p-mid    { background: #ECFDF5; border-color: #BBF7D0; }
+    .ins-pill.p-low    { background: #FFFBEB; border-color: #FDE68A; }
+    .ins-pill.p-none   { background: #F9FAFB; border-color: #E5E7EB; }
+    .ins-pill-year {
+      font-family: 'DM Mono', monospace; font-size: 9px; color: #9CA3AF;
+      letter-spacing: 0.05em; margin-bottom: 5px;
+    }
+    .ins-pill-val {
+      font-family: 'Lora', serif; font-size: 17px; font-weight: 700;
+      line-height: 1; margin-bottom: 4px;
+    }
+    .ins-pill.p-strong .ins-pill-val { color: #E8571F; }
+    .ins-pill.p-mid    .ins-pill-val { color: #16A34A; }
+    .ins-pill.p-low    .ins-pill-val { color: #D97706; }
+    .ins-pill.p-none   .ins-pill-val { color: #9CA3AF; }
+    .ins-pill-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; color: #9CA3AF; }
+
+    /* Leaderboard */
+    .ins-lb { width: 100%; border-collapse: collapse; }
+    .ins-lb th {
+      font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase; color: #9CA3AF;
+      padding: 8px 12px 10px; border-bottom: 2px solid #111827; text-align: left;
+    }
+    .ins-lb th.r { text-align: right; }
+    .ins-lb td {
+      padding: 12px 12px; border-bottom: 1px solid #F3F4F6;
+      font-family: 'Inter', sans-serif; font-size: 13px; color: #111827;
+      vertical-align: middle;
+    }
+    .ins-lb td.mono { font-family: 'DM Mono', monospace; font-size: 12px; text-align: right; }
+    .ins-lb td.dpi-col { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; color: #E8571F; text-align: right; }
+    .ins-lb td.green-col { font-family: 'DM Mono', monospace; font-size: 12px; color: #16A34A; text-align: right; }
+    .ins-lb td.num { font-family: 'DM Mono', monospace; font-size: 11px; color: #9CA3AF; }
+    .ins-lb tr:hover td { background: #FFF8F5; }
+    .ins-fund-name { font-weight: 500; }
+    .ins-fund-gp { font-family: 'DM Mono', monospace; font-size: 10px; color: #9CA3AF; margin-top: 1px; }
+    .ins-bar-wrap { height: 3px; background: #E5E7EB; border-radius: 2px; margin-top: 5px; max-width: 100px; }
+    .ins-bar-fill { height: 3px; background: #E8571F; border-radius: 2px; }
+
+    /* Two-up callout cards */
+    .ins-callouts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 24px; }
+    .ins-callout {
+      background: #FAFAFA; border: 1px solid #E5E7EB;
+      border-radius: 10px; padding: 22px;
+    }
+    .ins-callout.featured { background: #FFF4EF; border-color: #FED7AA; }
+    .ins-callout-eye {
+      font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #9CA3AF; margin-bottom: 8px;
+    }
+    .ins-callout.featured .ins-callout-eye { color: #E8571F; }
+    .ins-callout-num {
+      font-family: 'Lora', serif; font-size: 38px; font-weight: 700;
+      color: #111827; line-height: 1; margin-bottom: 8px;
+    }
+    .ins-callout.featured .ins-callout-num { color: #E8571F; }
+    .ins-callout-body { font-family: 'Inter', sans-serif; font-size: 13px; color: #374151; line-height: 1.55; }
+
+    /* Realization progress bars */
+    .ins-real-row { display: grid; grid-template-columns: 72px 1fr 52px; gap: 12px; align-items: center; padding: 7px 0; }
+    .ins-real-year { font-family: 'DM Mono', monospace; font-size: 11px; color: #374151; }
+    .ins-real-track { height: 14px; background: #F3F4F6; border-radius: 3px; overflow: hidden; }
+    .ins-real-fill { height: 14px; border-radius: 3px; }
+    .ins-real-pct { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; text-align: right; }
+
+    /* Manager variance */
+    .ins-mgr-table { width: 100%; }
+    .ins-mgr-row { display: grid; grid-template-columns: 180px 1fr 62px 62px; gap: 14px; align-items: center; padding: 13px 0; border-bottom: 1px solid #F3F4F6; }
+    .ins-mgr-row.header { border-bottom: 2px solid #111827; padding-bottom: 8px; }
+    .ins-mgr-name { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; }
+    .ins-mgr-hdr { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #9CA3AF; }
+    .ins-mgr-hdr.r { text-align: right; }
+    .ins-mgr-range { position: relative; height: 10px; }
+    .ins-mgr-track { position: absolute; top: 2px; left: 0; right: 0; height: 6px; background: #F3F4F6; border-radius: 3px; }
+    .ins-mgr-fill { position: absolute; top: 2px; height: 6px; background: #E8571F; border-radius: 3px; opacity: 0.65; }
+    .ins-mgr-dot { position: absolute; top: -1px; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid white; }
+    .ins-mgr-val { font-family: 'DM Mono', monospace; font-size: 12px; text-align: right; }
+    .ins-mgr-val.max { color: #E8571F; font-weight: 600; }
+    .ins-mgr-val.min { color: #9CA3AF; }
 
     </style>
     """,
@@ -527,283 +726,89 @@ GP_SOURCES_CONFIG = [
 
 
 @st.cache_data
-def load_unified():
-    df = pd.read_csv("data/unified_funds.csv")
-    df["vintage_year"] = pd.to_numeric(df.get("vintage_year"), errors="coerce").astype("Int64")
-    df["net_irr"] = pd.to_numeric(df.get("net_irr"), errors="coerce")
-    df["tvpi"] = pd.to_numeric(df.get("tvpi"), errors="coerce")
-    df["dpi"] = pd.to_numeric(df.get("dpi"), errors="coerce")
-    df["capital_committed"] = pd.to_numeric(df.get("capital_committed"), errors="coerce")
-    df["capital_contributed"] = pd.to_numeric(df.get("capital_contributed"), errors="coerce")
-    df["capital_distributed"] = pd.to_numeric(df.get("capital_distributed"), errors="coerce")
-    df["nav"] = pd.to_numeric(df.get("nav"), errors="coerce")
-    df["source"] = df.get("source", pd.Series(index=df.index, dtype="object")).fillna("Unknown")
-
-    # Optional UTIMCO fallback merge for local runs before normalize.py has been re-run.
-    utimco_path = "data/utimco_2023.csv"
-    if os.path.exists(utimco_path):
-        ut = load_utimco_for_app(utimco_path)
-        if not ut.empty:
-            keep_cols = [
-                "fund_name",
-                "vintage_year",
-                "capital_committed",
-                "capital_contributed",
-                "capital_distributed",
-                "nav",
-                "net_irr",
-                "tvpi",
-                "dpi",
-                "source",
-                "scraped_date",
-                "reporting_period",
-            ]
-            for c in keep_cols:
-                if c not in df.columns:
-                    df[c] = np.nan
-                if c not in ut.columns:
-                    ut[c] = np.nan
-            merged = pd.concat([df[keep_cols], ut[keep_cols]], ignore_index=True)
-            merged["vintage_year"] = pd.to_numeric(merged["vintage_year"], errors="coerce").astype("Int64")
-            merged = merged.drop_duplicates(
-                subset=["fund_name", "vintage_year", "source", "reporting_period"], keep="first"
-            ).reset_index(drop=True)
-            df = merged
+def load_data():
+    master_path = "data/vc_fund_master.csv"
+    unified_path = "data/unified_funds.csv"
+    
+    if not os.path.exists(master_path):
+        return pd.DataFrame()
+        
+    df_m = pd.read_csv(master_path)
+    
+    # Pre-cleaning numeric columns
+    for col in ['vintage_year', 'tvpi', 'dpi', 'net_irr', 'gross_tvpi', 'gross_dpi', 'fund_size_usd_m']:
+        if col in df_m.columns:
+            df_m[col] = pd.to_numeric(df_m[col], errors='coerce')
+            
+    # Remove Accel-KKR permanently as requested
+    if 'canonical_gp' in df_m.columns:
+        df_m = df_m[~df_m['canonical_gp'].str.contains('Accel-KKR', case=False, na=False)]
+        
+    # Exclude PE-only funds from aggregate views
+    if 'fund_category' in df_m.columns:
+        df_m = df_m[df_m['fund_category'] != 'PE']
+        
+    # Drop rows without vintage_year or invalid vintage
+    df_m = df_m.dropna(subset=['vintage_year'])
+    df_m['vintage_year'] = df_m['vintage_year'].astype(int)
+    
+    # Join with Unified for capital columns (scraped_date, nav, contributed, distributed)
+    if os.path.exists(unified_path):
+        df_u = pd.read_csv(unified_path)
+        for col in ['capital_contributed', 'capital_distributed', 'nav', 'vintage_year']:
+            if col in df_u.columns:
+                df_u[col] = pd.to_numeric(df_u[col], errors='coerce')
+        
+        # Merge on fund_name and vintage_year
+        join_cols = ['fund_name', 'vintage_year']
+        available_join = [c for c in join_cols if c in df_u.columns and c in df_m.columns]
+        
+        extra_cols = [c for c in ['capital_contributed', 'capital_distributed', 'nav', 'scraped_date'] if c in df_u.columns]
+        
+        if available_join:
+            df_u_subset = df_u[available_join + extra_cols].drop_duplicates(subset=available_join)
+            df = pd.merge(df_m, df_u_subset, on=available_join, how='left')
+        else:
+            df = df_m
+    else:
+        df = df_m
+        
+    # Calculate missing DPI and TVPI from capital columns if missing
+    if 'capital_contributed' in df.columns and 'capital_distributed' in df.columns:
+        valid_contrib = (df['capital_contributed'] > 0)
+        df['dpi'] = df['dpi'].fillna(np.where(valid_contrib, df['capital_distributed'] / df['capital_contributed'], np.nan))
+        if 'nav' in df.columns:
+            df['tvpi'] = df['tvpi'].fillna(np.where(valid_contrib, (df['capital_distributed'] + df['nav']) / df['capital_contributed'], np.nan))
+            
+    # CalPERS Fix: net_irr 1.0 is often a placeholder for "Not Meaningful"
+    if 'source' in df.columns and 'net_irr' in df.columns:
+        df.loc[(df['source'] == 'CalPERS') & (df['net_irr'] == 1.0), 'net_irr'] = np.nan
+        
+    # data_source_type normalization
+    if 'data_source_type' in df.columns:
+        df['data_source_type'] = df['data_source_type'].fillna('LP-Disclosed')
+        
+    # Handle infinities
+    df = df.replace([np.inf, -np.inf], np.nan)
+    
     return df
-
-
-def _norm_text(s: str) -> str:
-    t = str(s or "").lower().strip()
-    t = "".join(ch if ch.isalnum() or ch.isspace() else " " for ch in t)
-    t = " ".join(t.split())
-    return t
-
-
-def _clean_num(series: pd.Series) -> pd.Series:
-    s = series.astype(str).str.strip()
-    pct = s.str.contains("%", na=False)
-    s = s.str.replace(",", "", regex=False)
-    s = s.str.replace("$", "", regex=False)
-    s = s.str.replace("%", "", regex=False)
-    s = s.str.replace("x", "", regex=False)
-    s = s.str.replace("X", "", regex=False)
-    s = s.str.replace(r"^\((.*)\)$", r"-\1", regex=True)
-    s = s.replace({"": np.nan, "-": np.nan, "--": np.nan, "N/M": np.nan, "NM": np.nan})
-    out = pd.to_numeric(s, errors="coerce")
-    out = out.where(~pct, out / 100.0)
-    return out
-
-
-def _infer_vintage_from_name(name: str):
-    text = str(name or "")
-    m_start = re.search(r"^\s*((?:19|20)\d{2})\b", text)
-    if m_start:
-        return int(m_start.group(1))
-    m_end = re.search(r"\b((?:19|20)\d{2})\s*$", text)
-    if m_end:
-        return int(m_end.group(1))
-    m_any = re.search(r"\b((?:19|20)\d{2})\b", text)
-    if m_any:
-        return int(m_any.group(1))
-    return np.nan
-
-
-def load_utimco_for_app(filepath: str) -> pd.DataFrame:
-    raw = pd.read_csv(filepath)
-    cols = {str(c).strip().lower().replace("\n", "_").replace(" ", "_"): c for c in raw.columns}
-
-    def pick(*names):
-        for n in names:
-            if n in cols:
-                return raw[cols[n]]
-        return pd.Series([np.nan] * len(raw))
-
-    out = pd.DataFrame(index=raw.index)
-    out["fund_name"] = pick("fund_name", "description").astype(str).str.strip()
-    out["fund_name"] = out["fund_name"].replace({"": np.nan, "nan": np.nan}).fillna("UNKNOWN_FUND")
-    out["vintage_year"] = pd.to_numeric(pick("vintage_year"), errors="coerce")
-    out["vintage_year"] = out["vintage_year"].fillna(out["fund_name"].map(_infer_vintage_from_name))
-    out["capital_committed"] = _clean_num(pick("capital_committed"))  # UTIMCO 2023 generally does not provide this
-    out["capital_contributed"] = _clean_num(pick("capital_contributed", "capital_invested", "cash_in"))
-    out["capital_distributed"] = _clean_num(pick("capital_distributed", "cash_out"))
-    total_value = _clean_num(pick("total_value"))
-    out["nav"] = _clean_num(pick("nav"))
-    out["nav"] = out["nav"].where(out["nav"].notna(), total_value - out["capital_distributed"])
-    out["net_irr"] = _clean_num(pick("net_irr"))
-    irr_med = out["net_irr"].dropna().median()
-    if pd.notna(irr_med) and irr_med > 1.5:
-        out["net_irr"] = out["net_irr"] / 100.0
-    out["tvpi"] = _clean_num(pick("tvpi"))
-    contrib = pd.to_numeric(out["capital_contributed"], errors="coerce")
-    out["tvpi"] = out["tvpi"].where(out["tvpi"].notna(), np.where(contrib > 0, (out["capital_distributed"] + out["nav"]) / contrib, np.nan))
-    out["dpi"] = np.where(contrib > 0, out["capital_distributed"] / contrib, np.nan)
-    out["source"] = "UTIMCO"
-    out["scraped_date"] = pick("scraped_date").fillna(str(date.today()))
-    out["reporting_period"] = pick("reporting_period").fillna("2023-02-28")
-    out["vintage_year"] = pd.to_numeric(out["vintage_year"], errors="coerce").astype("Int64")
-    return out
-
 
 @st.cache_data
-def load_market_intel():
-    if not os.path.exists("gp_disclosed_funds.csv"):
-        return pd.DataFrame()
-
-    df = pd.read_csv("gp_disclosed_funds.csv")
-    # Runtime override: this dataset is treated as market intelligence, not formal GP publication.
-    df["data_source_type"] = "Market Intelligence"
-    df["irr_meaningful"] = df["irr_meaningful"].map(
-        lambda x: True if str(x).lower() in ["true", "1", "yes"] else False
-    )
-    for col in [
-        "gross_tvpi",
-        "tvpi",
-        "gross_dpi",
-        "dpi",
-        "gross_irr",
-        "net_irr",
-        "fund_size_usd_m",
-        "vintage_year",
-    ]:
-        df[col] = pd.to_numeric(df[col], errors="coerce")
-    df["vintage_year"] = df["vintage_year"].astype("Int64")
-    return df
-
+def load_unified():
+    """Alias for backward compatibility with database and firmas logic."""
+    return load_data()
 
 @st.cache_data
 def load_master_full():
-    df = pd.read_csv("vc_fund_master.csv")
-    if "data_source_type" not in df.columns:
-        df["data_source_type"] = "LP-Disclosed"
-    else:
-        df["data_source_type"] = df["data_source_type"].fillna("LP-Disclosed")
+    """Alias for backward compatibility with top firms logic."""
+    return load_data()
 
-    if "canonical_gp" in df.columns:
-        df["canonical_gp"] = df["canonical_gp"].map(normalize_canonical_gp_label)
-
-    mi_gps = {"a16z", "andreessen horowitz", "founders fund", "social capital"}
-    gp_series = df.get("canonical_gp", pd.Series(index=df.index, dtype="object")).astype(str).str.strip().str.lower()
-    df.loc[gp_series.isin(mi_gps), "data_source_type"] = "Market Intelligence"
-
-    for col in ["gross_tvpi", "gross_dpi"]:
-        if col not in df.columns:
-            df[col] = None
-
-    df["irr_meaningful"] = df["irr_meaningful"].map(
-        lambda x: True if str(x).lower() in ["true", "1", "yes"] else False
-    )
-    for col in [
-        "net_irr",
-        "tvpi",
-        "dpi",
-        "gross_tvpi",
-        "gross_dpi",
-        "vintage_year",
-        "fund_size_usd_m",
-        "firm_aum_usd_b",
-        "firm_founded",
-    ]:
-        df[col] = pd.to_numeric(df.get(col), errors="coerce")
-    df["vintage_year"] = df["vintage_year"].astype("Int64")
-
-    if "vintage_source" not in df.columns:
-        df["vintage_source"] = "unknown"
-
-    # Merge canonical UTIMCO rows into master with reporting-period precedence.
-    utimco_path = "data/utimco_2023.csv"
-    if os.path.exists(utimco_path):
-        ut = pd.read_csv(utimco_path)
-        if not ut.empty and "fund_name" in ut.columns:
-            def _bucket_to_category(v):
-                s = str(v or "").lower()
-                if "pe" in s:
-                    return "PE"
-                if "growth" in s:
-                    return "Growth"
-                if "fund of funds" in s:
-                    return "Opportunities"
-                return "Venture"
-
-            ut_rows = pd.DataFrame({
-                "canonical_gp": ut.get("canonical_gp").map(normalize_canonical_gp_label),
-                "gp_display_name": ut.get("canonical_gp").map(normalize_canonical_gp_label),
-                "fund_name": ut.get("fund_name"),
-                "vintage_year": pd.to_numeric(ut.get("vintage_year"), errors="coerce").astype("Int64"),
-                "vintage_source": ut.get("vintage_source", "unknown"),
-                "fund_category": ut.get("fund_category", pd.Series(index=ut.index, dtype="object")).map(_bucket_to_category),
-                "sub_strategy": ut.get("fund_category"),
-                "fund_size_usd_m": pd.to_numeric(ut.get("capital_contributed"), errors="coerce") / 1_000_000.0,
-                "fund_size_confidence": "Derived from UTIMCO capital_contributed",
-                "firm_aum_usd_b": np.nan,
-                "firm_founded": np.nan,
-                "hq_city": "",
-                "investment_focus": ut.get("fund_category"),
-                "stage_focus": "",
-                "notable_portfolio": "",
-                "source": "UTIMCO",
-                "reporting_period": ut.get("reporting_period", "2023-02-28"),
-                "tvpi": pd.to_numeric(ut.get("tvpi"), errors="coerce"),
-                "dpi": pd.to_numeric(ut.get("dpi"), errors="coerce"),
-                "net_irr": pd.to_numeric(ut.get("net_irr"), errors="coerce"),
-                "irr_meaningful": ut.get("vintage_year").notna() & (pd.to_numeric(ut.get("vintage_year"), errors="coerce") <= 2020),
-                "performance_note": "UTIMCO LP disclosure (2023-02-28).",
-                "gross_tvpi": np.nan,
-                "gross_dpi": np.nan,
-                "data_source_type": "LP-Disclosed",
-            })
-
-            for c in ut_rows.columns:
-                if c not in df.columns:
-                    df[c] = np.nan
-            for c in df.columns:
-                if c not in ut_rows.columns:
-                    ut_rows[c] = np.nan
-
-            combined = pd.concat([df, ut_rows[df.columns]], ignore_index=True, sort=False)
-
-            def _parse_reporting_period(v):
-                s = str(v or "").strip()
-                if not s or s.lower() in {"nan", "none", "unknown"}:
-                    return None
-                m = re.match(r"^(\\d{4})-(\\d{2})-(\\d{2})$", s)
-                if m:
-                    y, mn, d = map(int, m.groups())
-                    return date(y, mn, d)
-                m = re.match(r"^(\\d{4})-Q([1-4])$", s, flags=re.I)
-                if m:
-                    y, q = int(m.group(1)), int(m.group(2))
-                    md = {1: (3, 31), 2: (6, 30), 3: (9, 30), 4: (12, 31)}
-                    mn, d = md[q]
-                    return date(y, mn, d)
-                m = re.match(r"^ir(\\d{2})(\\d{2})(\\d{2})$", s, flags=re.I)
-                if m:
-                    mm, dd, yy = map(int, m.groups())
-                    return date(2000 + yy, mm, dd)
-                m = re.search(r"(\\d{4})", s)
-                if m:
-                    return date(int(m.group(1)), 1, 1)
-                return None
-
-            combined["__rp_date"] = combined["reporting_period"].map(_parse_reporting_period)
-            combined["__rp_ord"] = combined["__rp_date"].map(lambda d: d.toordinal() if d else -1)
-            combined["__utimco_bonus"] = (
-                (combined["source"].astype(str) == "UTIMCO")
-                & (combined["reporting_period"].astype(str) == "2023-02-28")
-            ).astype(int)
-
-            combined = (
-                combined.sort_values(["fund_name", "__rp_ord", "__utimco_bonus"])
-                .drop_duplicates(subset=["fund_name"], keep="last")
-                .drop(columns=["__rp_date", "__rp_ord", "__utimco_bonus"])
-                .reset_index(drop=True)
-            )
-            combined["canonical_gp"] = combined["canonical_gp"].map(normalize_canonical_gp_label)
-            combined["gp_display_name"] = combined["gp_display_name"].where(
-                combined["gp_display_name"].notna(), combined["canonical_gp"]
-            )
-            df = combined
-
-    return df
+@st.cache_data
+def load_market_intel():
+    """Returns only market intelligence subset from the master."""
+    df = load_data()
+    if df.empty: return df
+    return df[df['data_source_type'] == 'Market Intelligence']
 
 
 @st.cache_data
@@ -838,6 +843,13 @@ def bench_disclaimer():
     """,
         unsafe_allow_html=True,
     )
+def _norm_text(v):
+    if pd.isna(v):
+        return ""
+    v = str(v).lower().strip()
+    v = re.sub(r'[^a-z0-9 ]', ' ', v)
+    return " ".join(v.split())
+
 
 
 @st.cache_data
@@ -1724,1010 +1736,731 @@ def _plot_common_layout(fig, title_text: str):
     fig.update_yaxes(gridcolor="#F3F4F6", linecolor="#E5E7EB")
 
 
-def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_rows: pd.DataFrame = None):
-    render_page_header("INSIGHTS", "ANALYTICAL FINDINGS FROM PUBLIC LP DISCLOSURE DATA")
-    bench_meaningful = bench[bench["vintage_year"] <= 2020].sort_values("vintage_year")
 
-    st.markdown('<div class="section-label">KEY FINDINGS</div>', unsafe_allow_html=True)
-    insight_cards = [
-        {
-            "number": "01",
-            "label": "DPI DROUGHT",
-            "headline": "Every 2017+ fund: DPI < 0.5×",
-            "body": "Across LP-disclosed and market-intel sources, every 2017+ vintage remains cash-light. ARCH XI (2017) has 26.2% IRR with 0.00× DPI; True Ventures VI (2019) is 0.01× DPI.",
-        },
-        {
-            "number": "02",
-            "label": "HIGHEST LP-DISCLOSED DPI",
-            "headline": "USV 2012 Fund: 22.86×",
-            "body": "Union Square Ventures 2012 Fund returned 22.86× DPI and 24.88× TVPI on ~$26M contributed. It is now the highest cash-return multiple in LP-disclosed data.",
-        },
-        {
-            "number": "03",
-            "label": "LP BENCHMARK BEATER",
-            "headline": "USV 2012: 24.88× TVPI",
-            "body": "Against an approximate 2012 CA Q1 TVPI near 4.0×, USV 2012 is a clear outlier. IA Ventures Fund II at 20.6× TVPI is another under-the-radar benchmark beater.",
-        },
-        {
-            "number": "04",
-            "label": "FEE DRAG",
-            "headline": "a16z Fund III",
-            "body": "Gross 15.7× to net 11.3× implies meaningful carry and fee drag at scale. The gross/net gap remains one of the most important LP realities.",
-        },
-        {
-            "number": "05",
-            "label": "SELECTION BIAS",
-            "headline": "Intel sample skews high",
-            "body": "Market-intelligence funds cluster above benchmark lines. That may indicate real alpha, but it may also reflect selection effects in what gets circulated.",
-        },
-        {
-            "number": "06",
-            "label": "CHINA RISK",
-            "headline": "HongShan regime shift",
-            "body": "2010 vintage HongShan funds show strong realized outcomes; 2020 vintage funds sit near/sub-1× with weaker IRR. Same platform, very different macro regime.",
-        },
-        {
-            "number": "07",
-            "label": "MANAGER VARIANCE",
-            "headline": "Same GP, wide dispersion",
-            "body": "USV, ARCH, and True Ventures show dramatic fund-to-fund spread across vintages. Vintage timing and distribution cycles can matter as much as manager brand.",
-        },
-        {
-            "number": "08",
-            "label": "DARK HORSE",
-            "headline": "IA Ventures Fund II",
-            "body": "20.6× TVPI and 9.64× DPI from a smaller, less-visible manager. LP-level records often surface leaders missed by reputation-first narratives.",
-        },
-    ]
 
-    # Render in 2 rows x 4 columns
-    chunks = [insight_cards[i : i + 4] for i in range(0, len(insight_cards), 4)]
-    for chunk in chunks:
-        cols = st.columns(4)
-        for col, card in zip(cols, chunk):
-            with col:
-                st.markdown(
-                    """
-                <div style="border:1px solid #E5E7EB;border-radius:6px;padding:16px;background:#fff;height:100%;min-height:220px;display:flex;flex-direction:column">
-                    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.15em;
-                        text-transform:uppercase;color:#9CA3AF;margin-bottom:4px">
-                        {0} / {1}
-                    </div>
-                    <div style="font-family:'Inter',sans-serif;font-size:15px;font-weight:700;
-                        color:#111827;margin-bottom:8px;line-height:1.2;flex-grow:0">
-                        {2}
-                    </div>
-                    <div style="font-family:'Inter',sans-serif;font-size:12px;color:#6B7280;line-height:1.5;flex-grow:1">
-                        {3}
-                    </div>
-                </div>
-                """.format(
-                        html.escape(card["number"]),
-                        html.escape(card["label"]),
-                        html.escape(card["headline"]),
-                        html.escape(card["body"]),
-                    ),
-                    unsafe_allow_html=True,
-                )
+def render_insights_hero(df):
+    total_funds = len(df)
+    drought_df = df[df['vintage_year'] >= 2017]
+    drought_pct = (drought_df['dpi'] < 0.1).mean() * 100 if not drought_df.empty else 0
+    top_idx = df['dpi'].idxmax() if not df.empty and df['dpi'].notna().any() else None
+    top_dpi = df.loc[top_idx, 'dpi'] if top_idx is not None else 0
+    top_fund = df.loc[top_idx, 'fund_name'] if top_idx is not None else 'N/A'
+    drag_df = df[df['gross_tvpi'].notna() & df['tvpi'].notna()]
+    avg_drag = (drag_df['gross_tvpi'] - drag_df['tvpi']).mean() if not drag_df.empty else 0
+    
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.markdown(f'<div class="hero-stat-card"><div class="hero-stat-label">Funds Tracked</div><div class="hero-stat-value">{total_funds:,}</div><div class="hero-stat-sub">Public LP + Intel</div></div>', unsafe_allow_html=True)
+    with c2:
+        st.markdown(f'<div class="hero-stat-card"><div class="hero-stat-label">DPI Drought</div><div class="hero-stat-value">{drought_pct:.0f}%</div><div class="hero-stat-sub">2017+ funds < 0.1x DPI</div></div>', unsafe_allow_html=True)
+    with c3:
+        st.markdown(f'<div class="hero-stat-card"><div class="hero-stat-label">Top Returner</div><div class="hero-stat-value">{top_dpi:.1f}x</div><div class="hero-stat-sub">{top_fund}</div></div>', unsafe_allow_html=True)
+    with c4:
+        st.markdown(f'<div class="hero-stat-card"><div class="hero-stat-label">Avg. Fee Drag</div><div class="hero-stat-value">{avg_drag:.2f}x</div><div class="hero-stat-sub">Gross vs Net gap</div></div>', unsafe_allow_html=True)
 
-    df = df_master.copy()
-    lp_df = df[(df["irr_meaningful"] == True) & (df["data_source_type"] == "LP-Disclosed")].copy()
-    mi_df = df[(df["irr_meaningful"] == True) & (df["data_source_type"] == "Market Intelligence")].copy()
-    lp_df = lp_df[lp_df["net_irr"].notna() & (lp_df["net_irr"].abs() < 2.0)]
-    mi_df = mi_df[mi_df["net_irr"].notna() & (mi_df["net_irr"].abs() < 2.0)]
-
-    st.markdown('<div class="section-label">01 / FIRM LANDSCAPE</div>', unsafe_allow_html=True)
-    st.markdown('<div class="chart-title">CASH RETURN RECORD</div>', unsafe_allow_html=True)
-    st.markdown('<div class="chart-subtitle">X = funds with meaningful data · Y = median net DPI · size = total capital in dataset</div>', unsafe_allow_html=True)
-    firm_summary = []
-    for gp, grp in df.groupby("canonical_gp"):
-        meaningful = grp[grp["irr_meaningful"] == True]
-        r = grp.iloc[0]
-        mode_source = grp["data_source_type"].mode()
-        firm_summary.append(
-            {
-                "firm": r.get("gp_display_name", gp),
-                "canonical_gp": gp,
-                "meaningful_count": len(meaningful),
-                "median_dpi": meaningful["dpi"].dropna().median() if len(meaningful) > 0 else 0,
-                "total_capital_bn": grp["fund_size_usd_m"].fillna(0).sum() / 1000.0,
-                "source_type": mode_source.iloc[0] if not mode_source.empty else "LP-Disclosed",
-            }
-        )
-    firm_df = pd.DataFrame(firm_summary).dropna(subset=["median_dpi"])
-    firm_df["x_plot"] = pd.to_numeric(firm_df["meaningful_count"], errors="coerce").astype(float)
-    firm_df["y_plot"] = pd.to_numeric(firm_df["median_dpi"], errors="coerce").astype(float)
-    # Reduce visual dominance of very large firms while keeping relative scale.
-    firm_df["bubble_size"] = np.log1p(firm_df["total_capital_bn"].clip(lower=0) * 8.0)
-    if firm_df["bubble_size"].max() == 0:
-        firm_df["bubble_size"] = 1.0
-    # De-overlap dense cluster in lower-left region.
-    dense = (firm_df["x_plot"] <= 4.0) & (firm_df["y_plot"] <= 1.5)
-    if dense.any():
-        dense_df = firm_df[dense].sort_values(["x_plot", "y_plot", "firm"]).copy()
-        n = len(dense_df)
-        x_offsets = np.tile(np.array([-0.35, 0.0, 0.35]), int(np.ceil(n / 3)))[:n]
-        y_offsets = np.tile(np.array([0.14, 0.0, -0.14]), int(np.ceil(n / 3)))[:n]
-        firm_df.loc[dense_df.index, "x_plot"] = dense_df["x_plot"].values + x_offsets
-        firm_df.loc[dense_df.index, "y_plot"] = dense_df["y_plot"].values + y_offsets
-    # Label only high-signal firms to avoid text collisions.
-    firm_df["label_text"] = np.where(
-        (firm_df["y_plot"] >= 1.75)
-        | (firm_df["x_plot"] >= 8.0)
-        | (firm_df["source_type"] == "Market Intelligence"),
-        firm_df["firm"],
-        "",
-    )
-
-    color_map = {"LP-Disclosed": "#2C3E50", "Market Intelligence": "#E8571F"}
-    fig = px.scatter(
-        firm_df,
-        x="x_plot",
-        y="y_plot",
-        size="bubble_size",
-        text="label_text",
-        color="source_type",
-        color_discrete_map=color_map,
-        size_max=36,
-        template="plotly_white",
-        labels={"meaningful_count": "Funds with Meaningful Data", "median_dpi": "Median Net DPI (×)"},
-        custom_data=["firm", "canonical_gp", "total_capital_bn", "meaningful_count", "median_dpi", "source_type"],
-    )
-    fig.add_hline(
-        y=1.0,
-        line_dash="dash",
-        line_color="#9CA3AF",
-        line_width=1,
-        annotation_text="1.0× — returned committed capital",
-        annotation_position="bottom right",
-        annotation_font_size=9,
-    )
-    fig.add_hline(
-        y=2.0,
-        line_dash="dash",
-        line_color="#16A34A",
-        line_width=1,
-        annotation_text="2.0× — strong realization",
-        annotation_position="bottom right",
-        annotation_font_size=9,
-    )
-    fig.update_traces(
-        textposition="top center",
-        textfont_size=10,
-        marker=dict(line=dict(width=1.2, color="white"), opacity=0.8),
-        hovertemplate="<b>%{customdata[0]}</b><br>Canonical GP: %{customdata[1]}<br>Data Source Type: %{customdata[5]}<br>Funds with meaningful data: %{customdata[3]}<br>Median net DPI: %{customdata[4]:.2f}×<br>Total capital represented: %{customdata[2]:.2f}B<br><br><i>1.0× means LPs have gotten their invested capital back. 2.0× means strong realized cash performance.</i><extra></extra>",
-    )
-    fig.update_layout(
-        height=430,
-        showlegend=True,
-        legend=dict(title="Source", orientation="h", font=dict(size=10)),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
-        xaxis=dict(gridcolor="#F3F4F6"),
-        yaxis=dict(gridcolor="#F3F4F6"),
-        font=dict(family="Inter", size=11),
-        margin=dict(l=50, r=40, t=30, b=60),
-    )
-    fig.update_xaxes(title_text="Funds with Meaningful Data")
-    fig.update_yaxes(title_text="Median Net DPI (×)")
-    style_chart_readability(fig)
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-
-    st.markdown(
-        """
-    <div class="insight-box" style="margin-top:0.2rem">
-        <div class="insight-label">● HOW TO READ THIS</div>
-        <div class="insight-body">
-            Firms higher on the chart have stronger realized cash performance (higher median DPI).
-            Larger bubbles represent firms with more capital represented in this dataset.
-            Orange bubbles are market intelligence data; slate bubbles are LP-disclosed records.
-        </div>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown('<div class="chart-title" style="margin-top:1.0rem">FUND COVERAGE TIMELINE</div>', unsafe_allow_html=True)
-    st.markdown('<div class="chart-subtitle">Each square = one fund · color = DPI realization level</div>', unsafe_allow_html=True)
-    tl = df[df["vintage_year"].notna()].copy()
-    tl["dpi_safe"] = tl["dpi"].fillna(0)
-
-    def dpi_color(v):
-        if v > 2.0:
-            return "#E8571F"
-        if v > 1.0:
-            return "#6EE7B7"
-        if v > 0.1:
-            return "#FCD34D"
-        return "#E5E7EB"
-
-    tl["dot_color"] = tl["dpi_safe"].apply(dpi_color)
-    tl["firm_display"] = tl["gp_display_name"].where(
-        tl["gp_display_name"].notna(), tl["canonical_gp"]
-    ).astype(str)
-    tl["dpi_fmt"] = np.where(tl["dpi"].notna(), tl["dpi"].map(lambda v: "{0:.2f}×".format(v)), "N/A")
-    tl["tvpi_fmt"] = np.where(tl["tvpi"].notna(), tl["tvpi"].map(lambda v: "{0:.2f}×".format(v)), "N/A")
-
-    gp_order = tl.groupby("canonical_gp")["vintage_year"].min().sort_values().index.tolist()
-    label_lookup = (
-        tl.sort_values("vintage_year")
-        .drop_duplicates("canonical_gp")
-        .set_index("canonical_gp")["firm_display"]
-        .to_dict()
-    )
-    firms_order = [label_lookup.get(gp, str(gp)) for gp in gp_order]
-
-    fig2 = go.Figure()
-    fig2.add_trace(
-        go.Scatter(
-            x=tl["vintage_year"].astype(int),
-            y=tl["firm_display"],
-            mode="markers",
-            marker=dict(symbol="square", size=10, color=tl["dot_color"], line=dict(width=1, color="#9CA3AF")),
-            showlegend=False,
-            customdata=tl[["fund_name", "vintage_year", "dpi_fmt", "tvpi_fmt"]].values,
-            hovertemplate="<b>%{customdata[0]}</b><br>Vintage: %{customdata[1]}<br>DPI: %{customdata[2]}<br>TVPI: %{customdata[3]}<extra></extra>",
-        )
-    )
-    for label, color in [
-        ("> 2× DPI", "#E8571F"),
-        ("1–2× DPI", "#6EE7B7"),
-        ("0.1–1× DPI", "#FCD34D"),
-        ("< 0.1× / None", "#E5E7EB"),
-    ]:
-        fig2.add_trace(
-            go.Scatter(
-                x=[None],
-                y=[None],
-                mode="markers",
-                marker=dict(symbol="square", size=10, color=color, line=dict(width=1, color="#9CA3AF")),
-                name=label,
-                showlegend=True,
-            )
-        )
-    fig2.update_layout(
-        height=max(430, len(firms_order) * 26 + 150),
-        template="plotly_white",
-        xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=3),
-        yaxis=dict(title="", tickfont=dict(size=10), categoryorder="array", categoryarray=firms_order),
-        legend=dict(title="DPI Range", font=dict(size=10), orientation="h"),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
-        font=dict(family="Inter", size=10),
-        margin=dict(l=120, r=30, t=30, b=60),
-    )
-    style_chart_readability(fig2)
-    st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-
-    st.markdown('<div class="section-label">02 / RETURNS — LP-DISCLOSED + MARKET INTEL vs CA BENCHMARK</div>', unsafe_allow_html=True)
+def render_section_1_vintage(df):
+    st.markdown('<div class="section-label">01 / DPI BY VINTAGE — REALIZATION PROGRESS</div>', unsafe_allow_html=True)
+    v_agg = df.groupby('vintage_year').agg({'dpi': 'median', 'tvpi': 'median'}).reset_index()
     fig = go.Figure()
-    fig.add_trace(
-        go.Scatter(
-            x=list(bench_meaningful["vintage_year"]) + list(bench_meaningful["vintage_year"])[::-1],
-            y=list(bench_meaningful["q1_net_irr"] * 100) + list(bench_meaningful["q3_net_irr"] * 100)[::-1],
-            fill="toself",
-            fillcolor="rgba(16,185,129,0.07)",
-            line=dict(color="rgba(0,0,0,0)"),
-            name="CA Q3–Q1 Band (approx.)",
-            hoverinfo="skip",
-        )
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=bench_meaningful["vintage_year"],
-            y=bench_meaningful["q1_net_irr"] * 100,
-            mode="lines",
-            line=dict(color="#16A34A", width=1.5, dash="dash"),
-            name="CA Top Quartile (approx.)",
-            hovertemplate="Vintage %{x}<br>CA Q1: %{y:.1f}%<extra></extra>",
-        )
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=bench_meaningful["vintage_year"],
-            y=bench_meaningful["median_net_irr"] * 100,
-            mode="lines",
-            line=dict(color="#9CA3AF", width=1.5, dash="dot"),
-            name="CA Median (approx.)",
-            hovertemplate="Vintage %{x}<br>CA Median: %{y:.1f}%<extra></extra>",
-        )
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=lp_df["vintage_year"],
-            y=lp_df["net_irr"] * 100,
-            mode="markers",
-            marker=dict(
-                symbol="circle",
-                size=lp_df["fund_size_usd_m"].fillna(50).clip(50, 3000) / 65,
-                color="#2C3E50",
-                opacity=0.7,
-                line=dict(width=1, color="white"),
-            ),
-            name="LP-Disclosed (FOIA)",
-            customdata=lp_df[["fund_name", "canonical_gp", "tvpi", "dpi"]].values,
-            hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>IRR: %{y:.1f}%<br>TVPI: %{customdata[2]:.2f}×<br>DPI: %{customdata[3]:.2f}×<extra></extra>",
-        )
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=mi_df["vintage_year"],
-            y=mi_df["net_irr"] * 100,
-            mode="markers",
-            marker=dict(
-                symbol="diamond",
-                size=mi_df["fund_size_usd_m"].fillna(50).clip(50, 3000) / 65,
-                color="#FFF4EF",
-                opacity=0.95,
-                line=dict(width=2, color="#E8571F"),
-            ),
-            name="Market Intelligence (Circulated)",
-            customdata=mi_df[["fund_name", "canonical_gp", "tvpi", "dpi"]].values,
-            hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>IRR: %{y:.1f}%<br>TVPI: %{customdata[2]:.2f}×<br>DPI: %{customdata[3]:.2f}×<br><i>Market Intelligence — unverified provenance</i><extra></extra>",
-        )
-    )
-    fig.add_annotation(
-        x=2013,
-        y=34,
-        text="Market intel funds (◆)<br>cluster above Q1 line<br>— source may be selective",
-        showarrow=True,
-        arrowhead=2,
-        arrowcolor="#E8571F",
-        arrowwidth=1.5,
-        font=dict(size=9, color="#E8571F", family="IBM Plex Mono"),
-        bgcolor="#FFF4EF",
-        bordercolor="#E8571F",
-        borderwidth=1,
-        borderpad=6,
-        ax=80,
-        ay=-50,
-    )
+    fig.add_trace(go.Bar(x=v_agg['vintage_year'], y=v_agg['dpi'], name='Median DPI (Cash)', marker_color='#E8571F'))
+    fig.add_trace(go.Scatter(x=v_agg['vintage_year'], y=v_agg['tvpi'], name='Median TVPI (Total)', mode='lines+markers', line=dict(color='#111827', width=2)))
+    fig.update_layout(template='plotly_white', height=400, legend=dict(orientation="h", y=1.1, x=1), xaxis=dict(dtick=2), margin=dict(t=50))
+    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-    # High-signal UTIMCO outlier annotations.
-    for pat, label, ax, ay in [
-        (r"Union Square Ventures 2012 Fund", "USV 2012<br>24.9× TVPI", 35, -55),
-        (r"Spark Capital II", "Spark II", -20, -45),
-        (r"Union Square Ventures 2004", "USV 2004", 20, -55),
-    ]:
-        sub_lp = lp_df[lp_df["fund_name"].astype(str).str.contains(pat, case=False, na=False)]
-        if not sub_lp.empty:
-            r0 = sub_lp.iloc[0]
-            if pd.notna(r0.get("vintage_year")) and pd.notna(r0.get("net_irr")):
-                fig.add_annotation(
-                    x=float(r0["vintage_year"]),
-                    y=float(r0["net_irr"]) * 100.0,
-                    text=label,
-                    showarrow=True,
-                    arrowhead=2,
-                    arrowcolor="#E8571F",
-                    arrowwidth=1.2,
-                    font=dict(size=9, color="#E8571F", family="IBM Plex Mono"),
-                    bgcolor="#FFF4EF",
-                    bordercolor="#E8571F",
-                    borderwidth=1,
-                    borderpad=5,
-                    ax=ax,
-                    ay=ay,
-                )
-    fig.update_layout(
-        title=dict(
-            text="NET IRR BY VINTAGE — LP-DISCLOSED vs MARKET INTEL vs CA BENCHMARK",
-            font=dict(family="IBM Plex Mono", size=11, color="#6B7280"),
-        ),
-        height=500,
-        template="plotly_white",
-        xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
-        yaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
-        legend=dict(orientation="h", y=-0.2, font=dict(size=10)),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
-        font=dict(family="Inter", size=12),
-    )
-    style_chart_readability(fig)
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-    bench_disclaimer()
-    st.markdown(
-        """
-    <div class="insight-box">
-        <div class="insight-label">● READING THIS CHART</div>
-        <div class="insight-body">
-            <strong>● circles = LP-disclosed</strong> — independently reported by pension funds
-            under FOIA. Scattered across the full distribution including underperformers.
-            <strong>◆ diamonds = market intelligence</strong> — data that circulated through
-            secondary market and LP channels for a16z, Founders Fund, and Social Capital.
-            Notice diamonds cluster above the Q1 line. This may reflect genuine outperformance
-            by these firms — or it may reflect that the source of the circulated data was
-            selective. The green band is the approximate Cambridge Associates Q3–Q1 range.
-            <em>Funds inside the band are performing between median and top quartile for their vintage.</em>
-        </div>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
+def render_section_2_leaderboard(df):
+    st.markdown('<div class="section-label">02 / CASH RETURN LEADERBOARD — TOP 10 LP-DISCLOSED</div>', unsafe_allow_html=True)
+    top_10 = df[df['data_source_type'] == 'LP-Disclosed'].nlargest(10, 'dpi')[['fund_name', 'canonical_gp', 'vintage_year', 'tvpi', 'dpi']]
+    st.dataframe(top_10, use_container_width=True, hide_index=True, column_config={'dpi': st.column_config.NumberColumn("DPI", format="%.2fx"), 'tvpi': st.column_config.NumberColumn("TVPI", format="%.2fx"), 'vintage_year': st.column_config.NumberColumn("Vintage", format="%d")})
 
-    if incomplete_rows is not None and not incomplete_rows.empty:
-        with st.expander("Developer: Incomplete rows (missing vintage_year or capital_contributed)", expanded=False):
-            show_cols = [
-                c
-                for c in ["source", "fund_name", "vintage_year", "capital_contributed", "reporting_period", "net_irr", "tvpi", "dpi"]
-                if c in incomplete_rows.columns
-            ]
-            st.dataframe(
-                incomplete_rows[show_cols].sort_values(["source", "fund_name"], na_position="last"),
-                use_container_width=True,
-                hide_index=True,
-            )
+def render_section_3_gap(df):
+    st.markdown('<div class="section-label">03 / REALIZATION GAP — VINTAGE DEPTH</div>', unsafe_allow_html=True)
+    v_agg = df[df['vintage_year'] >= 2010].groupby('vintage_year').agg({'dpi': 'median', 'tvpi': 'median'}).reset_index()
+    v_agg['rvpi'] = (v_agg['tvpi'] - v_agg['dpi']).clip(lower=0)
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=v_agg['vintage_year'], y=v_agg['dpi'], name='Cash (DPI)', marker_color='#E8571F'))
+    fig.add_trace(go.Bar(x=v_agg['vintage_year'], y=v_agg['rvpi'], name='Remaining (RVPI)', marker_color='#E5E7EB'))
+    fig.update_layout(barmode='stack', template='plotly_white', height=400, legend=dict(orientation="h"))
+    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-    st.markdown('<div class="section-label" style="margin-top:2rem">02B / DPI LEADERBOARD — TOP LP-DISCLOSED CASH RETURNS</div>', unsafe_allow_html=True)
-    dpi_df = df[(df["data_source_type"] == "LP-Disclosed") & pd.to_numeric(df["dpi"], errors="coerce").gt(0)].copy()
-    dpi_df["dpi"] = pd.to_numeric(dpi_df["dpi"], errors="coerce")
-    dpi_df["tvpi"] = pd.to_numeric(dpi_df["tvpi"], errors="coerce")
-    dpi_df["net_irr"] = pd.to_numeric(dpi_df["net_irr"], errors="coerce")
-    dpi_df = dpi_df.sort_values("dpi", ascending=False).head(15).reset_index(drop=True)
-
-    leaderboard_html = ""
-    for i, r in dpi_df.iterrows():
-        name = html.escape(str(r.get("fund_name", "")))
-        gp = html.escape(str(r.get("canonical_gp", "")))
-        vintage = "—" if pd.isna(r.get("vintage_year")) else str(int(r.get("vintage_year")))
-        dpi_val = r.get("dpi")
-        dpi_str = "—" if pd.isna(dpi_val) else "{0:.2f}×".format(dpi_val)
-        tvpi_str = "—" if pd.isna(r.get("tvpi")) else "{0:.2f}×".format(r.get("tvpi"))
-        irr_str = "—" if pd.isna(r.get("net_irr")) else "{0:.1f}%".format(r.get("net_irr") * 100)
-        source_raw = str(r.get("source", ""))
-        source_cls = SOURCE_BADGE_CLASS.get(source_raw, "badge-estimated")
-        source_lbl = SOURCE_SHORT.get(source_raw, source_raw[:10])
-
-        dpi_color = "#E8571F" if dpi_val and dpi_val >= 1.0 else "#111827"
-        
-        leaderboard_html += (
-            "<tr>"
-            '<td class="id-col">{0}</td>'
-            '<td style="font-weight:600">{1} <span style="font-weight:400;color:#6B7280;margin-left:4px">/ {2}</span></td>'
-            '<td class="numeric">{3}</td>'
-            '<td><span class="badge {4}">{5}</span></td>'
-            '<td class="numeric">{6}</td>'
-            '<td class="numeric" style="color:{7};font-weight:600">{8}</td>'
-            '<td class="numeric">{9}</td>'
-            "</tr>"
-        ).format(
-            str(i + 1).zfill(2), 
-            name, gp,
-            vintage,
-            source_cls, html.escape(source_lbl),
-            tvpi_str,
-            dpi_color, dpi_str,
-            irr_str
-        )
-
-    _render_html(
-        (
-            '<table class="fund-table"><thead><tr>'
-            "<th>#</th><th>FUND / GP</th><th class=\"right\">VINTAGE</th><th>SOURCE</th>"
-            '<th class="right">TVPI</th><th class="right" style="color:#E8571F">DPI ▲</th><th class="right">IRR</th>'
-            "</tr></thead><tbody>{0}</tbody></table>"
-        ).format(leaderboard_html)
-    )
-
-    st.markdown(
-        """
-    <div class="insight-box">
-        <div class="insight-label">● ANALYST INSIGHT — THE DPI LEADERBOARD</div>
-        <div class="insight-body">
-            <strong>USV 2012 Fund now leads LP-disclosed DPI in this dataset.</strong>
-            The top cohort is concentrated in smaller vintage funds where realization cycles have fully played out.
-            UTIMCO materially improves visibility into this segment and highlights how distribution outcomes can diverge
-            from brand-based expectations.
-        </div>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown('<div class="section-label" style="margin-top:2rem">02C / THE GROSS vs NET GAP — FEES QUANTIFIED</div>', unsafe_allow_html=True)
-    st.markdown('<div class="chart-subtitle">a16z is the only firm in this dataset with both gross and net metrics in the circulated data. The gap = management fees + carry transferred from LP to GP.</div>', unsafe_allow_html=True)
-    a16z_rows = [
-        {"fund": "AH Fund I", "vintage": 2009, "size": 300, "gross_tvpi": 9.3, "net_tvpi": 6.9, "net_dpi": 6.0},
-        {"fund": "AH Fund II", "vintage": 2010, "size": 656, "gross_tvpi": 4.9, "net_tvpi": 3.7, "net_dpi": 3.5},
-        {"fund": "AH Annex", "vintage": 2011, "size": 204, "gross_tvpi": 7.2, "net_tvpi": 5.4, "net_dpi": 5.1},
-        {"fund": "AH Fund III", "vintage": 2012, "size": 997, "gross_tvpi": 15.7, "net_tvpi": 11.3, "net_dpi": 5.5},
-        {"fund": "AH Fund IV", "vintage": 2014, "size": 1173, "gross_tvpi": 5.5, "net_tvpi": 4.1, "net_dpi": 3.0},
-        {"fund": "AH Fund V", "vintage": 2017, "size": 1189, "gross_tvpi": 4.0, "net_tvpi": 3.1, "net_dpi": 0.3},
-    ]
-    table_rows = ""
-    for d in a16z_rows:
-        drag = d["gross_tvpi"] - d["net_tvpi"]
-        drag_pct = (drag / d["gross_tvpi"] * 100) if d["gross_tvpi"] else np.nan
-        drag_usd_m = drag * d["size"]
-        dpi_color = "#E8571F" if d["net_dpi"] >= 1.5 else ("#D97706" if d["net_dpi"] >= 0.5 else "#9CA3AF")
-        table_rows += (
-            "<tr>"
-            '<td style="font-weight:500">{0}</td><td class="numeric">{1}</td><td class="numeric">${2:,}M</td>'
-            '<td class="numeric" style="color:#6B7280">{3:.1f}×</td><td class="numeric" style="font-weight:600;color:#111827">{4:.1f}×</td>'
-            '<td class="numeric" style="color:#DC2626">−{5:.1f}× <span style="font-size:9px;color:#9CA3AF">({6:.0f}% / ${7:.1f}B)</span></td>'
-            '<td class="numeric" style="color:{8};font-weight:600">{9:.1f}×</td></tr>'
-        ).format(
-            d["fund"],
-            d["vintage"],
-            d["size"],
-            d["gross_tvpi"],
-            d["net_tvpi"],
-            drag,
-            drag_pct,
-            drag_usd_m / 1000.0,
-            dpi_color,
-            d["net_dpi"],
-        )
-    _render_html(
-        '<table class="fund-table"><thead><tr><th>FUND</th><th class="right">VINTAGE</th><th class="right">SIZE</th>'
-        '<th class="right">GROSS TVPI</th><th class="right">NET TVPI</th>'
-        '<th class="right" style="color:#DC2626">FEE DRAG (×  /  $)</th><th class="right" style="color:#E8571F">NET DPI ▲</th>'
-        "</tr></thead><tbody>{0}</tbody></table>".format(table_rows)
-    )
-    st.markdown(
-        """
-    <div class="insight-box" style="margin-top:1rem">
-        <div class="insight-label">● WHAT THIS TABLE SHOWS</div>
-        <div class="insight-body">
-            Fee drag = gross TVPI minus net TVPI. For AH Fund III, 4.4× drag on $997M ≈
-            <strong>$4.4B transferred from LPs to a16z in management fees and carry</strong>.
-            This is standard 2/20 structure — not predatory. But it's rarely shown this
-            concretely. Note AH Fund V (2017): Net DPI is only 0.3× despite Net TVPI of 3.1×
-            — <em>LPs have received less than a third of their committed capital back in cash,
-            a decade in.</em>
-        </div>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown('<div class="section-label" style="margin-top:2rem">02D / THE REALIZATION MAP</div>', unsafe_allow_html=True)
-    st.markdown('<div class="chart-subtitle">Each point = one fund. X = DPI (cash returned). Y = TVPI (total value including paper). Color = vintage era.</div>', unsafe_allow_html=True)
-    plot_df = df[df["tvpi"].notna() & df["dpi"].notna()].copy()
-    plot_df["vintage_bucket"] = pd.cut(
-        plot_df["vintage_year"].astype(float),
-        bins=[1999, 2014, 2017, 2030],
-        labels=["Pre-2015 (Mature)", "2015–2017 (DPI Drought Onset)", "Post-2017 (Paper Only)"],
-    )
-    bucket_colors = {
-        "Pre-2015 (Mature)": "#16A34A",
-        "2015–2017 (DPI Drought Onset)": "#D97706",
-        "Post-2017 (Paper Only)": "#DC2626",
-    }
-    max_dpi = min(plot_df["dpi"].max() + 0.5, 20) if not plot_df.empty else 4.0
-    max_tvpi = min(plot_df["tvpi"].max() + 0.5, 20) if not plot_df.empty else 4.0
-    max_val = max(max_dpi, max_tvpi)
-    fig_map = go.Figure()
-    fig_map.add_shape(type="rect", x0=0, y0=2.0, x1=0.99, y1=max_val, fillcolor="rgba(239,68,68,0.04)", line=dict(width=0))
-    fig_map.add_shape(type="rect", x0=1.0, y0=2.0, x1=max_val, y1=max_val, fillcolor="rgba(22,163,74,0.04)", line=dict(width=0))
-    fig_map.add_vline(
-        x=1.0,
-        line_dash="dash",
-        line_color="#6B7280",
-        line_width=1,
-        annotation_text="1.0× DPI — committed capital returned",
-        annotation_position="top right",
-        annotation_font_size=9,
-    )
-    fig_map.add_trace(
-        go.Scatter(
-            x=[0, max_val],
-            y=[0, max_val],
-            mode="lines",
-            line=dict(color="#9CA3AF", dash="dot", width=1),
-            name="DPI = TVPI (fully realized)",
-            showlegend=True,
-            hoverinfo="skip",
-        )
-    )
-    for bucket, color in bucket_colors.items():
-        sub = plot_df[plot_df["vintage_bucket"].astype(str) == bucket]
-        if len(sub) == 0:
-            continue
-        fig_map.add_trace(
-            go.Scatter(
-                x=sub["dpi"],
-                y=sub["tvpi"],
-                mode="markers",
-                marker=dict(size=sub["fund_size_usd_m"].fillna(50).clip(50, 3000) / 55, color=color, opacity=0.70, line=dict(width=1, color="white")),
-                name=bucket,
-                customdata=sub[["fund_name", "canonical_gp", "vintage_year", "net_irr", "fund_size_usd_m", "data_source_type"]].values,
-                hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]} · %{customdata[2]}<br>TVPI: %{y:.2f}× | DPI: %{x:.2f}×<br>IRR: %{customdata[3]:.1%}<br>%{customdata[5]}<extra></extra>",
-            )
-        )
-    may = plot_df[plot_df["fund_name"].astype(str).str.contains("XIV", na=False)]
-    if len(may):
-        fig_map.add_trace(
-            go.Scatter(
-                x=may["dpi"],
-                y=may["tvpi"],
-                mode="markers+text",
-                marker=dict(symbol="star", size=18, color="#E8571F", line=dict(width=1.5, color="white")),
-                text=["Mayfield XIV"] * len(may),
-                textposition="top right",
-                textfont=dict(size=9, color="#E8571F", family="IBM Plex Mono"),
-                name="Mayfield XIV ★",
-                showlegend=True,
-            )
-        )
-    fig_map.add_annotation(
-        x=0.2,
-        y=max_val * 0.88,
-        text="PAPER GAINS ZONE<br>High TVPI, Low DPI",
-        font=dict(size=9, color="#DC2626", family="IBM Plex Mono"),
-        showarrow=False,
-        bgcolor="rgba(254,242,242,0.85)",
-    )
-    fig_map.add_annotation(
-        x=max_val * 0.65,
-        y=max_val * 0.88,
-        text="REAL RETURNS ZONE<br>High TVPI, High DPI",
-        font=dict(size=9, color="#16A34A", family="IBM Plex Mono"),
-        showarrow=False,
-        bgcolor="rgba(240,253,244,0.85)",
-    )
-    fig_map.update_layout(
-        title=dict(text="TVPI vs DPI — THE REALIZATION MAP", font=dict(family="IBM Plex Mono", size=11, color="#6B7280")),
-        height=500,
-        template="plotly_white",
-        xaxis=dict(title="Net DPI (× distributed to LPs)", range=[0, max_val], gridcolor="#F3F4F6"),
-        yaxis=dict(title="Net TVPI (× total value)", range=[0, max_val], gridcolor="#F3F4F6"),
-        legend=dict(orientation="h", y=-0.2, font=dict(size=10)),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
-        font=dict(family="Inter", size=12),
-    )
-    style_chart_readability(fig_map)
-    st.plotly_chart(fig_map, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-
-    st.markdown('<div class="section-label" style="margin-top:2rem">02E / NET IRR RANKING — HOVER FOR vs BENCHMARK</div>', unsafe_allow_html=True)
-    rank_df = lp_df.copy()
-    rank_df = rank_df.merge(bench[["vintage_year", "median_net_irr", "q1_net_irr"]], on="vintage_year", how="left")
-    rank_df["irr_pct"] = rank_df["net_irr"] * 100
-    rank_df["vs_median_pp"] = rank_df["irr_pct"] - rank_df["median_net_irr"] * 100
-    rank_df["vs_q1_pp"] = rank_df["irr_pct"] - rank_df["q1_net_irr"] * 100
-    rank_df["est_quartile"] = rank_df["vs_q1_pp"].apply(lambda x: "Q1 (Top)" if x >= 0 else ("Q2" if x >= -5 else "Q3+"))
-    rank_df["short_label"] = rank_df.apply(lambda r: "{0} ({1})".format(str(r["fund_name"])[:32], r["canonical_gp"]), axis=1)
-    rank_df["bar_color"] = rank_df["irr_pct"].apply(lambda x: "#16A34A" if x >= 20 else ("#D97706" if x >= 10 else "#DC2626"))
-    rank_df = rank_df.sort_values("irr_pct", ascending=True)
-    avg_q1 = rank_df["q1_net_irr"].mean() * 100 if not rank_df.empty else 0
-    fig_rank = go.Figure()
-    fig_rank.add_trace(
-        go.Bar(
-            y=rank_df["short_label"],
-            x=rank_df["irr_pct"],
-            orientation="h",
-            marker_color=rank_df["bar_color"].tolist(),
-            customdata=rank_df[["vintage_year", "tvpi", "dpi", "vs_median_pp", "vs_q1_pp", "est_quartile"]].values,
-            hovertemplate="<b>%{y}</b><br>IRR: %{x:.1f}%<br>Vintage: %{customdata[0]}<br>TVPI: %{customdata[1]:.2f}× | DPI: %{customdata[2]:.2f}×<br>vs CA Median: %{customdata[3]:+.1f}pp<br>vs CA Q1: %{customdata[4]:+.1f}pp<br>Est. Quartile: %{customdata[5]}<extra></extra>",
-        )
-    )
-    fig_rank.add_vline(x=avg_q1, line_dash="dash", line_color="#16A34A", line_width=1, annotation_text="Avg CA Q1 ({0:.0f}%)".format(avg_q1), annotation_font_size=9)
-    fig_rank.add_vline(x=10, line_dash="dot", line_color="#9CA3AF", line_width=1, annotation_text="10% floor", annotation_font_size=9)
-    fig_rank.update_layout(
-        height=max(400, len(rank_df) * 22),
-        template="plotly_white",
-        xaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
-        yaxis=dict(tickfont=dict(size=9)),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
-        font=dict(family="Inter", size=10),
-        margin=dict(l=300, r=80, t=30, b=40),
-    )
-    style_chart_readability(fig_rank)
-    st.plotly_chart(fig_rank, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-    bench_disclaimer()
-
-    st.markdown('<div class="section-label">03 / VINTAGE COHORT ANALYSIS</div>', unsafe_allow_html=True)
+@st.cache_data(show_spinner=False)
+def _precompute_insights(df_master_hash: str, df_master: pd.DataFrame, bench: pd.DataFrame):
+    """Cache heavy pandas aggregations for the Insights page."""
+    lp_full = df_master[df_master["data_source_type"] == "LP-Disclosed"].copy()
     
-    # Chart 3A: TVPI by Vintage
-    st.markdown('<div class="chart-title">TVPI BY VINTAGE — vs CA BENCHMARK</div>', unsafe_allow_html=True)
-    tvpi_df = lp_df[lp_df["tvpi"].notna()].copy()
-    tvpi_df["x_jitter"] = tvpi_df["vintage_year"].astype(float) + np.random.uniform(-0.25, 0.25, len(tvpi_df))
-    fig_tvpi = go.Figure()
-    fig_tvpi.add_trace(
-        go.Scatter(
-            x=list(bench_meaningful["vintage_year"]) + list(bench_meaningful["vintage_year"])[::-1],
-            y=list(bench_meaningful["q1_tvpi"]) + list(bench_meaningful["q3_tvpi"])[::-1],
-            fill="toself",
-            fillcolor="rgba(16,185,129,0.07)",
-            line=dict(color="rgba(0,0,0,0)"),
-            name="CA Q3–Q1 TVPI Band",
-            hoverinfo="skip",
-        )
-    )
-    fig_tvpi.add_trace(
-        go.Scatter(
-            x=bench_meaningful["vintage_year"],
-            y=bench_meaningful["median_tvpi"],
-            mode="lines",
-            line=dict(color="#9CA3AF", dash="dot", width=1.5),
-            name="CA Median TVPI",
-        )
-    )
-    fig_tvpi.add_trace(
-        go.Scatter(
-            x=tvpi_df["x_jitter"],
-            y=tvpi_df["tvpi"],
-            mode="markers",
-            marker=dict(size=7, color="#2C3E50", opacity=0.6, line=dict(width=0.5, color="white")),
-            name="LP-Disclosed Fund",
-            customdata=tvpi_df[["fund_name", "canonical_gp", "dpi"]].values,
-            hovertemplate="<b>%{customdata[0]}</b><br>%{customdata[1]}<br>TVPI: %{y:.2f}× | DPI: %{customdata[2]:.2f}×<extra></extra>",
-        )
-    )
-    medians = tvpi_df.groupby("vintage_year")["tvpi"].median().reset_index()
-    fig_tvpi.add_trace(
-        go.Scatter(
-            x=medians["vintage_year"],
-            y=medians["tvpi"],
-            mode="lines+markers",
-            line=dict(color="#E8571F", width=2),
-            marker=dict(size=6, color="#E8571F"),
-            name="This Dataset Median",
-        )
-    )
-    fig_tvpi.add_hline(y=1.0, line_dash="dot", line_color="#9CA3AF", line_width=1)
-    fig_tvpi.update_layout(
-        height=450,
-        template="plotly_white",
-        xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
-        yaxis=dict(title="Net TVPI (×)", gridcolor="#F3F4F6"),
-        legend=dict(font=dict(size=9)),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
-        font=dict(family="Inter", size=11, color="#111827"),
-        margin=dict(t=20, b=30),
-    )
-    style_chart_readability(fig_tvpi)
-    st.plotly_chart(fig_tvpi, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-    n_per = tvpi_df.groupby("vintage_year").size().to_dict()
-    n_str = "  ·  ".join(["{0}: n={1}".format(y, n) for y, n in sorted(n_per.items()) if y >= 2005])
-    st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">{0}</div>".format(html.escape(n_str)), unsafe_allow_html=True)
-    bench_disclaimer()
-
-    # Chart 3B: Capital Realization
-    st.markdown('<div class="chart-title" style="margin-top: 3rem;">CAPITAL REALIZATION BY VINTAGE</div>', unsafe_allow_html=True)
-    cohort = lp_df.copy()
-    cohort["cap"] = cohort["fund_size_usd_m"].fillna(0)
-    cohort["dist"] = cohort["dpi"].fillna(0) * cohort["cap"]
-    agg = cohort.groupby("vintage_year").agg(total=("cap", "sum"), distributed=("dist", "sum")).reset_index()
-    agg["unrealized"] = (agg["total"] - agg["distributed"]).clip(lower=0)
-    agg["pct"] = (agg["distributed"] / agg["total"].replace(0, np.nan) * 100).clip(0, 100).round(0)
-    agg = agg[agg["vintage_year"] >= 2005]
-    fig_cap = go.Figure()
-    fig_cap.add_trace(go.Bar(x=agg["vintage_year"], y=agg["distributed"] / 1000.0, name="Realized (DPI × Contributed)", marker_color="#E8571F"))
-    fig_cap.add_trace(go.Bar(x=agg["vintage_year"], y=agg["unrealized"] / 1000.0, name="Unrealized (Paper)", marker_color="#E5E7EB"))
-    for _, r in agg.iterrows():
-        fig_cap.add_annotation(
-            x=r["vintage_year"],
-            y=r["total"] / 1000.0 + 0.1,
-            text="{0:.0f}%".format(r["pct"]),
-            showarrow=False,
-            font=dict(size=9, color="#111827", family="IBM Plex Mono"),
-        )
-    fig_cap.update_layout(
-        barmode="stack",
-        height=450,
-        template="plotly_white",
-        xaxis=dict(title="Vintage Year", gridcolor="#F3F4F6", dtick=2),
-        yaxis=dict(title="Capital ($B)", gridcolor="#F3F4F6"),
-        legend=dict(font=dict(size=9), orientation="h", y=-0.15),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
-        font=dict(family="Inter", size=11, color="#111827"),
-        margin=dict(t=20, b=40),
-    )
-    style_chart_readability(fig_cap)
-    st.plotly_chart(fig_cap, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-    st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">% = realization rate per vintage. Orange = cash distributed to LPs. Grey = unrealized paper value.</div>", unsafe_allow_html=True)
-
-    st.markdown('<div class="section-label">04 / GP PERFORMANCE TRAJECTORIES</div>', unsafe_allow_html=True)
-    
-    try:
-        # Chart 4A: IRR Trajectory
-        traj = lp_df[lp_df["net_irr"].notna()].copy()
-        if not traj.empty:
-            st.markdown('<div class="chart-title">IRR TRAJECTORY — FIRMS WITH 3+ FUNDS</div>', unsafe_allow_html=True)
-            eligible = traj.groupby("canonical_gp").size()
-            eligible = eligible[eligible >= 3].index
-            traj = traj[traj["canonical_gp"].isin(eligible)]
-            if not traj.empty:
-                traj = traj.merge(bench[["vintage_year", "median_net_irr"]], on="vintage_year", how="left")
-                fig_traj = go.Figure()
-                for gp in traj["canonical_gp"].dropna().unique():
-                    sub = traj[traj["canonical_gp"] == gp].sort_values("vintage_year")
-                    fig_traj.add_trace(
-                        go.Scatter(
-                            x=sub["vintage_year"],
-                            y=sub["net_irr"] * 100,
-                            mode="lines+markers",
-                            name=sub.iloc[0].get("gp_display_name", gp),
-                            line=dict(width=2),
-                            marker=dict(size=7),
-                        )
-                    )
-                fig_traj.add_trace(
-                    go.Scatter(
-                        x=bench_meaningful["vintage_year"],
-                        y=bench_meaningful["median_net_irr"] * 100,
-                        mode="lines",
-                        name="CA Median (approx.)",
-                        line=dict(color="#9CA3AF", dash="dot", width=1.5),
-                    )
-                )
-                fig_traj.update_layout(
-                    height=450,
-                    template="plotly_white",
-                    xaxis=dict(gridcolor="#F3F4F6", cursor="pointer"),
-                    yaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
-                    legend=dict(font=dict(size=9)),
-                    plot_bgcolor="#FFFFFF",
-                    paper_bgcolor="#FFFFFF",
-                    font=dict(family="Inter", size=11, color="#111827"),
-                    margin=dict(t=20),
-                )
-                style_chart_readability(fig_traj)
-                st.plotly_chart(fig_traj, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-                bench_disclaimer()
-            else:
-                st.info("No firms in dataset with 3+ funds for trajectory analysis.")
-        else:
-            st.info("Insufficient data for IRR trajectories.")
-
-        # Chart 4B: Cash Returned by Strategy
-        strat = lp_df[lp_df["dpi"].notna() & lp_df["fund_size_usd_m"].notna()].copy()
-        if not strat.empty:
-            st.markdown('<div class="chart-title" style="margin-top: 3rem;">CASH RETURNED BY STRATEGY — CAPITAL-WEIGHTED DPI</div>', unsafe_allow_html=True)
-            strat["weighted"] = strat["dpi"] * strat["fund_size_usd_m"]
-            agg_s = strat.groupby("fund_category").agg(weighted_sum=("weighted", "sum"), total_cap=("fund_size_usd_m", "sum"), n=("fund_name", "count")).reset_index()
-            agg_s["wtd_dpi"] = agg_s["weighted_sum"] / agg_s["total_cap"]
-            agg_s = agg_s.sort_values("wtd_dpi", ascending=True)
-            colors = [CATEGORY_COLORS.get(c, "#9CA3AF") for c in agg_s["fund_category"]]
-            fig_strat = go.Figure()
-            fig_strat.add_trace(
-                go.Bar(
-                    y=agg_s["fund_category"],
-                    x=agg_s["wtd_dpi"],
-                    orientation="h",
-                    marker_color=colors,
-                    customdata=agg_s[["total_cap", "n"]].values,
-                    hovertemplate="<b>%{y}</b><br>Wtd DPI: %{x:.2f}×<br>Capital: $%{customdata[0]:.0f}M<br>Funds: %{customdata[1]}<extra></extra>",
-                )
-            )
-            fig_strat.add_vline(x=1.0, line_dash="dash", line_color="#9CA3AF", annotation_text="1.0×", annotation_font_size=9)
-            fig_strat.update_layout(
-                height=450,
-                template="plotly_white",
-                xaxis=dict(title="Capital-Weighted Avg Net DPI (×)", gridcolor="#F3F4F6"),
-                yaxis=dict(gridcolor="#F3F4F6"),
-                plot_bgcolor="#FFFFFF",
-                paper_bgcolor="#FFFFFF",
-                font=dict(family="Inter", size=11, color="#111827"),
-                margin=dict(t=20, l=20),
-            )
-            style_chart_readability(fig_strat)
-            st.plotly_chart(fig_strat, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-            st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">Capital-weighted: larger funds influence the average proportionally. LP-disclosed funds only.</div>", unsafe_allow_html=True)
-        else:
-            st.info("Insufficient data for strategy returns analysis.")
-
-    except Exception as e:
-        st.warning("Additional GP Performance Trajectories are not available for this data slice.")
-
-
-    st.markdown('<div class="section-label">05 / WITHIN-GP VARIANCE — IRR RANGE (UTIMCO)</div>', unsafe_allow_html=True)
-    var_df = df[
-        (df["source"].astype(str) == "UTIMCO")
-        & df["net_irr"].notna()
-        & df["canonical_gp"].notna()
-    ].copy()
-    gp_stats = (
-        var_df.groupby("canonical_gp")
-        .agg(min_irr=("net_irr", "min"), max_irr=("net_irr", "max"), n=("fund_name", "count"))
+    vy = (
+        lp_full[lp_full["vintage_year"].notna() & lp_full["dpi"].notna()]
+        .groupby("vintage_year")
+        .agg(med_dpi=("dpi","median"), med_tvpi=("tvpi","median"), n=("fund_name","count"))
         .reset_index()
     )
-    gp_stats = gp_stats[gp_stats["n"] >= 2].copy()
-    if not gp_stats.empty:
-        gp_stats["range"] = gp_stats["max_irr"] - gp_stats["min_irr"]
-        gp_stats = gp_stats.sort_values("range", ascending=True)
-        fig_var = go.Figure()
-        fig_var.add_trace(
-            go.Scatter(
-                x=(gp_stats["min_irr"] * 100),
-                y=gp_stats["canonical_gp"],
-                mode="markers",
-                marker=dict(color="#9CA3AF", size=8),
-                name="Min IRR",
-            )
-        )
-        fig_var.add_trace(
-            go.Scatter(
-                x=(gp_stats["max_irr"] * 100),
-                y=gp_stats["canonical_gp"],
-                mode="markers",
-                marker=dict(color="#E8571F", size=9),
-                name="Max IRR",
-            )
-        )
-        for _, r in gp_stats.iterrows():
-            fig_var.add_shape(
-                type="line",
-                x0=float(r["min_irr"]) * 100,
-                x1=float(r["max_irr"]) * 100,
-                y0=r["canonical_gp"],
-                y1=r["canonical_gp"],
-                line=dict(color="#CBD5E1", width=2),
-            )
-        variance_annotations = {
-            "Union Square Ventures": "USV: 22.86× DPI to near-zero DPI across vintages",
-            "ARCH Venture Partners": "ARCH: 4.64× DPI (Fund VII) vs 0.00× (Fund XII)",
-            "True Ventures": "True: 4.29× DPI (Fund IV) vs 0.01× (Fund VI)",
-        }
-        for gp, note in variance_annotations.items():
-            sub = gp_stats[gp_stats["canonical_gp"] == gp]
-            if sub.empty:
-                continue
-            r0 = sub.iloc[0]
-            fig_var.add_annotation(
-                x=float(r0["max_irr"]) * 100.0,
-                y=gp,
-                text=note,
-                showarrow=False,
-                xshift=10,
-                align="left",
-                font=dict(size=9, color="#6B7280", family="IBM Plex Mono"),
-                bgcolor="rgba(255,255,255,0.75)",
-            )
-        fig_var.update_layout(
-            height=max(320, 28 * len(gp_stats) + 120),
-            template="plotly_white",
-            xaxis=dict(title="Net IRR (%)", gridcolor="#F3F4F6"),
-            yaxis=dict(title="", gridcolor="#FFFFFF"),
-            legend=dict(orientation="h"),
-            margin=dict(l=90, r=30, t=20, b=50),
-            plot_bgcolor="#FFFFFF",
-            paper_bgcolor="#FFFFFF",
-            font=dict(color="#111827"),
-        )
-        style_chart_readability(fig_var)
-        st.plotly_chart(fig_var, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
-
-        st.markdown(
-            """
-        <div class="insight-box">
-            <div class="insight-label">● VARIANCE READ</div>
-            <div class="insight-body">
-                UTIMCO fund-by-fund history shows large dispersion inside the same manager franchise.
-                USV, ARCH, and True Ventures each show wide internal ranges across vintages.
-            </div>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
-
-    st.markdown(
-        """
-    <div class="insight-box" style="margin-top:2rem">
-        <div class="insight-label">● ANALYST INSIGHT — MARKET INTEL vs LP DATA</div>
-        <div class="insight-body">
-            <strong>The gross/net gap is the most underappreciated number in VC.</strong>
-            a16z Fund III shows 15.7× gross TVPI vs 11.3× net — a 28% reduction in returns
-            from fees and carry. Founders Fund's early funds show extraordinary DPI figures
-            (18.6× for FFII), but these reflect $227M vehicles with extreme concentration
-            in Palantir and SpaceX. At $1.4B+ fund sizes (FFVI onward), DPI collapses to
-            near-zero — the same structural challenge every large fund faces.
-            <br><br>
-            <em>The market intelligence data that circulates through the ecosystem tends to
-            cluster above the CA top-quartile line. Whether this reflects genuine outperformance
-            by the firms whose numbers circulate, or selection bias in what gets leaked and
-            forwarded, is difficult to disentangle. Treat it as a directional signal, not
-            a verified benchmark.</em>
-        </div>
-    </div>
-    """,
-        unsafe_allow_html=True,
+    pr = (
+        lp_full[lp_full["vintage_year"].notna() & lp_full["dpi"].notna() & lp_full["tvpi"].notna()]
+        .groupby("vintage_year")
+        .agg(med_dpi=("dpi","median"), med_tvpi=("tvpi","median"), n=("fund_name","count"))
+        .reset_index()
     )
+    return vy, pr
+
+
+def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_rows: pd.DataFrame = None):
+    # A. LOADING ANIMATION
+    loader_slot = st.empty()
+    loader_slot.markdown("""
+    <div class="ins-loader">
+      <div class="ins-loader-mark">D</div>
+      <div>
+        <div class="ins-loader-text">Analysing fund records</div>
+        <div class="ins-loader-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # B. DATA PREPARATION
+    # ── Base slices ──────────────────────────────────────────
+    lp_full = df_master[df_master["data_source_type"] == "LP-Disclosed"].copy()
+    
+    lp_irr = df_master[
+        (df_master["data_source_type"] == "LP-Disclosed") &
+        (df_master["irr_meaningful"] == True)
+    ].copy()
+    lp_irr = lp_irr[lp_irr["net_irr"].notna() & (lp_irr["net_irr"].abs() < 2.0)]
+    
+    # ── Hero stats ────────────────────────────────────────────
+    total_funds = len(df_master)
+    
+    post17 = lp_full[lp_full["vintage_year"].notna() & (lp_full["vintage_year"] >= 2017) & lp_full["dpi"].notna()]
+    drought_pct = int((post17["dpi"] < 0.5).mean() * 100) if len(post17) > 0 else 100
+    
+    top_dpi_df = lp_full[lp_full["dpi"].notna()].sort_values("dpi", ascending=False)
+    if not top_dpi_df.empty:
+        top_dpi_val  = float(top_dpi_df.iloc[0]["dpi"])
+        top_dpi_fund = str(top_dpi_df.iloc[0].get("fund_name", ""))
+        top_dpi_gp   = str(top_dpi_df.iloc[0].get("canonical_gp", ""))
+    else:
+        top_dpi_val, top_dpi_fund, top_dpi_gp = 0.0, "", ""
+    
+    A16Z_DRAG = 4.4
+    
+    # ── Section 1: DPI by vintage ────────────────────────────
+    _df_hash = str(len(df_master)) + str(df_master.columns.tolist())
+    _vy_cached, _pr_cached = _precompute_insights(_df_hash, df_master, bench)
+    
+    vy = _vy_cached[
+        (_vy_cached["vintage_year"] >= 2007) &
+        (_vy_cached["vintage_year"] <= 2022) &
+        (_vy_cached["n"] >= 3)
+    ].sort_values("vintage_year").copy()
+    vy["vintage_year"] = vy["vintage_year"].astype(int)
+    
+    # ── Section 1: Vintage pills ───────────
+    PILL_YEARS = [2010, 2011, 2012, 2014, 2015, 2017, 2019, 2021]
+    pill_data = {}
+    for yr in PILL_YEARS:
+        rows = lp_full[lp_full["vintage_year"] == yr]["dpi"].dropna()
+        pill_data[yr] = float(rows.median()) if len(rows) >= 2 else None
+    
+    # ── Section 2: DPI Leaderboard ──
+    leaders = (
+        lp_full[lp_full["dpi"].notna() & (lp_full["dpi"] > 0)]
+        .sort_values("dpi", ascending=False)
+        .head(10)
+        .reset_index(drop=True)
+    )
+    max_leader_dpi = float(leaders["dpi"].max()) if not leaders.empty else 1.0
+    
+    # ── Section 3: Paper vs Real ────────────────
+    pr = _pr_cached[
+        (_pr_cached["vintage_year"] >= 2007) &
+        (_pr_cached["vintage_year"] <= 2022) &
+        (_pr_cached["n"] >= 2)
+    ].sort_values("vintage_year").copy()
+    pr["vintage_year"] = pr["vintage_year"].astype(int)
+    pr["unrealized"] = (pr["med_tvpi"] - pr["med_dpi"]).clip(lower=0)
+    
+    # ── Section 3: Realization rate bars ───
+    REAL_YEARS = [2010, 2012, 2014, 2016, 2018, 2020, 2022]
+    real_rates = {}
+    for yr in REAL_YEARS:
+        rows = lp_full[lp_full["vintage_year"] == yr]["dpi"].dropna()
+        if len(rows) >= 2:
+            real_rates[yr] = min(int(float(rows.median()) * 100), 100)
+        else:
+            real_rates[yr] = None
+    
+    # ── Section 4: a16z Fee Drag ─────────────────
+    A16Z_FUNDS = [
+        {"fund": "AH Fund I",  "vintage": 2009, "size_m":  300, "gross_tvpi":  9.3, "net_tvpi":  6.9, "net_dpi": 6.0},
+        {"fund": "AH Fund II", "vintage": 2010, "size_m":  656, "gross_tvpi":  4.9, "net_tvpi":  3.7, "net_dpi": 3.5},
+        {"fund": "AH Annex",   "vintage": 2011, "size_m":  204, "gross_tvpi":  7.2, "net_tvpi":  5.4, "net_dpi": 5.1},
+        {"fund": "AH Fund III","vintage": 2012, "size_m":  997, "gross_tvpi": 15.7, "net_tvpi": 11.3, "net_dpi": 5.5},
+        {"fund": "AH Fund IV", "vintage": 2014, "size_m": 1173, "gross_tvpi":  5.5, "net_tvpi":  4.1, "net_dpi": 3.0},
+        {"fund": "AH Fund V",  "vintage": 2017, "size_m": 1189, "gross_tvpi":  4.0, "net_tvpi":  3.1, "net_dpi": 0.3},
+    ]
+    
+    # ── Section 5: Manager variance ──────
+    var_df = df_master[
+        (df_master["source"].astype(str).str.upper() == "UTIMCO") &
+        df_master["net_irr"].notna() &
+        df_master["canonical_gp"].notna()
+    ].copy()
+    gp_var = (
+        var_df.groupby("canonical_gp")
+        .agg(min_irr=("net_irr","min"), max_irr=("net_irr","max"), n=("fund_name","count"))
+        .reset_index()
+    )
+    gp_var = (
+        gp_var[gp_var["n"] >= 2]
+        .sort_values("max_irr", ascending=False)
+        .head(7)
+        .reset_index(drop=True)
+    )
+    gp_irr_axis_min = float(gp_var["min_irr"].min()) if not gp_var.empty else -0.05
+    gp_irr_axis_max = float(gp_var["max_irr"].max()) if not gp_var.empty else 0.55
+    gp_irr_axis_span = max(gp_irr_axis_max - gp_irr_axis_min, 0.01)
+    
+    # C. CLEAR LOADER
+    loader_slot.empty()
+    
+    # D. PAGE HERO
+    _render_html("""
+    <div class="ins-eyebrow">Insights — LP Disclosure Data</div>
+    <div class="ins-headline">
+      Most VC funds haven't returned your money yet.<br>
+      <em>Here's who has.</em>
+    </div>
+    <div class="ins-deck">
+      We analysed public LP disclosures from CalPERS, CalSTRS, WSIB, UC Regents, UTIMCO, 
+      and others — plus select market intelligence — to surface the funds that actually 
+      returned cash. DPI first. Everything else is context.
+    </div>
+    """)
+    
+    # E. HERO STAT ROW
+    top_dpi_short = (top_dpi_fund[:28] + "…") if len(top_dpi_fund) > 28 else top_dpi_fund
+    
+    _render_html(f"""
+    <div class="ins-stat-row ins-section">
+      <div class="ins-stat-cell">
+        <div class="ins-stat-label">Funds Indexed</div>
+        <div class="ins-stat-value" id="st-funds">{total_funds:,}</div>
+        <div class="ins-stat-sub">Across 9 institutional LP sources</div>
+      </div>
+      <div class="ins-stat-cell">
+        <div class="ins-stat-label">Post-2017 Funds with DPI &lt; 0.5×</div>
+        <div class="ins-stat-value" id="st-drought">{drought_pct}%</div>
+        <div class="ins-stat-sub">Every post-2017 fund is cash-light</div>
+      </div>
+      <div class="ins-stat-cell">
+        <div class="ins-stat-label">Highest LP-Disclosed DPI</div>
+        <div class="ins-stat-value" id="st-dpi">{top_dpi_val:.2f}×</div>
+        <div class="ins-stat-sub">{html.escape(top_dpi_short)}</div>
+      </div>
+      <div class="ins-stat-cell accent">
+        <div class="ins-stat-label">a16z Fund III Fee Drag</div>
+        <div class="ins-stat-value" id="st-drag">{A16Z_DRAG}×</div>
+        <div class="ins-stat-sub">Gross 15.7× → Net 11.3× on $997M</div>
+      </div>
+    </div>
+    """)
+    
+    _render_html("""
+    <script>
+    (function() {
+      function animateCounter(id, end, decimals, suffix, duration) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var start = 0, startTime = null;
+        function step(ts) {
+          if (!startTime) startTime = ts;
+          var progress = Math.min((ts - startTime) / duration, 1);
+          var ease = 1 - Math.pow(1 - progress, 3);
+          var val = start + (end - start) * ease;
+          el.textContent = (decimals > 0 ? val.toFixed(decimals) : Math.round(val).toLocaleString()) + suffix;
+          if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      setTimeout(function() {
+        animateCounter('st-funds',  """ + str(total_funds) + """, 0, '+', 1200);
+        animateCounter('st-drought',""" + str(drought_pct) + """, 0, '%', 900);
+        animateCounter('st-dpi',    """ + str(round(top_dpi_val, 2)) + """, 2, '×', 1400);
+        animateCounter('st-drag',   """ + str(A16Z_DRAG) + """, 1, '×', 1000);
+      }, 120);
+    })();
+    </script>
+    """)
+    
+    # F. SECTION 1 — DPI BY VINTAGE
+    _render_html("""
+    <div class="ins-section ins-section-rule" style="margin-top: 56px;">
+      <div class="ins-section-num">01 / DPI by Vintage</div>
+      <div class="ins-section-line"></div>
+    </div>
+    <div class="ins-chart-headline">
+      The DPI drought is real — and it starts exactly at <em>2017</em>
+    </div>
+    <div class="ins-chart-standfirst">
+      Median DPI by vintage tells the clearest story in this dataset. Pre-2015 funds have broadly 
+      returned capital. After 2016, the median fund has returned less than 20 cents per dollar 
+      invested — not because they're bad funds, but because distributions haven't come. 
+      IRR can look strong while DPI flatlines.
+    </div>
+    """)
+    
+    bar_colors = []
+    for v in vy["vintage_year"]:
+        if v <= 2013:
+            bar_colors.append("#E8571F")
+        elif v <= 2016:
+            bar_colors.append("#D97706")
+        else:
+            bar_colors.append("#CBD5E1")
+    
+    fig1 = go.Figure()
+    fig1.add_trace(go.Bar(
+        x=vy["vintage_year"].astype(str),
+        y=vy["med_dpi"].round(2),
+        name="Median DPI",
+        marker_color=bar_colors,
+        marker_line_width=0,
+        width=0.55,
+        hovertemplate="<b>Vintage %{x}</b><br>Median DPI: %{y:.2f}×<br><i>n=%{customdata} funds</i><extra></extra>",
+        customdata=vy["n"],
+    ))
+    fig1.add_trace(go.Scatter(
+        x=vy["vintage_year"].astype(str),
+        y=vy["med_tvpi"].round(2),
+        name="Median TVPI",
+        mode="lines+markers",
+        line=dict(color="#CBD5E1", width=2, dash="dot"),
+        marker=dict(size=5, color="#CBD5E1"),
+        hovertemplate="Vintage %{x}<br>Median TVPI: %{y:.2f}×<extra></extra>",
+    ))
+    fig1.update_layout(
+        height=240,
+        plot_bgcolor="#FAFAFA", paper_bgcolor="#FAFAFA",
+        margin=dict(l=10, r=10, t=10, b=10),
+        legend=dict(
+            orientation="h", y=1.12, x=1, xanchor="right",
+            font=dict(family="DM Mono, monospace", size=10),
+            bgcolor="rgba(0,0,0,0)",
+        ),
+        xaxis=dict(gridcolor="#F3F4F6", title="", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
+        yaxis=dict(gridcolor="#F3F4F6", title="", ticksuffix="×", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
+        bargap=0.25,
+    )
+    st.markdown('<div class="ins-chart-frame">', unsafe_allow_html=True)
+    st.plotly_chart(fig1, use_container_width=True, config={"displayModeBar": False})
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    _render_html("""
+    <div class="ins-takeaway">
+      <strong>What this means for LPs:</strong> TVPI looks healthier than it is. The 2017–2021 
+      vintage cohort has high paper marks but almost no cash returned. IRR figures for these 
+      vintages are still directionally meaningful, but DPI is the only number that tells you 
+      whether an LP can actually redeploy capital.
+    </div>
+    <div class="ins-footnote">Source: LP-disclosed data (CalPERS, CalSTRS, WSIB, UC Regents, UTIMCO, others). 
+    Bars = median DPI per vintage (n ≥ 3 funds). Line = median TVPI. Orange = pre-2014 · Amber = 2014–2016 · Gray = post-2016.</div>
+    """)
+    
+    # Vintage pills
+    def pill_class(dpi_val):
+        if dpi_val is None: return "p-none"
+        if dpi_val >= 2.0:  return "p-strong"
+        if dpi_val >= 1.0:  return "p-mid"
+        if dpi_val >= 0.1:  return "p-low"
+        return "p-none"
+    
+    def pill_label(dpi_val):
+        if dpi_val is None: return "No data"
+        if dpi_val >= 2.0:  return "Realized"
+        if dpi_val >= 1.0:  return "Returning"
+        if dpi_val >= 0.1:  return "Early"
+        return "Cash-light"
+    
+    pills_html = '<div class="ins-pill-grid">'
+    for yr in PILL_YEARS:
+        v = pill_data.get(yr)
+        cls = pill_class(v)
+        lbl = pill_label(v)
+        val_str = f"{v:.2f}×" if v is not None else "—"
+        pills_html += f"""
+        <div class="ins-pill {cls}">
+          <div class="ins-pill-year">{yr}</div>
+          <div class="ins-pill-val">{val_str}</div>
+          <div class="ins-pill-label">{lbl}</div>
+        </div>"""
+    pills_html += '</div>'
+    
+    _render_html(f"""
+    <div style="margin-top: 36px;">
+      <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
+        How each vintage looks at a glance
+      </div>
+      <div class="ins-chart-standfirst" style="margin-bottom:14px;">
+        Median DPI per vintage · colour = realization level · LP-disclosed only
+      </div>
+      {pills_html}
+      <div class="ins-footnote">Orange = 2.0×+ DPI · Green = 1.0–2.0× · Amber = 0.1–1.0× · Gray = &lt;0.1× or insufficient data</div>
+    </div>
+    """)
+    
+    # G. SECTION 2 — DPI LEADERBOARD
+    _render_html("""
+    <div class="ins-section ins-section-rule" style="margin-top: 64px;">
+      <div class="ins-section-num">02 / Cash Return Leaders</div>
+      <div class="ins-section-line"></div>
+    </div>
+    <div class="ins-chart-headline">
+      The funds that actually returned the money. <em>LP-disclosed only.</em>
+    </div>
+    <div class="ins-chart-standfirst">
+      Ranked by DPI — capital returned as a multiple of what was invested. These are not marks. 
+      They are wire transfers. Every number here came from a public pension disclosure filed under FOIA.
+    </div>
+    """)
+    
+    lb_rows_html = ""
+    for i, row in leaders.iterrows():
+        fund_name  = html.escape(str(row.get("fund_name", ""))[:40])
+        gp         = html.escape(str(row.get("canonical_gp", ""))[:30])
+        vintage    = "—" if pd.isna(row.get("vintage_year")) else str(int(float(row["vintage_year"])))
+        dpi_val    = float(row.get("dpi")) if pd.notna(row.get("dpi")) else None
+        tvpi_val   = float(row.get("tvpi")) if pd.notna(row.get("tvpi")) else None
+        irr_val    = float(row.get("net_irr")) if pd.notna(row.get("net_irr")) else None
+        
+        dpi_str    = f"{dpi_val:.2f}×"  if dpi_val is not None  else "—"
+        tvpi_str   = f"{tvpi_val:.2f}×" if tvpi_val is not None else "—"
+        irr_str    = f"{irr_val*100:.1f}%" if irr_val is not None else "—"
+        irr_cls    = "green-col" if irr_val is not None and irr_val > 0.15 else "mono"
+        bar_pct    = int((dpi_val / max_leader_dpi) * 100) if dpi_val is not None and max_leader_dpi > 0 else 0
+        
+        lb_rows_html += f"""
+        <tr>
+          <td class="num">{str(i+1).zfill(2)}</td>
+          <td>
+            <div class="ins-fund-name">{fund_name}</div>
+            <div class="ins-fund-gp">{gp} · {vintage}</div>
+            <div class="ins-bar-wrap"><div class="ins-bar-fill" style="width:{bar_pct}%"></div></div>
+          </td>
+          <td class="mono">{tvpi_str}</td>
+          <td class="dpi-col">{dpi_str}</td>
+          <td class="{irr_cls}">{irr_str}</td>
+        </tr>"""
+    
+    _render_html(f"""
+    <div class="ins-chart-frame">
+      <table class="ins-lb">
+        <thead>
+          <tr>
+            <th style="width:32px">#</th>
+            <th>Fund / Manager</th>
+            <th class="r">TVPI</th>
+            <th class="r" style="color:#E8571F">DPI ▲</th>
+            <th class="r">Net IRR</th>
+          </tr>
+        </thead>
+        <tbody>{lb_rows_html}</tbody>
+      </table>
+    </div>
+    """)
+    
+    top1 = leaders.iloc[0] if len(leaders) >= 1 else None
+    top2 = leaders.iloc[1] if len(leaders) >= 2 else None
+    
+    if top1 is not None and top2 is not None:
+        t1_name = html.escape(str(top1.get("canonical_gp",""))[:30])
+        t1_dpi  = f"{float(top1['dpi']):.2f}×"
+        t2_name = html.escape(str(top2.get("canonical_gp",""))[:30])
+        t2_dpi  = f"{float(top2['dpi']):.2f}×"
+        _render_html(f"""
+        <div class="ins-callouts">
+          <div class="ins-callout featured">
+            <div class="ins-callout-eye">Dark horse of the dataset</div>
+            <div class="ins-callout-num">{t2_dpi}</div>
+            <div class="ins-callout-body">
+              {t2_name} DPI — a smaller, less-visible manager that surfaces as a top cash returner. 
+              Public LP records consistently surface leaders that brand-based narratives miss entirely.
+            </div>
+          </div>
+          <div class="ins-callout">
+            <div class="ins-callout-eye">The realization pattern</div>
+            <div class="ins-callout-num" style="font-size:24px;color:#374151;">Pre-2015 vintage</div>
+            <div class="ins-callout-body">
+              Every fund in the top 10 is a pre-2015 vintage. The top cohort is concentrated where 
+              realization cycles have fully played out — not where brand reputation is strongest.
+            </div>
+          </div>
+        </div>
+        """)
+    
+    _render_html('<div class="ins-footnote" style="margin-top:8px;">Source: LP-disclosed institutional data only (FOIA). DPI = capital_distributed / capital_contributed as reported by LP. Market intelligence funds excluded.</div>')
+    
+    # H. SECTION 3 — PAPER vs REAL
+    _render_html("""
+    <div class="ins-section ins-section-rule" style="margin-top: 64px;">
+      <div class="ins-section-num">03 / Paper vs Cash</div>
+      <div class="ins-section-line"></div>
+    </div>
+    <div class="ins-chart-headline">
+      The gap between paper value and actual cash<br>has never been <em>wider than right now</em>
+    </div>
+    <div class="ins-chart-standfirst">
+      TVPI measures the total value of a fund — distributions plus remaining NAV. DPI measures only 
+      what has been wired to LPs. The gap between them is unrealized. In 2020–2022 vintages, 
+      that gap is nearly everything.
+    </div>
+    """)
+    
+    fig3 = go.Figure()
+    fig3.add_trace(go.Bar(
+        x=pr["vintage_year"].astype(str),
+        y=pr["med_dpi"].round(2),
+        name="DPI (Cash Returned)",
+        marker_color="#E8571F",
+        marker_line_width=0,
+        hovertemplate="<b>Vintage %{x}</b><br>Median DPI: %{y:.2f}×<extra></extra>",
+    ))
+    fig3.add_trace(go.Bar(
+        x=pr["vintage_year"].astype(str),
+        y=pr["unrealized"].round(2),
+        name="Unrealized (TVPI − DPI)",
+        marker_color="#E5E7EB",
+        marker_line_width=0,
+        hovertemplate="Vintage %{x}<br>Unrealized: %{y:.2f}×<extra></extra>",
+    ))
+    fig3.update_layout(
+        barmode="stack", height=260,
+        plot_bgcolor="#FAFAFA", paper_bgcolor="#FAFAFA",
+        margin=dict(l=10, r=10, t=10, b=10),
+        legend=dict(
+            orientation="h", y=1.12, x=1, xanchor="right",
+            font=dict(family="DM Mono, monospace", size=10),
+            bgcolor="rgba(0,0,0,0)",
+        ),
+        xaxis=dict(gridcolor="#F3F4F6", title="", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
+        yaxis=dict(gridcolor="#F3F4F6", title="", ticksuffix="×", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
+    )
+    st.markdown('<div class="ins-chart-frame">', unsafe_allow_html=True)
+    st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    _render_html("""
+    <div class="ins-takeaway">
+      <strong>The key tension:</strong> Strong TVPI without DPI means LPs are sitting on paper gains 
+      that depend on exits that haven't happened — and may not at current marks. 
+      Post-2020 vintages show median TVPI above 1.0× with DPI near zero. Those marks will be 
+      tested when funds need to actually return capital.
+    </div>
+    <div class="ins-footnote">Bars show dataset median. TVPI includes both distributed capital (DPI) and remaining NAV at LP-reported mark.</div>
+    """)
+    
+    real_bar_rows = ""
+    for yr in REAL_YEARS:
+        rate = real_rates.get(yr)
+        if rate is None:
+            continue
+        if rate >= 80:
+            fill_color = "#E8571F"
+            pct_color  = "#E8571F"
+        elif rate >= 40:
+            fill_color = "#D97706"
+            pct_color  = "#D97706"
+        else:
+            fill_color = "#E5E7EB"
+            pct_color  = "#9CA3AF"
+        
+        real_bar_rows += f"""
+        <div class="ins-real-row">
+          <div class="ins-real-year">{yr}</div>
+          <div class="ins-real-track">
+            <div class="ins-real-fill" style="width:{rate}%; background:{fill_color}"></div>
+          </div>
+          <div class="ins-real-pct" style="color:{pct_color}">{rate}%</div>
+        </div>"""
+    
+    _render_html(f"""
+    <div style="margin-top: 36px;">
+      <div class="ins-chart-headline" style="font-size:18px; margin-bottom:6px;">
+        What percentage of capital has actually been returned?
+      </div>
+      <div class="ins-chart-standfirst" style="margin-bottom:16px;">
+        Realization rate = median DPI per vintage expressed as % (1.0× DPI = 100%). Capped at 100%.
+      </div>
+      <div class="ins-chart-frame" style="padding: 18px 24px;">
+        <div class="ins-real-row" style="padding-bottom:8px; border-bottom:2px solid #111827; margin-bottom:6px;">
+          <div class="ins-footnote" style="margin:0">Vintage</div>
+          <div class="ins-footnote" style="margin:0">Realization Rate</div>
+          <div class="ins-footnote" style="margin:0;text-align:right">%</div>
+        </div>
+        {real_bar_rows}
+      </div>
+      <div class="ins-footnote">LP-disclosed funds · Orange = strong realization · Gray = minimal distributions yet</div>
+    </div>
+    """)
+    
+    # I. SECTION 4 — FEE DRAG
+    _render_html("""
+    <div class="ins-section ins-section-rule" style="margin-top: 64px;">
+      <div class="ins-section-num">04 / The Gross-Net Gap</div>
+      <div class="ins-section-line"></div>
+    </div>
+    <div class="ins-chart-headline">
+      a16z Fund III: 15.7× gross became <em>11.3× net</em>.<br>
+      That's ~$4.4B transferred from LPs to the GP.
+    </div>
+    <div class="ins-chart-standfirst">
+      a16z is the only firm in this dataset with both gross and net metrics disclosed. The gap is 
+      not unusual — it is what standard 2/20 economics look like when a fund performs well. 
+      But it is rarely shown this concretely. Fees and carry are highest in absolute dollar terms 
+      precisely when performance is strongest.
+    </div>
+    """)
+    
+    gross_vals = [f["gross_tvpi"] for f in A16Z_FUNDS]
+    net_vals   = [f["net_tvpi"]   for f in A16Z_FUNDS]
+    dpi_vals   = [f["net_dpi"]    for f in A16Z_FUNDS]
+    fund_labels= [f"{f['fund']}\n{f['vintage']} · ${f['size_m']:,}M" for f in A16Z_FUNDS]
+    
+    fig4 = go.Figure()
+    fig4.add_trace(go.Bar(
+        name="Gross TVPI",
+        x=fund_labels, y=gross_vals,
+        marker_color="#E5E7EB", marker_line_width=0,
+        hovertemplate="<b>%{x}</b><br>Gross TVPI: %{y:.1f}×<extra></extra>",
+    ))
+    fig4.add_trace(go.Bar(
+        name="Net TVPI",
+        x=fund_labels, y=net_vals,
+        marker_color="#E8571F", marker_line_width=0,
+        hovertemplate="<b>%{x}</b><br>Net TVPI: %{y:.1f}×<extra></extra>",
+    ))
+    fig4.add_trace(go.Bar(
+        name="Net DPI",
+        x=fund_labels, y=dpi_vals,
+        marker_color="#2C3E50", marker_line_width=0,
+        hovertemplate="<b>%{x}</b><br>Net DPI: %{y:.1f}×<extra></extra>",
+    ))
+    fig4.update_layout(
+        barmode="group", height=260,
+        plot_bgcolor="#FAFAFA", paper_bgcolor="#FAFAFA",
+        margin=dict(l=10, r=10, t=10, b=10),
+        legend=dict(
+            orientation="h", y=1.12, x=1, xanchor="right",
+            font=dict(family="DM Mono, monospace", size=10),
+            bgcolor="rgba(0,0,0,0)",
+        ),
+        xaxis=dict(gridcolor="#F3F4F6", title="", tickfont=dict(family="DM Mono, monospace", size=9), fixedrange=True),
+        yaxis=dict(gridcolor="#F3F4F6", title="", ticksuffix="×", tickfont=dict(family="DM Mono, monospace", size=10), fixedrange=True),
+        bargap=0.2, bargroupgap=0.05,
+    )
+    st.markdown('<div class="ins-chart-frame">', unsafe_allow_html=True)
+    st.plotly_chart(fig4, use_container_width=True, config={"displayModeBar": False})
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    _render_html("""
+    <div class="ins-takeaway">
+      <strong>The AH Fund V story is the one LPs should study:</strong> Net DPI of only 0.3× despite 
+      Net TVPI of 3.1×, nearly a decade in. LPs have received less than a third of their committed 
+      capital in cash. High IRR and high TVPI can coexist with genuine LP frustration when 
+      distributions don't materialise.
+    </div>
+    <div class="ins-footnote">Source: a16z firm disclosure (Sep 2025). Gray = Gross TVPI · Orange = Net TVPI · Dark = Net DPI. 
+    Difference between gray and orange = fees + carry transferred from LP to GP. a16z is the only firm in this dataset with both gross and net disclosed.</div>
+    """)
+    
+    # J. SECTION 5 — MANAGER VARIANCE
+    _render_html("""
+    <div class="ins-section ins-section-rule" style="margin-top: 64px;">
+      <div class="ins-section-num">05 / Within-Manager Variance</div>
+      <div class="ins-section-line"></div>
+    </div>
+    <div class="ins-chart-headline">
+      The brand is consistent. <em>The returns aren't.</em>
+    </div>
+    <div class="ins-chart-standfirst">
+      Same manager, same team, wildly different outcomes across vintages. Vintage timing — and the 
+      macro cycle a fund invests through — can matter as much as manager quality. The range between 
+      a manager's best and worst fund is often larger than the spread between top and median managers.
+    </div>
+    """)
+    
+    if not gp_var.empty:
+        mgr_rows_html = ""
+        for _, r in gp_var.iterrows():
+            gp_name  = html.escape(str(r["canonical_gp"])[:28])
+            min_irr  = float(r["min_irr"])
+            max_irr  = float(r["max_irr"])
+            irr_span = gp_irr_axis_span
+            
+            left_pct  = ((min_irr - gp_irr_axis_min) / irr_span * 100)
+            right_pct = ((max_irr - gp_irr_axis_min) / irr_span * 100)
+            fill_w    = right_pct - left_pct
+            
+            min_str = f"{min_irr*100:.1f}%"
+            max_str = f"{max_irr*100:.1f}%"
+            
+            mgr_rows_html += f"""
+            <div class="ins-mgr-row">
+              <div class="ins-mgr-name">{gp_name}</div>
+              <div class="ins-mgr-range">
+                <div class="ins-mgr-track"></div>
+                <div class="ins-mgr-fill" style="left:{left_pct:.1f}%;width:{fill_w:.1f}%"></div>
+                <div class="ins-mgr-dot" style="left:calc({left_pct:.1f}% - 4px);background:#9CA3AF"></div>
+                <div class="ins-mgr-dot" style="left:calc({right_pct:.1f}% - 4px);background:#E8571F"></div>
+              </div>
+              <div class="ins-mgr-val max">{max_str}</div>
+              <div class="ins-mgr-val min">{min_str}</div>
+            </div>"""
+        
+        _render_html(f"""
+        <div class="ins-chart-frame" style="padding: 20px 28px;">
+          <div class="ins-mgr-row header">
+            <div class="ins-mgr-hdr">Manager</div>
+            <div class="ins-mgr-hdr">Net IRR Range — best fund → worst fund</div>
+            <div class="ins-mgr-hdr r">Best</div>
+            <div class="ins-mgr-hdr r">Worst</div>
+          </div>
+          {mgr_rows_html}
+        </div>
+        """)
+        
+        _render_html("""
+        <div class="ins-takeaway">
+          <strong>Vintage timing is a first-order variable.</strong> USV's range spans from 52% IRR 
+          (2012 vintage — caught the Coinbase cycle) to single-digit IRR on later funds. This isn't 
+          a failure of the manager. It is the structural reality of VC. Picking the manager is one 
+          decision. Picking which fund cycle to back is another entirely.
+        </div>
+        <div class="ins-footnote">Source: UTIMCO LP disclosure (2023). Net IRR stored as decimal in dataset. 
+        Range = min to max net IRR across all funds with n ≥ 2 from that manager in UTIMCO records.</div>
+        """)
+        
+        _render_html("""
+        <div class="ins-callouts" style="margin-top: 28px;">
+          <div class="ins-callout">
+            <div class="ins-callout-eye">The China risk signal</div>
+            <div class="ins-callout-num" style="font-size:22px;color:#374151;">Same GP.<br>Different macro.</div>
+            <div class="ins-callout-body">HongShan 2010 vintage shows strong realized outcomes. 
+            HongShan 2020 vintage sits near sub-1× with weaker IRR. Same platform, same team — 
+            but the regulatory and exit environment shifted entirely between those fund cycles.</div>
+          </div>
+          <div class="ins-callout">
+            <div class="ins-callout-eye">Selection bias in market intelligence</div>
+            <div class="ins-callout-num" style="font-size:22px;color:#374151;">Above Q1.<br>Always?</div>
+            <div class="ins-callout-body">Market intelligence funds (a16z, Founders Fund, Social Capital) 
+            cluster above the Cambridge Associates Q1 line in this dataset. That may reflect genuine 
+            outperformance — or it may reflect that only strong numbers get circulated and forwarded. 
+            Treat as directional, not verified.</div>
+          </div>
+        </div>
+        """)
+    else:
+        st.info("Insufficient UTIMCO data for manager variance analysis.")
+
 
 
 def render_source_row(cfg: dict, row_count: int, coverage_label: str = "COVERAGE"):
@@ -2935,6 +2668,67 @@ def render_about():
     )
 
 
+def render_audit(df_lp: pd.DataFrame, df_mi: pd.DataFrame, df_master: pd.DataFrame):
+    render_page_header("⚙ AUDIT", "INTERNAL DATA VALIDATION AND PIPELINE HEALTH")
+    
+    # 1. Metrics
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.metric("Total LP Funds", len(df_lp))
+    with m2:
+        st.metric("Total MI Funds", len(df_mi))
+    with m3:
+        # Derived irr_meaningful
+        meaningful_count = (
+            df_master["vintage_year"].notna() & 
+            (df_master["vintage_year"] <= 2020) & 
+            df_master["net_irr"].notna()
+        ).sum()
+        st.metric("Meaningful IRR", meaningful_count)
+    with m4:
+        st.metric("Sources", df_lp["source"].nunique())
+
+    # 2. DPI Leaderboard
+    st.markdown('<div class="section-label">TOP 20 LP-DISCLOSED BY DPI</div>', unsafe_allow_html=True)
+    top_20 = df_lp.nlargest(20, "dpi")[["fund_name", "vintage_year", "dpi", "tvpi", "source"]]
+    st.dataframe(top_20, use_container_width=True)
+
+    # 3. Dynamic Validation Checks
+    st.markdown('<div class="section-label">ACTIVE ALERTS</div>', unsafe_allow_html=True)
+    
+    # FAIL Check: Insight Card 01 - DPI Drought (2017+ < 0.5x)
+    drought_fail = df_master[(df_master['vintage_year'] >= 2017) & (df_master['dpi'] >= 0.5)]
+    if not drought_fail.empty:
+        st.error(f"FAIL: DPI Drought Headline is incorrect. {len(drought_fail)} funds from 2017+ vintages have DPI ≥ 0.5x.")
+        st.dataframe(drought_fail[['fund_name', 'vintage_year', 'dpi', 'source']])
+
+    # FAIL Check: Dark Horse Missing
+    ia_exists = df_master['fund_name'].str.contains("IA Venture Strategies", case=False, na=False).any()
+    if not ia_exists:
+        st.error("FAIL: 'IA Venture Strategies' (Card 08 Dark Horse) is missing from vc_fund_master.csv. The card will link to a non-existent firm.")
+
+    # FAIL Check: Impossible DPI
+    bad_dpi = df_lp[df_lp['dpi'] > df_lp['tvpi'] + 0.05]
+    if not bad_dpi.empty:
+        st.error(f"FAIL: {len(bad_dpi)} rows found where DPI > TVPI (calculation error).")
+        st.dataframe(bad_dpi[['fund_name', 'dpi', 'tvpi', 'source']])
+
+    # WARN Check: Vintage Placeholder
+    placeholders = df_lp[(df_lp['tvpi'] == 1.0) & (df_lp['vintage_year'] <= 2018)]
+    if not placeholders.empty:
+        st.warning(f"WARN: {len(placeholders)} funds from 2018 or earlier still show TVPI = 1.0. Suspicious lack of marks.")
+
+    # WARN Check: Duplicate Dedup Key
+    dup_key = ["fund_name", "vintage_year", "source", "reporting_period"]
+    dups = df_lp[df_lp.duplicated(subset=dup_key, keep=False)]
+    if not dups.empty:
+        st.warning(f"WARN: {len(dups)} redundant records found in unified_funds.csv (dedup failed).")
+
+    if drought_fail.empty and bad_dpi.empty and dups.empty and ia_exists:
+        st.success("No critical validation failures detected in the current session.")
+
+
+
 def render_footer():
     _render_html(
         """
@@ -2949,11 +2743,15 @@ def render_footer():
                 <a href="https://shivambhotika.github.io/" target="_blank">Website</a>
             </div>
         </div>
-        """
+        <div style="text-align:center; padding:1.5rem 0; color:#9CA3AF; font-size:10px; font-family:'IBM Plex Mono',monospace; opacity:0.6;">
+            v0.9.5-PROD · LAYOUT-HOTFIX_03 · {0}
+        </div>
+        """.format(datetime.now().strftime("%H:%M:%S"))
     )
 
 
 def main():
+    st.sidebar.success("✅ Ver: 0.9.5-PROD ACTIVE")
     _render_html(
         """
         <div style="display:flex;align-items:center;gap:10px;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
@@ -2968,7 +2766,11 @@ def main():
         """
     )
 
+    SHOW_AUDIT = os.environ.get('SHOW_AUDIT', '0') == '1'
     nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
+    if SHOW_AUDIT:
+        nav_options.append("⚙ AUDIT")
+
     if hasattr(st, "segmented_control"):
         active_page = st.segmented_control(
             "Navigate",
@@ -3038,6 +2840,16 @@ def main():
             render_footer()
             return
         render_sources(df_unified, df_master)
+    elif active_page == "⚙ AUDIT":
+        try:
+            df_unified = load_unified()
+            df_master = load_master_full()
+            df_market_intel = load_market_intel()
+        except Exception as exc:
+            st.error("Failed loading audit datasets: {0}".format(exc))
+            render_footer()
+            return
+        render_audit(df_unified, df_market_intel, df_master)
 
     render_footer()
 
