@@ -3010,42 +3010,53 @@ def render_footer():
 
 def main():
     st.sidebar.success("✅ Ver: 0.9.5-PROD ACTIVE")
-    _render_html(
-        """
-        <div style="display:flex;align-items:center;gap:10px;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
-            <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center;">
-                <span style="color:white;font-size:14px;font-weight:800">D</span>
-            </div>
-            <div>
-                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#111827">SHOW ME THE </span>
-                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#E8571F">DPI</span>
-            </div>
-        </div>
-        """
-    )
-
+    
     SHOW_AUDIT = os.environ.get('SHOW_AUDIT', '0') == '1'
     nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
     if SHOW_AUDIT:
         nav_options.append("⚙ AUDIT")
-
-    if hasattr(st, "segmented_control"):
-        active_page = st.segmented_control(
-            "Navigate",
-            nav_options,
-            default=nav_options[0],
-            label_visibility="collapsed",
-        )
-    else:
-        active_page = st.radio(
-            "Navigate",
-            nav_options,
-            horizontal=True,
-            label_visibility="collapsed",
-        )
-
-    if not active_page:
-        active_page = nav_options[0]
+    
+    # Initialize active page in session state
+    if "active_page" not in st.session_state:
+        st.session_state.active_page = nav_options[0]
+    
+    # Create navigation links with current active state
+    nav_links = []
+    for opt in nav_options:
+        if opt == st.session_state.active_page:
+            # Active: red, underlined, italicized
+            nav_links.append(f'<a href="?page={opt}" style="color:#E8571F;text-decoration:underline;font-style:italic;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;margin-right:18px;">{opt}</a>')
+        else:
+            # Inactive: normal gray
+            nav_links.append(f'<a href="?page={opt}" style="color:#6B7280;text-decoration:none;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;margin-right:18px;">{opt}</a>')
+    
+    nav_html = " ".join(nav_links)
+    
+    _render_html(
+        f"""
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                    <span style="color:white;font-size:14px;font-weight:800">D</span>
+                </div>
+                <div>
+                    <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#111827">SHOW ME THE </span>
+                    <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#E8571F">DPI</span>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;">
+                {nav_html}
+            </div>
+        </div>
+        """
+    )
+    
+    # Handle navigation via query params
+    query_params = st.query_params
+    if "page" in query_params and query_params["page"] in nav_options:
+        st.session_state.active_page = query_params["page"]
+    
+    active_page = st.session_state.active_page
 
     if active_page == "ABOUT":
         render_about()
