@@ -3047,22 +3047,9 @@ def render_footer():
 
 def main():
     st.sidebar.success("✅ Ver: 0.9.5-PROD ACTIVE")
-    
-    SHOW_AUDIT = os.environ.get('SHOW_AUDIT', '0') == '1'
-    nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
-    if SHOW_AUDIT:
-        nav_options.append("⚙ AUDIT")
-    
-    # Initialize active page in session state
-    if "active_page" not in st.session_state:
-        st.session_state.active_page = nav_options[0]
-    
-    # Single row header with logo and navigation
-    header_cols = st.columns([4, 6])
-    
-    with header_cols[0]:
-        _render_html("""
-        <div style="display:flex;align-items:center;gap:10px;">
+    _render_html(
+        """
+        <div style="display:flex;align-items:center;gap:10px;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
             <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center;">
                 <span style="color:white;font-size:14px;font-weight:800">D</span>
             </div>
@@ -3073,32 +3060,29 @@ def main():
         </div>
         """
     )
-    
-    with header_cols[1]:
-        # Navigation as styled radio (looks like text links)
-        nav_items = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
-        if SHOW_AUDIT:
-            nav_items.append("⚙ AUDIT")
-        
-        active_idx = nav_items.index(st.session_state.active_page)
-        
-        selected = st.radio(
+
+    SHOW_AUDIT = os.environ.get('SHOW_AUDIT', '0') == '1'
+    nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
+    if SHOW_AUDIT:
+        nav_options.append("⚙ AUDIT")
+
+    if hasattr(st, "segmented_control"):
+        active_page = st.segmented_control(
             "Navigate",
-            nav_items,
-            index=active_idx,
+            nav_options,
+            default=nav_options[0],
             label_visibility="collapsed",
-            horizontal=True,
-            key="nav_radio"
         )
-        
-        if selected != st.session_state.active_page:
-            st.session_state.active_page = selected
-            st.rerun()
-    
-    # Divider line
-    _render_html('<div style="border-bottom:1px solid #E5E7EB;margin-bottom:0.5rem;"></div>')
-    
-    active_page = st.session_state.active_page
+    else:
+        active_page = st.radio(
+            "Navigate",
+            nav_options,
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+
+    if not active_page:
+        active_page = nav_options[0]
 
     if active_page == "ABOUT":
         render_about()
