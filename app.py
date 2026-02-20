@@ -211,30 +211,40 @@ def inject_css():
     .stTextInput input:focus { border-color: #E8571F !important; box-shadow: 0 0 0 2px rgba(232, 87, 31, 0.1) !important; }
     .stRadio label, .stRadio div, .stSelectbox label, .stTextInput label { color: #111827 !important; }
 
+    /* Global Theme Overrides to combat dark mode defaults */
+    [data-testid="stAppViewContainer"] {
+        --primary-color: #E8571F;
+        --background-color: #FFFFFF;
+        --secondary-background-color: #F9FAFB;
+        --text-color: #111827;
+    }
+
+    .stTextInput input::placeholder { color: #9CA3AF !important; }
+    .stTextInput input:focus { border-color: #E8571F !important; box-shadow: 0 0 0 2px rgba(232, 87, 31, 0.1) !important; }
+    .stRadio label, .stRadio div, .stSelectbox label, .stTextInput label { color: #111827 !important; }
+
     .record-count { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; color: #E8571F; margin-left: 12px; }
     .chart-subtitle { font-family: 'Inter', sans-serif; font-size: 12px; color: #9CA3AF; margin-bottom: 16px; }
 
-    /* Premium Navigation Bar Styling */
+    /* Ultra-Premium Navigation Bar - v4 - THEME-PROOF */
     div[data-testid="stSegmentedControl"] {
         background: white !important;
         margin-bottom: 2rem !important;
-        width: 100% !important;
+        border-radius: 12px !important;
     }
     div[data-testid="stSegmentedControl"] > div {
-        background: #F9FAFB !important;
+        background: #F3F4F6 !important;
         border: 1px solid #E5E7EB !important;
         padding: 4px !important;
         border-radius: 12px !important;
-        width: fit-content !important;
-        display: flex !important;
         gap: 4px !important;
     }
     div[data-testid="stSegmentedControl"] button, 
-    div[data-testid="stSegmentedControl"] [role="radio"],
-    div[data-testid="stSegmentedControl"] label {
+    div[data-testid="stSegmentedControl"] [data-baseweb="button"],
+    div[data-testid="stSegmentedControl"] [role="radio"] {
         background-color: transparent !important;
         background: transparent !important;
-        color: #6B7280 !important;
+        color: #4B5563 !important;
         border: none !important;
         border-radius: 8px !important;
         font-family: 'IBM Plex Mono', monospace !important;
@@ -243,10 +253,7 @@ def inject_css():
         letter-spacing: 0.05em !important;
         text-transform: uppercase !important;
         padding: 8px 18px !important;
-        box-shadow: none !important;
-        margin: 0 !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     div[data-testid="stSegmentedControl"] button[data-checked="true"], 
     div[data-testid="stSegmentedControl"] [aria-checked="true"],
@@ -254,36 +261,37 @@ def inject_css():
         background-color: white !important;
         background: white !important;
         color: #E8571F !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
         font-weight: 700 !important;
         text-decoration: underline !important;
         text-underline-offset: 4px !important;
     }
     div[data-testid="stSegmentedControl"] button:hover {
-        background-color: rgba(0,0,0,0.03) !important;
+        background-color: rgba(255,255,255,0.5) !important;
         color: #111827 !important;
     }
-    div[data-testid="stSegmentedControl"] button[data-checked="true"]:hover {
-        background-color: white !important;
-        color: #E8571F !important;
-    }
 
-    /* Aggressive Plotly "Undefined" & Modebar Fix */
+    /* NUCLEAR OPTION FOR PLOTLY "UNDEFINED" & INTERFACE BLUTTER */
     .js-plotly-plot .plotly .modebar, 
     .js-plotly-plot .plotly .modebar-container,
-    .js-plotly-plot .plotly .modebar-btn,
-    div[data-testid="stPlotlyChart"] .modebar {
+    .js-plotly-plot .plotly .notifier-container,
+    .js-plotly-plot .plotly .plotly-notifier,
+    .js-plotly-plot .plotly .hoverlayer,
+    div[data-testid="stPlotlyChart"] .modebar,
+    .modebar-container, .plotly-notifier {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
+        pointer-events: none !important;
     }
-    /* Stop the "undefined" tooltip frame from appearing when hovering modebar area */
-    .plotly-notifier, .modebar-container { display: none !important; }
+    /* Specifically target any tooltip frame that might be leaking */
+    div.svg-container + div { display: none !important; }
 
     .footer-wrap { margin-top: 1.2rem; border-top: 1px solid #E5E7EB; padding-top: 12px; }
     .footer-text { font-family: 'Inter', sans-serif; font-size: 12px; color: #6B7280; line-height: 1.55; }
     .footer-links a { color: #E8571F; text-decoration: none; }
     .footer-links a:hover { text-decoration: underline; }
+
 
     </style>
     """,
@@ -986,6 +994,7 @@ def style_chart_readability(fig: go.Figure):
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#FFFFFF",
         modebar=dict(remove=["zoom", "pan", "select", "lasso2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "hoverClosestCartesian", "hoverCompareCartesian"]),
+        title="",
     )
     if fig.layout.legend is not None:
         legend_orientation = getattr(fig.layout.legend, "orientation", None)
@@ -1931,7 +1940,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     fig.update_xaxes(title_text="Funds with Meaningful Data")
     fig.update_yaxes(title_text="Median Net DPI (×)")
     style_chart_readability(fig)
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
 
     st.markdown(
         """
@@ -2017,7 +2026,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         margin=dict(l=120, r=30, t=30, b=60),
     )
     style_chart_readability(fig2)
-    st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
 
     st.markdown('<div class="section-label">02 / RETURNS — LP-DISCLOSED + MARKET INTEL vs CA BENCHMARK</div>', unsafe_allow_html=True)
     fig = go.Figure()
@@ -2144,7 +2153,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         font=dict(family="Inter", size=12),
     )
     style_chart_readability(fig)
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
     bench_disclaimer()
     st.markdown(
         """
@@ -2398,7 +2407,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         font=dict(family="Inter", size=12),
     )
     style_chart_readability(fig_map)
-    st.plotly_chart(fig_map, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_map, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
 
     st.markdown('<div class="section-label" style="margin-top:2rem">02E / NET IRR RANKING — HOVER FOR vs BENCHMARK</div>', unsafe_allow_html=True)
     rank_df = lp_df.copy()
@@ -2435,7 +2444,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         margin=dict(l=300, r=80, t=30, b=40),
     )
     style_chart_readability(fig_rank)
-    st.plotly_chart(fig_rank, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_rank, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
     bench_disclaimer()
 
     st.markdown('<div class="section-label">03 / VINTAGE COHORT ANALYSIS</div>', unsafe_allow_html=True)
@@ -2500,7 +2509,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         margin=dict(t=20, b=30),
     )
     style_chart_readability(fig_tvpi)
-    st.plotly_chart(fig_tvpi, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_tvpi, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
     n_per = tvpi_df.groupby("vintage_year").size().to_dict()
     n_str = "  ·  ".join(["{0}: n={1}".format(y, n) for y, n in sorted(n_per.items()) if y >= 2005])
     st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">{0}</div>".format(html.escape(n_str)), unsafe_allow_html=True)
@@ -2539,7 +2548,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
         margin=dict(t=20, b=40),
     )
     style_chart_readability(fig_cap)
-    st.plotly_chart(fig_cap, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_cap, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
     st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">% = realization rate per vintage. Orange = cash distributed to LPs. Grey = unrealized paper value.</div>", unsafe_allow_html=True)
 
     st.markdown('<div class="section-label">04 / GP PERFORMANCE TRAJECTORIES</div>', unsafe_allow_html=True)
@@ -2588,7 +2597,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
                     margin=dict(t=20),
                 )
                 style_chart_readability(fig_traj)
-                st.plotly_chart(fig_traj, use_container_width=True, config={"displayModeBar": False, "displaylogo": False})
+                st.plotly_chart(fig_traj, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
                 bench_disclaimer()
             else:
                 st.info("No firms in dataset with 3+ funds for trajectory analysis.")
@@ -2627,7 +2636,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
                 margin=dict(t=20, l=20),
             )
             style_chart_readability(fig_strat)
-            st.plotly_chart(fig_strat, use_container_width=True, config={"displayModeBar": False, "displaylogo": False})
+            st.plotly_chart(fig_strat, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
             st.markdown("<div style=\"font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9CA3AF\">Capital-weighted: larger funds influence the average proportionally. LP-disclosed funds only.</div>", unsafe_allow_html=True)
         else:
             st.info("Insufficient data for strategy returns analysis.")
@@ -2711,7 +2720,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
             font=dict(color="#111827"),
         )
         style_chart_readability(fig_var)
-        st.plotly_chart(fig_var, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig_var, use_container_width=True, config={"displayModeBar": False, "showTips": False, "displaylogo": False})
 
         st.markdown(
             """
