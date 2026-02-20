@@ -101,25 +101,35 @@ def inject_css():
     #MainMenu, footer, header { visibility: hidden; }
     .stDeployButton { display: none; }
     
-    /* Navigation text buttons */
-    .nav-text-btn {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+    /* Navigation text radio - hide radio circles and style as text */
+    div[data-testid="stRadio"] > div {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 18px !important;
+    }
+    div[data-testid="stRadio"] label {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    div[data-testid="stRadio"] input {
+        display: none !important;
+    }
+    div[data-testid="stRadio"] label span {
         font-family: 'DM Mono', monospace !important;
         font-size: 11px !important;
         font-weight: 500 !important;
         letter-spacing: 0.08em !important;
         text-transform: uppercase !important;
         color: #6B7280 !important;
-        padding: 0 !important;
-        margin: 0 18px 0 0 !important;
         cursor: pointer;
     }
-    .nav-text-btn:hover {
+    div[data-testid="stRadio"] label span:hover {
         color: #374151 !important;
     }
-    .nav-text-btn.active {
+    div[data-testid="stRadio"] input:checked + div span {
         color: #E8571F !important;
         text-decoration: underline !important;
         font-style: italic !important;
@@ -3065,25 +3075,25 @@ def main():
     )
     
     with header_cols[1]:
-        # Navigation as styled buttons in a row
+        # Navigation as styled radio (looks like text links)
         nav_items = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
         if SHOW_AUDIT:
             nav_items.append("⚙ AUDIT")
         
-        nav_cols = st.columns([1, 1, 1, 1, 1, 3])
-        for i, opt in enumerate(nav_items):
-            with nav_cols[i]:
-                is_active = opt == st.session_state.active_page
-                btn_class = "nav-text-btn active" if is_active else "nav-text-btn"
-                
-                if st.button(
-                    opt,
-                    key=f"nav_btn_{opt}",
-                    use_container_width=False,
-                    type="secondary"
-                ):
-                    st.session_state.active_page = opt
-                    st.rerun()
+        active_idx = nav_items.index(st.session_state.active_page)
+        
+        selected = st.radio(
+            "Navigate",
+            nav_items,
+            index=active_idx,
+            label_visibility="collapsed",
+            horizontal=True,
+            key="nav_radio"
+        )
+        
+        if selected != st.session_state.active_page:
+            st.session_state.active_page = selected
+            st.rerun()
     
     # Divider line
     _render_html('<div style="border-bottom:1px solid #E5E7EB;margin-bottom:0.5rem;"></div>')
