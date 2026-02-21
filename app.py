@@ -2172,10 +2172,7 @@ def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_row
     gp_irr_axis_max = float(gp_var["max_irr"].max()) if not gp_var.empty else 0.55
     gp_irr_axis_span = max(gp_irr_axis_max - gp_irr_axis_min, 0.01)
     
-    # C. CLEAR LOADER
-    loader_slot.empty()
-    
-    # D. PAGE HERO
+    # C. PAGE HERO
     _render_html("""
     <div class="ins-eyebrow">Insights — LP Disclosure Data</div>
     <div class="ins-headline">
