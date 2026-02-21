@@ -101,41 +101,50 @@ def inject_css():
     #MainMenu, footer, header { visibility: hidden; }
     .stDeployButton { display: none; }
     
-    /* Navigation text radio - hide radio circles and style as text */
-    div[data-testid="stRadio"] > div {
-        display: flex !important;
-        flex-direction: row !important;
-        gap: 18px !important;
+    /* ── TOP TEXT NAVIGATION ── */
+    .nav-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 28px;
+        padding-top: 6px;
     }
-    div[data-testid="stRadio"] label {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    div[data-testid="stRadio"] input {
-        display: none !important;
-    }
-    div[data-testid="stRadio"] label span {
-        font-family: 'DM Mono', monospace !important;
-        font-size: 11px !important;
+    a.nav-link,
+    a.nav-link:link,
+    a.nav-link:visited,
+    a.nav-link:hover,
+    a.nav-link:active,
+    a.nav-link:focus {
+        font-family: 'Inter', sans-serif !important;
+        font-size: 12px !important;
         font-weight: 500 !important;
-        letter-spacing: 0.08em !important;
+        letter-spacing: 0.06em !important;
         text-transform: uppercase !important;
-        color: #6B7280 !important;
-        cursor: pointer;
+        color: #111827 !important;
+        text-decoration: none !important;
+        border-bottom: 2px solid transparent;
+        padding-bottom: 3px;
+        white-space: nowrap;
+        transition: color 0.15s ease;
+        display: inline-block;
+        outline: none;
     }
-    div[data-testid="stRadio"] label span:hover {
-        color: #374151 !important;
-    }
-    div[data-testid="stRadio"] input:checked + div span {
+    a.nav-link:hover { color: #374151 !important; }
+    a.nav-link:visited { color: #111827 !important; }
+    .nav-active,
+    a.nav-link.nav-active,
+    a.nav-link.nav-active:link,
+    a.nav-link.nav-active:visited,
+    a.nav-link.nav-active:active,
+    a.nav-link.nav-active:focus {
         color: #E8571F !important;
-        text-decoration: underline !important;
-        font-style: italic !important;
+        border-bottom: 2px solid #E8571F !important;
+        text-decoration: none !important;
     }
-    div[data-testid="stHorizontalBlock"] {
-        gap: 0 !important;
+    .nav-active:hover,
+    a.nav-link.nav-active:hover {
+        color: #E8571F !important;
+        text-decoration: none !important;
     }
 
     /* Editorial Headings */
@@ -3046,71 +3055,57 @@ def render_footer():
 
 
 def main():
-    st.sidebar.success("✅ Ver: 0.9.5-PROD ACTIVE")
-    _render_html(
-        """
-        <div style="display:flex;align-items:center;gap:10px;padding-bottom:0.6rem;border-bottom:1px solid #E5E7EB;margin-bottom:0;">
-            <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;display:flex;align-items:center;justify-content:center;">
-                <span style="color:white;font-size:14px;font-weight:800">D</span>
+    """Main application entry point."""
+    valid_pages = {"about", "insights", "top_firms", "fund_database", "sources"}
+
+    # ── 1. Routing: sync ?page= query param → session_state every run ────────
+    # This handles deep links AND anchor-based nav clicks (URL changes cause rerun)
+    qp = st.query_params.get("page", "")
+    if qp in valid_pages:
+        st.session_state["page"] = qp
+    elif "page" not in st.session_state:
+        st.session_state["page"] = "fund_database"
+
+    current_page = st.session_state["page"]
+
+    # ── 2. Header row ─────────────────────────────────────────────────────────
+    col_logo, col_spacer, col_nav = st.columns([2, 4, 3])
+
+    with col_logo:
+        _render_html("""
+        <div style="display:flex;align-items:center;gap:10px;padding-top:6px;">
+            <div style="width:26px;height:26px;background:#E8571F;border-radius:6px;
+                        display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span style="color:white;font-size:14px;font-weight:800;">D</span>
             </div>
             <div>
-                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#111827">SHOW ME THE </span>
-                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#E8571F">DPI</span>
+                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#111827;">SHOW ME THE </span>
+                <span style="font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#E8571F;">DPI</span>
             </div>
         </div>
-        """
-    )
+        """)
 
-    SHOW_AUDIT = os.environ.get('SHOW_AUDIT', '0') == '1'
-    nav_options = ["ABOUT", "INSIGHTS", "TOP FIRMS", "FUND DATABASE", "SOURCES"]
-    if SHOW_AUDIT:
-        nav_options.append("⚙ AUDIT")
-
-    if hasattr(st, "segmented_control"):
-        active_page = st.segmented_control(
-            "Navigate",
-            nav_options,
-            default=nav_options[0],
-            label_visibility="collapsed",
+    with col_nav:
+        nav_items = [
+            ("ABOUT",         "about"),
+            ("INSIGHTS",      "insights"),
+            ("TOP FIRMS",     "top_firms"),
+            ("FUND DATABASE", "fund_database"),
+            ("SOURCES",       "sources"),
+        ]
+        links_html = "".join(
+            f'<a href="?page={key}" target="_self" class="nav-link{" nav-active" if key == current_page else ""}">{label}</a>'
+            for label, key in nav_items
         )
-    else:
-        active_page = st.radio(
-            "Navigate",
-            nav_options,
-            horizontal=True,
-            label_visibility="collapsed",
-        )
+        _render_html(f'<div class="nav-container">{links_html}</div>')
 
-    if not active_page:
-        active_page = nav_options[0]
+    # ── 3. Divider ────────────────────────────────────────────────────────────
+    _render_html('<div style="border-bottom:1px solid #E5E7EB;margin:0.25rem 0 1rem 0;"></div>')
 
-    if active_page == "ABOUT":
+    # ── 4. Page routing ───────────────────────────────────────────────────────
+    if current_page == "about":
         render_about()
-    elif active_page == "FUND DATABASE":
-        try:
-            df_unified = load_unified()
-        except Exception as exc:
-            st.error("Failed loading data/unified_funds.csv: {0}".format(exc))
-            render_footer()
-            return
-        try:
-            df_market_intel = load_market_intel()
-        except Exception as exc:
-            st.error("Failed loading gp_disclosed_funds.csv: {0}".format(exc))
-            df_market_intel = pd.DataFrame()
-        render_fund_database(df_unified, df_market_intel)
-    elif active_page == "TOP FIRMS":
-        try:
-            df_unified = load_unified()
-            df_master = load_master_full()
-            target_patterns = load_target_firm_patterns()
-            df_focus_master = get_focus_master(df_master, df_unified, target_patterns)
-        except Exception as exc:
-            st.error("Failed loading firm datasets: {0}".format(exc))
-            render_footer()
-            return
-        render_firms(df_focus_master)
-    elif active_page == "INSIGHTS":
+    elif current_page == "insights":
         try:
             df_unified = load_unified()
             df_master = load_master_full()
@@ -3121,12 +3116,32 @@ def main():
             st.error("Failed loading insights datasets: {0}".format(exc))
             render_footer()
             return
-
         incomplete_rows = df_unified[
-            df_unified["vintage_year"].isna() | pd.to_numeric(df_unified.get("capital_contributed"), errors="coerce").isna()
+            df_unified["vintage_year"].isna()
+            | pd.to_numeric(df_unified.get("capital_contributed"), errors="coerce").isna()
         ].copy()
         render_insights(df_focus_master, bench, incomplete_rows)
-    elif active_page == "SOURCES":
+    elif current_page == "top_firms":
+        try:
+            df_unified = load_unified()
+            df_master = load_master_full()
+            target_patterns = load_target_firm_patterns()
+            df_focus_master = get_focus_master(df_master, df_unified, target_patterns)
+        except Exception as exc:
+            st.error("Failed loading firm datasets: {0}".format(exc))
+            render_footer()
+            return
+        render_firms(df_focus_master)
+    elif current_page == "fund_database":
+        try:
+            df_unified = load_unified()
+            df_market_intel = load_market_intel()
+        except Exception as exc:
+            st.error("Failed loading dataset: {0}".format(exc))
+            render_footer()
+            return
+        render_fund_database(df_unified, df_market_intel)
+    elif current_page == "sources":
         try:
             df_unified = load_unified()
             df_master = load_master_full()
@@ -3135,16 +3150,6 @@ def main():
             render_footer()
             return
         render_sources(df_unified, df_master)
-    elif active_page == "⚙ AUDIT":
-        try:
-            df_unified = load_unified()
-            df_master = load_master_full()
-            df_market_intel = load_market_intel()
-        except Exception as exc:
-            st.error("Failed loading audit datasets: {0}".format(exc))
-            render_footer()
-            return
-        render_audit(df_unified, df_market_intel, df_master)
 
     render_footer()
 
