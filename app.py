@@ -23,21 +23,6 @@ st.set_page_config(
 
 
 # Dedent markdown on all containers (st, columns, expanders, etc.) so HTML never shows as raw code.
-from textwrap import dedent
-from streamlit.delta_generator import DeltaGenerator
-
-if not hasattr(DeltaGenerator, "_original_markdown"):
-
-    DeltaGenerator._original_markdown = DeltaGenerator.markdown
-
-    def _dg_markdown_dedent(self, body, *args, **kwargs):
-        if isinstance(body, str):
-            body = dedent(body)
-        return DeltaGenerator._original_markdown(self, body, *args, **kwargs)
-
-    DeltaGenerator.markdown = _dg_markdown_dedent
-
-
 def _render_html(html_text: str):
     st.markdown(dedent(html_text).strip(), unsafe_allow_html=True)
 
