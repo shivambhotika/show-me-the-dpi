@@ -2065,10 +2065,6 @@ def _precompute_insights(df_master_hash: str, df_master: pd.DataFrame, bench: pd
 
 
 def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_rows: pd.DataFrame = None):
-    # A. LOADING ANIMATION
-    loader_slot = st.empty()
-    loader_slot.markdown('<div class="ins-loader"><div class="ins-loader-mark">D</div><div class="ins-loader-mark">P</div><div class="ins-loader-mark">I</div></div>', unsafe_allow_html=True)
-    
     # B. DATA PREPARATION
     # ── Base slices ──────────────────────────────────────────
     lp_full = df_master[df_master["data_source_type"] == "LP-Disclosed"].copy()
