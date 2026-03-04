@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import html
 import os
 import re
@@ -7,10 +9,17 @@ from textwrap import dedent
 
 import numpy as np
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
+
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    PLOTLY_AVAILABLE = True
+except Exception:
+    px = None
+    go = None
+    PLOTLY_AVAILABLE = False
 import requests
 
 
@@ -2065,6 +2074,15 @@ def _precompute_insights(df_master_hash: str, df_master: pd.DataFrame, bench: pd
 
 
 def render_insights(df_master: pd.DataFrame, bench: pd.DataFrame, incomplete_rows: pd.DataFrame = None):
+    if not PLOTLY_AVAILABLE:
+        st.error(
+            "Insights charts require Plotly, but Plotly is unavailable in this deployment."
+        )
+        st.info(
+            "Redeploy after dependencies install. Expected package: `plotly` from `requirements.txt`."
+        )
+        return
+
     # B. DATA PREPARATION
     # ── Base slices ──────────────────────────────────────────
     lp_full = df_master[df_master["data_source_type"] == "LP-Disclosed"].copy()
