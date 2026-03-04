@@ -1,8 +1,8 @@
-streamlit
-pandas
-numpy
-numpy-financial
-plotly
-requests
-pdfplumber
-
+streamlit>=1.50.0,<1.51
+pandas>=2.0.0,<2.4
+numpy>=1.24.0,<2.1
+numpy-financial>=1.0.0,<1.1
+plotly>=6.0.0,<6.6
+requests>=2.31.0,<2.33
+pdfplumber>=0.11.0,<0.12
+beautifulsoup4>=4.12.0,<4.14
