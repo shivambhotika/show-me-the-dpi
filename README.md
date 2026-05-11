@@ -1,6 +1,13 @@
 # show-me-the-dpi
 Venture fund returns basis open available data
 
+## Deployment
+
+This repo now includes two app entrypoints:
+
+- `app.py`: Flask app for Vercel. Vercel should detect the top-level `app` variable automatically.
+- `streamlit_app.py`: legacy Streamlit app for Streamlit Community Cloud or local Streamlit runs. Use `requirements-streamlit.txt` for that version.
+
 ## Data Ingestion Pipeline
 Run the full ingestion + load process with:
 
