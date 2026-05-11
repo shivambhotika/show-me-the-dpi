@@ -8,13 +8,13 @@ This repo now includes two app entrypoints:
 - `app.py`: Flask app for Vercel. Vercel should detect the top-level `app` variable automatically.
 - `streamlit_app.py`: legacy Streamlit app for Streamlit Community Cloud or local Streamlit runs. Use `requirements-streamlit.txt` for that version.
 
-For firm logos in the Vercel app, add this environment variable in Vercel:
+Firm logos use logo.dev. The Vercel app includes a publishable fallback key, and you can override it with:
 
 ```bash
-LOGO_DEV_TOKEN=your_logo_dev_token
+LOGO_DEV_PUBLIC_KEY=your_logo_dev_publishable_key
 ```
 
-Do not commit the actual token to GitHub. The Flask app proxies logo requests through `/logo/...` so the token is used server-side instead of being exposed in browser image URLs.
+Do not commit secret `sk_` tokens to GitHub. Secret tokens are only supported via `LOGO_DEV_TOKEN` for the optional `/logo/...` proxy.
 
 ## Data Ingestion Pipeline
 Run the full ingestion + load process with:

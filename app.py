@@ -10,7 +10,6 @@ from urllib.parse import quote_plus
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import requests
 from flask import Flask, Response, abort, render_template_string, request
 
 
@@ -18,6 +17,8 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
 app = Flask(__name__)
+
+LOGO_DEV_PUBLIC_KEY = os.environ.get("LOGO_DEV_PUBLIC_KEY", "pk_NTI52387TOGQE_Oukofcfw").strip()
 
 
 NAV_ITEMS = [
@@ -67,9 +68,21 @@ def clean_number(value):
     if pd.isna(value):
         return None
     try:
-        return float(value)
+        number = float(value)
+        if not math.isfinite(number):
+            return None
+        return number
     except (TypeError, ValueError):
         return None
+
+
+def clean_text(value, default: str = "") -> str:
+    if value is None or pd.isna(value):
+        return default
+    text = str(value).strip()
+    if text.lower() in {"", "nan", "none", "nat"}:
+        return default
+    return text
 
 
 def fmt_multiple(value) -> str:
@@ -99,6 +112,15 @@ def fmt_money(value) -> str:
     return f"${value:,.0f}"
 
 
+def fmt_commitment(value) -> str:
+    value = clean_number(value)
+    if value is None:
+        return "-"
+    if 0 < abs(value) < 10_000:
+        value *= 1_000_000
+    return fmt_money(value)
+
+
 def fmt_fund_size_m(value) -> str:
     value = clean_number(value)
     if value is None:
@@ -106,11 +128,29 @@ def fmt_fund_size_m(value) -> str:
     return fmt_money(value * 1_000_000)
 
 
+def commitment_from_row(row):
+    committed = clean_number(getattr(row, "capital_committed", None))
+    if committed is not None:
+        return committed
+    fund_size_m = clean_number(getattr(row, "fund_size_usd_m", None))
+    if fund_size_m is not None:
+        return fund_size_m * 1_000_000
+    return None
+
+
 def safe_int(value) -> str:
     value = clean_number(value)
-    if value is None or math.isnan(value):
+    if value is None:
         return "-"
     return str(int(value))
+
+
+def parse_positive_int(value, default: int = 1) -> int:
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return default
+    return max(number, default)
 
 
 def median_or_nan(series) -> float:
@@ -121,7 +161,10 @@ def median_or_nan(series) -> float:
 
 
 def normalize_logo_name(name: str) -> str:
-    text = re.sub(r"[^a-z0-9 ]", " ", str(name).lower())
+    text = clean_text(name)
+    if not text:
+        return ""
+    text = re.sub(r"[^a-z0-9 ]", " ", text.lower())
     return " ".join(text.split())
 
 
@@ -142,9 +185,20 @@ def logo_img(name: str, size: int = 28) -> str:
     clean = normalize_logo_name(name)
     if not clean:
         return ""
-    src = f"/logo/{quote_plus(clean)}?size={int(size)}"
+    domain = logo_domain(clean)
+    if not domain or not LOGO_DEV_PUBLIC_KEY:
+        return ""
+    src = f"https://img.logo.dev/{quote_plus(domain)}?token={quote_plus(LOGO_DEV_PUBLIC_KEY)}&size={int(size)}&format=png"
     alt = html.escape(str(name))
-    return f'<img class="logo" src="{src}" alt="{alt}" loading="lazy" onerror="this.style.display=\'none\'">'
+    initials = "".join(part[0].upper() for part in clean.split()[:2])[:2] or "GP"
+    return (
+        f'<span class="logo-wrap" style="width:{int(size)}px;height:{int(size)}px">'
+        f'<span class="logo-fallback">{html.escape(initials)}</span>'
+        f'<img class="logo" src="{src}" alt="{alt}" loading="lazy" '
+        'onload="this.parentNode.classList.add(\'loaded\')" '
+        'onerror="this.parentNode.classList.add(\'failed\');this.remove()">'
+        '</span>'
+    )
 
 
 def load_unified() -> pd.DataFrame:
@@ -231,6 +285,16 @@ def source_badge(source_type: str) -> str:
     css = "badge-gp" if label.startswith("GP") or label == "Market Intelligence" else "badge-lp"
     display = "Market Intelligence" if label.startswith("GP") else label
     return f'<span class="badge {css}">{html.escape(display)}</span>'
+
+
+def source_type_mask(series: pd.Series, selected: str) -> pd.Series:
+    selected = str(selected or "all")
+    values = series.fillna("LP-Disclosed").astype(str)
+    if selected == "all":
+        return pd.Series(True, index=series.index)
+    if selected in {"GP-Disclosed", "Market Intelligence"}:
+        return values.isin(["GP-Disclosed", "Market Intelligence"])
+    return values.eq(selected)
 
 
 def plot_html(fig) -> str:
@@ -534,13 +598,13 @@ def render_top_firms(data: dict) -> str:
         f"""
         <a class="firm-card" href="/?page=top_firms&firm={quote_plus(str(row.canonical_gp))}">
           <div class="firm-title logo-line">{logo_img(row.gp_display_name, 32)}<span>{html.escape(str(row.gp_display_name))}</span></div>
-          <div class="firm-sub">{html.escape(str(row.hq))} · {html.escape(str(row.data_type))}</div>
+          <div class="firm-sub">{html.escape(clean_text(row.hq, "-"))} · {html.escape(clean_text(row.data_type, "-"))}</div>
           <div class="firm-stats">
             <span><b>{fmt_multiple(row.median_dpi)}</b>DPI</span>
             <span><b>{fmt_multiple(row.median_tvpi)}</b>TVPI</span>
             <span><b>{int(row.funds)}</b>funds</span>
           </div>
-          <div class="muted">{html.escape(str(row.focus))[:90]}</div>
+          <div class="muted">{html.escape(clean_text(row.focus, "-"))[:90]}</div>
         </a>
         """
         for row in card_rows.itertuples()
@@ -599,7 +663,7 @@ def render_fund_database(data: dict) -> str:
     source_filter = request.args.get("source", "all")
     year_filter = request.args.get("year", "all")
     sort = request.args.get("sort", "dpi")
-    page = max(int(request.args.get("p", "1") or "1"), 1)
+    page = parse_positive_int(request.args.get("p", "1"), 1)
     per_page = 50
 
     display = combined.copy()
@@ -610,26 +674,30 @@ def render_fund_database(data: dict) -> str:
         if "source" in display:
             mask = mask | display["source"].fillna("").str.contains(q, case=False, regex=False)
         display = display[mask]
-    if source_filter != "all" and "data_source_type" in display:
-        display = display[display["data_source_type"].fillna("LP-Disclosed") == source_filter]
+    if "data_source_type" in display:
+        display = display[source_type_mask(display["data_source_type"], source_filter)]
     if year_filter != "all":
-        display = display[pd.to_numeric(display["vintage_year"], errors="coerce").eq(float(year_filter))]
+        year_value = clean_number(year_filter)
+        if year_value is not None:
+            display = display[pd.to_numeric(display["vintage_year"], errors="coerce").eq(float(year_value))]
 
     if sort in display.columns:
         display = display.sort_values(sort, ascending=False, na_position="last")
     total = len(display)
+    max_page = max((total - 1) // per_page + 1, 1)
+    page = min(page, max_page)
     display = display.iloc[(page - 1) * per_page : page * per_page]
 
     rows = "".join(
         f"""
         <tr>
-          <td><div class="logo-line table-logo">{logo_img(getattr(row, "canonical_gp", ""), 22)}<div><strong>{html.escape(str(getattr(row, "fund_name", "")))}</strong><div class="muted">{html.escape(str(getattr(row, "canonical_gp", ""))) if hasattr(row, "canonical_gp") else ""}</div></div></div></td>
+          <td><div class="logo-line table-logo">{logo_img(getattr(row, "canonical_gp", ""), 22)}<div><strong>{html.escape(clean_text(getattr(row, "fund_name", ""), "-"))}</strong><div class="muted">{html.escape(clean_text(getattr(row, "canonical_gp", ""))) if hasattr(row, "canonical_gp") else ""}</div></div></div></td>
           <td>{safe_int(getattr(row, "vintage_year", None))}</td>
-          <td>{fmt_money(getattr(row, "capital_committed", None) if hasattr(row, "capital_committed") else getattr(row, "fund_size_usd_m", None) * 1_000_000 if clean_number(getattr(row, "fund_size_usd_m", None)) is not None else None)}</td>
+          <td>{fmt_commitment(commitment_from_row(row))}</td>
           <td>{fmt_multiple(getattr(row, "dpi", None))}</td>
           <td>{fmt_multiple(getattr(row, "tvpi", None))}</td>
           <td>{fmt_percent(getattr(row, "net_irr", None))}</td>
-          <td>{getattr(row, "source", "-")}</td>
+          <td>{html.escape(clean_text(getattr(row, "source", ""), "-"))}</td>
           <td>{source_badge(getattr(row, "data_source_type", "LP-Disclosed"))}</td>
         </tr>
         """
@@ -654,7 +722,7 @@ def render_fund_database(data: dict) -> str:
         <select name="source">
           <option value="all" {"selected" if source_filter == "all" else ""}>All source types</option>
           <option value="LP-Disclosed" {"selected" if source_filter == "LP-Disclosed" else ""}>LP-disclosed</option>
-          <option value="GP-Disclosed" {"selected" if source_filter == "GP-Disclosed" else ""}>Market intelligence</option>
+          <option value="GP-Disclosed" {"selected" if source_filter in ["GP-Disclosed", "Market Intelligence"] else ""}>Market intelligence</option>
         </select>
         <select name="year">{year_options}</select>
         <select name="sort">
@@ -860,8 +928,12 @@ BASE_TEMPLATE = """
     .leader-bar { height:9px; background:#F3F4F6; border-radius:99px; overflow:hidden; }
     .leader-bar i { display:block; height:100%; background:var(--accent); }
     .logo-line { display:flex; align-items:center; gap:10px; min-width:0; }
-    .logo { width:28px; height:28px; border-radius:6px; object-fit:contain; background:#fff; border:1px solid var(--line); flex:0 0 auto; }
-    .table-logo .logo { width:22px; height:22px; border-radius:5px; }
+    .logo-wrap { position:relative; display:inline-grid; place-items:center; border-radius:6px; background:#fff; border:1px solid var(--line); flex:0 0 auto; overflow:hidden; }
+    .logo-fallback { font-family:"IBM Plex Mono", monospace; font-size:10px; font-weight:700; color:#6B7280; }
+    .logo { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#fff; opacity:0; transition:opacity .12s ease; }
+    .logo-wrap.loaded .logo { opacity:1; }
+    .logo-wrap.loaded .logo-fallback { visibility:hidden; }
+    .table-logo .logo-wrap { border-radius:5px; }
     .footnote { font-family:"IBM Plex Mono", monospace; color:var(--muted); font-size:11px; line-height:1.6; padding:10px 0 18px; border-top:1px solid #F3F4F6; }
     .firm-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:14px; margin:20px 0 28px; }
     .firm-card { display:block; color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:4px; padding:16px; background:#fff; min-height:176px; }
@@ -961,7 +1033,9 @@ def healthz():
 
 @app.get("/logo/<path:name>")
 def logo(name: str):
-    token = os.environ.get("LOGO_DEV_TOKEN", "").strip()
+    import requests
+
+    token = os.environ.get("LOGO_DEV_TOKEN", "").strip() or LOGO_DEV_PUBLIC_KEY
     domain = logo_domain(name)
     if not token or not domain:
         abort(404)

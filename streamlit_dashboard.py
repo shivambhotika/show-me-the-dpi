@@ -39,7 +39,7 @@ def _render_html(html_text: str):
 def _get_logo_url(company_name: str) -> str:
     """Get logo URL from logo-dev API or clearbit fallback."""
     try:
-        api_key = "pk_aX9c7b3FQ7KXuL9Tq0UWaQ"
+        api_key = os.environ.get("LOGO_DEV_PUBLIC_KEY", "pk_NTI52387TOGQE_Oukofcfw")
         # Map common company names to domain names
         domain_map = {
             "Union Square Ventures": "usv.com",
