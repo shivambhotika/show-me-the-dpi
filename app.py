@@ -100,19 +100,51 @@ def load_unified() -> pd.DataFrame:
 
 
 def load_master() -> pd.DataFrame:
-    df = read_csv(BASE_DIR / "vc_fund_master.csv")
+    df = read_csv(DATA_DIR / "vc_fund_master.csv")
+    if df.empty:
+        df = read_csv(BASE_DIR / "vc_fund_master.csv")
     for col in ["vintage_year", "fund_size_usd_m", "firm_aum_usd_b", "tvpi", "dpi", "net_irr", "gross_tvpi", "gross_dpi"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
+    if "canonical_gp" in df.columns:
+        df = df[~df["canonical_gp"].astype(str).str.contains("Accel-KKR", case=False, na=False)].copy()
+    if "fund_name" in df.columns:
+        df = df[~df["fund_name"].astype(str).str.contains("Accel-KKR", case=False, na=False)].copy()
+    if "fund_category" in df.columns:
+        df = df[df["fund_category"].astype(str).ne("PE")].copy()
+    if "vintage_year" in df.columns:
+        df = df.dropna(subset=["vintage_year"]).copy()
+        df["vintage_year"] = df["vintage_year"].astype(int)
+    unified = load_unified()
+    if not unified.empty and {"fund_name", "vintage_year"}.issubset(df.columns) and {"fund_name", "vintage_year"}.issubset(unified.columns):
+        extra_cols = [c for c in ["capital_contributed", "capital_distributed", "nav", "scraped_date"] if c in unified.columns]
+        if extra_cols:
+            u = unified[["fund_name", "vintage_year"] + extra_cols].drop_duplicates(subset=["fund_name", "vintage_year"])
+            df = pd.merge(df, u, on=["fund_name", "vintage_year"], how="left")
+    if {"capital_contributed", "capital_distributed"}.issubset(df.columns):
+        valid = pd.to_numeric(df["capital_contributed"], errors="coerce") > 0
+        dpi_calc = df["capital_distributed"] / df["capital_contributed"]
+        df["dpi"] = df["dpi"].fillna(dpi_calc.where(valid))
+        if "nav" in df.columns:
+            tvpi_calc = (df["capital_distributed"] + df["nav"]) / df["capital_contributed"]
+            df["tvpi"] = df["tvpi"].fillna(tvpi_calc.where(valid))
+    if {"source", "net_irr"}.issubset(df.columns):
+        df.loc[(df["source"] == "CalPERS") & (df["net_irr"] == 1.0), "net_irr"] = pd.NA
+    if "data_source_type" in df.columns:
+        df["data_source_type"] = df["data_source_type"].fillna("LP-Disclosed")
     return df
 
 
 def load_market() -> pd.DataFrame:
-    df = read_csv(BASE_DIR / "gp_disclosed_funds.csv")
-    for col in ["vintage_year", "fund_size_usd_m", "firm_aum_usd_b", "tvpi", "dpi", "net_irr", "gross_tvpi", "gross_dpi"]:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-    return df
+    df = load_master()
+    if df.empty or "data_source_type" not in df.columns:
+        df = read_csv(BASE_DIR / "gp_disclosed_funds.csv")
+        for col in ["vintage_year", "fund_size_usd_m", "firm_aum_usd_b", "tvpi", "dpi", "net_irr", "gross_tvpi", "gross_dpi"]:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+        return df
+    source_type = df["data_source_type"].astype(str)
+    return df[source_type.isin(["Market Intelligence", "GP-Disclosed"])].copy()
 
 
 def load_benchmarks() -> pd.DataFrame:
