@@ -23,6 +23,7 @@ NAV_ITEMS = [
     ("TOP FIRMS", "top_firms"),
     ("FUND DATABASE", "fund_database"),
     ("SOURCES", "sources"),
+    ("AUDIT", "audit"),
 ]
 
 
@@ -169,8 +170,10 @@ def page_data() -> dict:
 
 
 def source_badge(source_type: str) -> str:
-    css = "badge-gp" if str(source_type).startswith("GP") else "badge-lp"
-    return f'<span class="badge {css}">{source_type}</span>'
+    label = str(source_type or "LP-Disclosed")
+    css = "badge-gp" if label.startswith("GP") or label == "Market Intelligence" else "badge-lp"
+    display = "Market Intelligence" if label.startswith("GP") else label
+    return f'<span class="badge {css}">{html.escape(display)}</span>'
 
 
 def plot_html(fig) -> str:
@@ -275,6 +278,22 @@ def render_insights(data: dict) -> str:
         .agg(median_dpi=("dpi", "median"), median_tvpi=("tvpi", "median"), funds=("fund_name", "count"))
     )
     by_vintage = by_vintage[(by_vintage["vintage_year"].between(2007, 2022)) & (by_vintage["funds"] >= 2)]
+    pill_years = [2010, 2011, 2012, 2014, 2015, 2017, 2019, 2021]
+    pill_html = ""
+    for year in pill_years:
+        rows = lp_full[lp_full["vintage_year"].eq(year)]["dpi"].dropna()
+        dpi_value = float(rows.median()) if len(rows) >= 2 else None
+        if dpi_value is None:
+            pill_class, label, value = "pill-none", "No data", "-"
+        elif dpi_value >= 2:
+            pill_class, label, value = "pill-strong", "Realized", fmt_multiple(dpi_value)
+        elif dpi_value >= 1:
+            pill_class, label, value = "pill-mid", "Returning", fmt_multiple(dpi_value)
+        elif dpi_value >= 0.1:
+            pill_class, label, value = "pill-low", "Early", fmt_multiple(dpi_value)
+        else:
+            pill_class, label, value = "pill-none", "Cash-light", fmt_multiple(dpi_value)
+        pill_html += f'<div class="pill {pill_class}"><span>{year}</span><strong>{value}</strong><small>{label}</small></div>'
 
     fig1 = go.Figure()
     colors = ["#E8571F" if y <= 2013 else "#D97706" if y <= 2016 else "#CBD5E1" for y in by_vintage["vintage_year"]]
@@ -316,6 +335,28 @@ def render_insights(data: dict) -> str:
     fig2.add_trace(go.Bar(x=paper["vintage_year"].astype(str), y=paper["unrealized"], name="Unrealized TVPI less DPI", marker_color="#CBD5E1"))
     fig2.update_layout(title="Paper value versus returned cash", barmode="stack", xaxis_title="Vintage year", yaxis_title="Multiple")
 
+    a16z = master[master["canonical_gp"].astype(str).str.lower().eq("a16z")].copy()
+    a16z = a16z[a16z["gross_tvpi"].notna() & a16z["tvpi"].notna()].sort_values("vintage_year")
+    fee_drag_html = ""
+    if not a16z.empty:
+        a16z_labels = [f"{row.fund_name}<br>{safe_int(row.vintage_year)}" for row in a16z.itertuples()]
+        fig_fee = go.Figure()
+        fig_fee.add_trace(go.Bar(x=a16z_labels, y=a16z["gross_tvpi"], name="Gross TVPI", marker_color="#CBD5E1"))
+        fig_fee.add_trace(go.Bar(x=a16z_labels, y=a16z["tvpi"], name="Net TVPI", marker_color="#E8571F"))
+        fig_fee.add_trace(go.Bar(x=a16z_labels, y=a16z["dpi"], name="Net DPI", marker_color="#111827"))
+        fig_fee.update_layout(title="a16z gross vs net disclosure", barmode="group", xaxis_title="", yaxis_title="Multiple")
+        fund_three = a16z[a16z["fund_name"].astype(str).str.contains("Fund III", case=False, na=False)].head(1)
+        drag_text = ""
+        if not fund_three.empty:
+            row = fund_three.iloc[0]
+            drag = clean_number(row["gross_tvpi"]) - clean_number(row["tvpi"])
+            drag_text = f"<section class='callout'><strong>Fee drag snapshot.</strong> {html.escape(str(row['fund_name']))} shows gross TVPI {fmt_multiple(row['gross_tvpi'])} versus net TVPI {fmt_multiple(row['tvpi'])}. That is {fmt_multiple(drag)} of multiple drag before LP net returns are realized.</section>"
+        fee_drag_html = f"""
+        {section_intro("04 / GROSS-NET GAP", "Gross returns are not what LPs take home", "a16z is the clearest market-intelligence example in this dataset with gross and net metrics disclosed. The gap is fees and carry showing up in plain view.")}
+        <section class="chart">{plot_html(fig_fee)}</section>
+        {drag_text}
+        """
+
     by_gp = (
         lp_full[lp_full["net_irr"].notna() & lp_full["canonical_gp"].notna()]
         .groupby("canonical_gp", dropna=True)
@@ -353,12 +394,24 @@ def render_insights(data: dict) -> str:
     </section>
     {section_intro("01 / DPI BY VINTAGE", "The DPI drought starts around 2017", "Pre-2015 funds have broadly returned capital. After 2016, the median fund in this dataset has returned little cash, even when TVPI still shows value on paper.")}
     <section class="chart">{plot_html(fig1)}</section>
-    {section_intro("02 / DPI LEADERBOARD", "The funds that actually sent cash back", "A DPI-first leaderboard surfaces realized outcomes rather than unrealized marks.")}
+    <section class="pill-grid">{pill_html}</section>
+    <section class="callout"><strong>What this means for LPs.</strong> TVPI can look healthier than the cash reality. The 2017-2021 cohort has paper marks that may still be useful, but DPI is the number that tells you whether an LP can redeploy capital.</section>
+    {section_intro("02 / DPI LEADERBOARD", "The funds that actually sent cash back", "A DPI-first leaderboard surfaces realized outcomes rather than unrealized marks. These are not marks. They are cash distributions reported by LPs.")}
     <section class="panel leader-list">{leader_rows}</section>
+    <section class="two-col callout-grid">
+      <div class="callout"><strong>Dark-horse signal.</strong> DPI-first sorting surfaces smaller or less visible managers that brand-driven narratives often miss.</div>
+      <div class="callout"><strong>Vintage pattern.</strong> The cash-return leaderboard is dominated by older vintages where realization cycles have actually had time to play out.</div>
+    </section>
     {section_intro("03 / PAPER VS REAL", "TVPI can look healthy while DPI is still thin", "The gap between TVPI and DPI is the unrealized portion. For newer vintages, that gap is the story.")}
     <section class="chart">{plot_html(fig2)}</section>
-    {section_intro("04 / MANAGER VARIANCE", "Same manager, different fund outcomes", "Public LP data makes it easier to compare a firm's fund-level spread instead of relying on a single brand-level reputation.")}
+    <section class="callout"><strong>The key tension.</strong> Strong TVPI without DPI means LPs are sitting on paper gains that depend on exits that have not happened yet.</section>
+    {fee_drag_html}
+    {section_intro("05 / MANAGER VARIANCE", "Same manager, different fund outcomes", "Public LP data makes it easier to compare a firm's fund-level spread instead of relying on a single brand-level reputation.")}
     <section class="chart">{plot_html(fig3)}</section>
+    <section class="two-col callout-grid">
+      <div class="callout"><strong>Vintage timing is first-order.</strong> Picking the manager is one decision. Picking the fund cycle is another.</div>
+      <div class="callout"><strong>Selection bias watch.</strong> Market-intelligence records often skew toward strong disclosed outcomes, so they should be treated as directional rather than audited.</div>
+    </section>
     """
 
 
@@ -463,6 +516,8 @@ def render_fund_database(data: dict) -> str:
         mask = display["fund_name"].fillna("").str.contains(q, case=False, regex=False)
         if "canonical_gp" in display:
             mask = mask | display["canonical_gp"].fillna("").str.contains(q, case=False, regex=False)
+        if "source" in display:
+            mask = mask | display["source"].fillna("").str.contains(q, case=False, regex=False)
         display = display[mask]
     if source_filter != "all" and "data_source_type" in display:
         display = display[display["data_source_type"].fillna("LP-Disclosed") == source_filter]
@@ -570,12 +625,93 @@ def render_sources(data: dict) -> str:
     """
 
 
+def render_audit(data: dict) -> str:
+    lp = data["unified"].copy()
+    market = data["market"].copy()
+    master = data["master"].copy()
+    meaningful_count = 0
+    source_count = 0
+    if not master.empty:
+        meaningful_count = int(
+            (
+                pd.to_numeric(master.get("vintage_year"), errors="coerce").le(2020)
+                & pd.to_numeric(master.get("net_irr"), errors="coerce").notna()
+            ).sum()
+        )
+    if not lp.empty and "source" in lp:
+        source_count = int(lp["source"].nunique())
+
+    alerts = []
+    if not master.empty:
+        drought_fail = master[(master["vintage_year"] >= 2017) & (master["dpi"] >= 0.5)]
+        if not drought_fail.empty:
+            alerts.append(("fail", f"DPI drought headline needs caveat: {len(drought_fail):,} 2017+ rows have DPI >= 0.5x."))
+        ia_exists = master["fund_name"].astype(str).str.contains("IA Venture Strategies", case=False, na=False).any()
+        if not ia_exists:
+            alerts.append(("fail", "IA Venture Strategies is missing from the master dataset. Any dark-horse copy should not link to it."))
+    if not lp.empty:
+        bad_dpi = lp[lp["dpi"] > lp["tvpi"] + 0.05]
+        if not bad_dpi.empty:
+            alerts.append(("fail", f"{len(bad_dpi):,} LP rows have DPI greater than TVPI by more than 0.05x."))
+        placeholders = lp[(lp["tvpi"] == 1.0) & (lp["vintage_year"] <= 2018)]
+        if not placeholders.empty:
+            alerts.append(("warn", f"{len(placeholders):,} older LP rows still show TVPI = 1.0x."))
+        dup_key = ["fund_name", "vintage_year", "source", "reporting_period"]
+        if set(dup_key).issubset(lp.columns):
+            dups = lp[lp.duplicated(subset=dup_key, keep=False)]
+            if not dups.empty:
+                alerts.append(("warn", f"{len(dups):,} duplicate LP records share fund, vintage, source, and reporting period."))
+    if not alerts:
+        alerts.append(("ok", "No critical validation failures detected in the current dataset."))
+
+    alert_html = "".join(
+        f'<div class="alert alert-{kind}"><strong>{kind.upper()}</strong><span>{html.escape(text)}</span></div>'
+        for kind, text in alerts
+    )
+    top_rows = ""
+    if not lp.empty:
+        top = lp[lp["dpi"].notna()].sort_values("dpi", ascending=False).head(20)
+        top_rows = "".join(
+            f"""
+            <tr>
+              <td><strong>{html.escape(str(row.fund_name))}</strong></td>
+              <td>{safe_int(getattr(row, "vintage_year", None))}</td>
+              <td>{fmt_multiple(getattr(row, "dpi", None))}</td>
+              <td>{fmt_multiple(getattr(row, "tvpi", None))}</td>
+              <td>{html.escape(str(getattr(row, "source", "-")))}</td>
+            </tr>
+            """
+            for row in top.itertuples()
+        )
+    return f"""
+    {page_header("AUDIT", "INTERNAL DATA VALIDATION AND PIPELINE HEALTH", "VERCEL HTML PORT")}
+    <section class="metric-grid">
+      <div class="metric"><span>Total LP funds</span><strong>{len(lp):,}</strong></div>
+      <div class="metric"><span>Total market-intel funds</span><strong>{len(market):,}</strong></div>
+      <div class="metric"><span>Meaningful IRR rows</span><strong>{meaningful_count:,}</strong></div>
+      <div class="metric"><span>LP sources</span><strong>{source_count:,}</strong></div>
+    </section>
+    <section class="panel">
+      <h2>Active alerts</h2>
+      <div class="alert-list">{alert_html}</div>
+    </section>
+    <section class="panel">
+      <h2>Top 20 LP-disclosed by DPI</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Fund</th><th>Vintage</th><th>DPI</th><th>TVPI</th><th>Source</th></tr></thead>
+        <tbody>{top_rows}</tbody>
+      </table></div>
+    </section>
+    """
+
+
 PAGE_RENDERERS = {
     "about": render_about,
     "insights": render_insights,
     "top_firms": render_top_firms,
     "fund_database": render_fund_database,
     "sources": render_sources,
+    "audit": render_audit,
 }
 
 
@@ -644,6 +780,22 @@ BASE_TEMPLATE = """
     .source-method p { color:#374151; line-height:1.7; margin-top:0; }
     code { font-family:"IBM Plex Mono", monospace; background:#F3F4F6; padding:2px 6px; border-radius:3px; }
     .callout { background:#FFFBEB; border:1px solid #FDE68A; border-radius:4px; color:#374151; padding:16px; line-height:1.65; margin:18px 0; }
+    .callout-grid { border-top:0; padding-top:0; }
+    .pill-grid { display:grid; grid-template-columns:repeat(8, minmax(0,1fr)); gap:10px; margin:16px 0 24px; }
+    .pill { border:1px solid var(--line); border-radius:4px; padding:12px; background:#fff; }
+    .pill span { display:block; font-family:"IBM Plex Mono", monospace; color:var(--muted); font-size:11px; margin-bottom:8px; }
+    .pill strong { display:block; font-size:20px; color:var(--ink); }
+    .pill small { color:var(--muted); }
+    .pill-strong { border-color:#FDBA74; background:#FFF7ED; }
+    .pill-mid { border-color:#86EFAC; background:#F0FDF4; }
+    .pill-low { border-color:#FDE68A; background:#FFFBEB; }
+    .pill-none { background:#F9FAFB; }
+    .alert-list { display:grid; gap:10px; }
+    .alert { display:grid; grid-template-columns:80px 1fr; gap:12px; border-radius:4px; padding:12px 14px; line-height:1.5; }
+    .alert strong { font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.08em; }
+    .alert-fail { background:#FEF2F2; border:1px solid #FECACA; color:#7F1D1D; }
+    .alert-warn { background:#FFFBEB; border:1px solid #FDE68A; color:#78350F; }
+    .alert-ok { background:#ECFDF5; border:1px solid #A7F3D0; color:#064E3B; }
     .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; }
     table { width: 100%; border-collapse: collapse; min-width: 860px; background: #fff; }
     th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }
@@ -666,6 +818,7 @@ BASE_TEMPLATE = """
       nav { justify-content: flex-start; gap: 14px 18px; }
       .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .firm-grid, .two-col { grid-template-columns:1fr; }
+      .pill-grid { grid-template-columns:repeat(2, minmax(0,1fr)); }
       .section-intro, .source-method { grid-template-columns:1fr; gap:10px; }
       .leader-row { grid-template-columns:1fr; }
       .page-head { align-items:flex-start; flex-direction:column; }
@@ -697,7 +850,7 @@ BASE_TEMPLATE = """
 
 @app.get("/")
 def index():
-    current_page = request.args.get("page", "about")
+    current_page = request.args.get("page", "fund_database")
     if current_page not in PAGE_RENDERERS:
         abort(404)
     data = page_data()
