@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import math
 import html
+import os
+import re
 from pathlib import Path
 from urllib.parse import quote_plus
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from flask import Flask, abort, render_template_string, request
+import requests
+from flask import Flask, Response, abort, render_template_string, request
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -25,6 +28,33 @@ NAV_ITEMS = [
     ("SOURCES", "sources"),
     ("AUDIT", "audit"),
 ]
+
+
+LOGO_DOMAINS = {
+    "a16z": "a16z.com",
+    "andreessen horowitz": "a16z.com",
+    "arch venture partners": "archventure.com",
+    "bessemer venture partners": "bvp.com",
+    "benchmark": "benchmark.com",
+    "founders fund": "foundersfund.com",
+    "foundry group": "foundrygroup.com",
+    "general catalyst": "generalcatalyst.com",
+    "ggv": "ggvc.com",
+    "greylock": "greylock.com",
+    "hongshan": "hongshan.com",
+    "index ventures": "indexventures.com",
+    "insight partners": "insightpartners.com",
+    "khosla ventures": "khoslaventures.com",
+    "kleiner perkins": "kleinerperkins.com",
+    "lightspeed": "lsvp.com",
+    "mayfield": "mayfield.com",
+    "nea": "nea.com",
+    "peak xv": "peakxv.com",
+    "sequoia": "sequoiacap.com",
+    "social capital": "socialcapital.com",
+    "union square ventures": "usv.com",
+    "upfront ventures": "upfront.com",
+}
 
 
 def read_csv(path: Path) -> pd.DataFrame:
@@ -88,6 +118,33 @@ def median_or_nan(series) -> float:
     if values.empty:
         return float("nan")
     return float(values.median())
+
+
+def normalize_logo_name(name: str) -> str:
+    text = re.sub(r"[^a-z0-9 ]", " ", str(name).lower())
+    return " ".join(text.split())
+
+
+def logo_domain(name: str) -> str:
+    clean = normalize_logo_name(name)
+    if clean in LOGO_DOMAINS:
+        return LOGO_DOMAINS[clean]
+    for key, domain in LOGO_DOMAINS.items():
+        if key in clean or clean in key:
+            return domain
+    tokens = [t for t in clean.split() if t not in {"ventures", "venture", "partners", "capital", "fund", "funds"}]
+    if tokens:
+        return "".join(tokens[:2]) + ".com"
+    return ""
+
+
+def logo_img(name: str, size: int = 28) -> str:
+    clean = normalize_logo_name(name)
+    if not clean:
+        return ""
+    src = f"/logo/{quote_plus(clean)}?size={int(size)}"
+    alt = html.escape(str(name))
+    return f'<img class="logo" src="{src}" alt="{alt}" loading="lazy" onerror="this.style.display=\'none\'">'
 
 
 def load_unified() -> pd.DataFrame:
@@ -320,7 +377,7 @@ def render_insights(data: dict) -> str:
     leader_rows = "".join(
         f"""
         <div class="leader-row">
-          <div><strong>{html.escape(str(row.fund_name))}</strong><span>{html.escape(str(getattr(row, "canonical_gp", "")))} · {safe_int(getattr(row, "vintage_year", None))} · {html.escape(str(getattr(row, "source", "")))}</span></div>
+          <div class="logo-line">{logo_img(getattr(row, "canonical_gp", ""), 26)}<div><strong>{html.escape(str(row.fund_name))}</strong><span>{html.escape(str(getattr(row, "canonical_gp", "")))} · {safe_int(getattr(row, "vintage_year", None))} · {html.escape(str(getattr(row, "source", "")))}</span></div></div>
           <div class="leader-bar"><i style="width:{min(float(row.dpi) / max_leader * 100, 100):.1f}%"></i></div>
           <b>{fmt_multiple(row.dpi)}</b>
         </div>
@@ -334,6 +391,39 @@ def render_insights(data: dict) -> str:
     fig2.add_trace(go.Bar(x=paper["vintage_year"].astype(str), y=paper["median_dpi"], name="Realized DPI", marker_color="#E8571F"))
     fig2.add_trace(go.Bar(x=paper["vintage_year"].astype(str), y=paper["unrealized"], name="Unrealized TVPI less DPI", marker_color="#CBD5E1"))
     fig2.update_layout(title="Paper value versus returned cash", barmode="stack", xaxis_title="Vintage year", yaxis_title="Multiple")
+
+    benchmark_html = ""
+    if not bench.empty and "median_dpi" in bench.columns:
+        bench_plot = bench[bench["vintage_year"].between(2007, 2022)].copy()
+        fig_bench = go.Figure()
+        fig_bench.add_trace(go.Scatter(
+            x=by_vintage["vintage_year"],
+            y=by_vintage["median_dpi"],
+            mode="lines+markers",
+            name="Observed LP median DPI",
+            line=dict(color="#E8571F", width=3),
+        ))
+        fig_bench.add_trace(go.Scatter(
+            x=bench_plot["vintage_year"],
+            y=bench_plot["median_dpi"],
+            mode="lines",
+            name="Approx. CA median DPI",
+            line=dict(color="#111827", width=2, dash="dash"),
+        ))
+        if "q1_dpi" in bench_plot:
+            fig_bench.add_trace(go.Scatter(
+                x=bench_plot["vintage_year"],
+                y=bench_plot["q1_dpi"],
+                mode="lines",
+                name="Approx. CA top-quartile DPI",
+                line=dict(color="#9CA3AF", width=2, dash="dot"),
+            ))
+        fig_bench.update_layout(title="LP-observed DPI versus approximate benchmark bands", xaxis_title="Vintage year", yaxis_title="DPI")
+        benchmark_html = f"""
+        {section_intro("04 / BENCHMARK CONTEXT", "DPI against directional CA-style bands", "The benchmark dataset is approximate, but it gives a useful sense of when the observed LP-disclosed cohort is tracking below, near, or above a broad US VC realization baseline.")}
+        <section class="chart">{plot_html(fig_bench)}</section>
+        <section class="footnote">Benchmark: approximate CA US VC quartiles synthesized from public LP annual reports and academic literature. Use as directional reference only.</section>
+        """
 
     a16z = master[master["canonical_gp"].astype(str).str.lower().eq("a16z")].copy()
     a16z = a16z[a16z["gross_tvpi"].notna() & a16z["tvpi"].notna()].sort_values("vintage_year")
@@ -352,7 +442,7 @@ def render_insights(data: dict) -> str:
             drag = clean_number(row["gross_tvpi"]) - clean_number(row["tvpi"])
             drag_text = f"<section class='callout'><strong>Fee drag snapshot.</strong> {html.escape(str(row['fund_name']))} shows gross TVPI {fmt_multiple(row['gross_tvpi'])} versus net TVPI {fmt_multiple(row['tvpi'])}. That is {fmt_multiple(drag)} of multiple drag before LP net returns are realized.</section>"
         fee_drag_html = f"""
-        {section_intro("04 / GROSS-NET GAP", "Gross returns are not what LPs take home", "a16z is the clearest market-intelligence example in this dataset with gross and net metrics disclosed. The gap is fees and carry showing up in plain view.")}
+        {section_intro("05 / GROSS-NET GAP", "Gross returns are not what LPs take home", "a16z is the clearest market-intelligence example in this dataset with gross and net metrics disclosed. The gap is fees and carry showing up in plain view.")}
         <section class="chart">{plot_html(fig_fee)}</section>
         {drag_text}
         """
@@ -405,8 +495,9 @@ def render_insights(data: dict) -> str:
     {section_intro("03 / PAPER VS REAL", "TVPI can look healthy while DPI is still thin", "The gap between TVPI and DPI is the unrealized portion. For newer vintages, that gap is the story.")}
     <section class="chart">{plot_html(fig2)}</section>
     <section class="callout"><strong>The key tension.</strong> Strong TVPI without DPI means LPs are sitting on paper gains that depend on exits that have not happened yet.</section>
+    {benchmark_html}
     {fee_drag_html}
-    {section_intro("05 / MANAGER VARIANCE", "Same manager, different fund outcomes", "Public LP data makes it easier to compare a firm's fund-level spread instead of relying on a single brand-level reputation.")}
+    {section_intro("06 / MANAGER VARIANCE", "Same manager, different fund outcomes", "Public LP data makes it easier to compare a firm's fund-level spread instead of relying on a single brand-level reputation.")}
     <section class="chart">{plot_html(fig3)}</section>
     <section class="two-col callout-grid">
       <div class="callout"><strong>Vintage timing is first-order.</strong> Picking the manager is one decision. Picking the fund cycle is another.</div>
@@ -442,7 +533,7 @@ def render_top_firms(data: dict) -> str:
     cards = "".join(
         f"""
         <a class="firm-card" href="/?page=top_firms&firm={quote_plus(str(row.canonical_gp))}">
-          <div class="firm-title">{html.escape(str(row.gp_display_name))}</div>
+          <div class="firm-title logo-line">{logo_img(row.gp_display_name, 32)}<span>{html.escape(str(row.gp_display_name))}</span></div>
           <div class="firm-sub">{html.escape(str(row.hq))} · {html.escape(str(row.data_type))}</div>
           <div class="firm-stats">
             <span><b>{fmt_multiple(row.median_dpi)}</b>DPI</span>
@@ -478,7 +569,7 @@ def render_top_firms(data: dict) -> str:
     {page_header("TOP FIRMS", "VC & GROWTH EQUITY MANAGERS — PUBLIC LP DATA", f"{table.shape[0]:,} FIRMS TRACKED")}
     <section class="firm-grid">{cards}</section>
     <section class="panel">
-      <h2>{html.escape(detail_title)}</h2>
+      <h2 class="logo-line">{logo_img(detail_title, 34)}<span>{html.escape(detail_title)}</span></h2>
       <p>Firm detail keeps LP-disclosed and market-intelligence records visible side by side. Mature-fund medians are used for comparison because young DPI is usually not meaningful.</p>
       <section class="metric-grid compact">
         <div class="metric"><span>Funds tracked</span><strong>{len(gp_df):,}</strong></div>
@@ -532,7 +623,7 @@ def render_fund_database(data: dict) -> str:
     rows = "".join(
         f"""
         <tr>
-          <td><strong>{getattr(row, "fund_name", "")}</strong><div class="muted">{getattr(row, "canonical_gp", "") if hasattr(row, "canonical_gp") else ""}</div></td>
+          <td><div class="logo-line table-logo">{logo_img(getattr(row, "canonical_gp", ""), 22)}<div><strong>{html.escape(str(getattr(row, "fund_name", "")))}</strong><div class="muted">{html.escape(str(getattr(row, "canonical_gp", ""))) if hasattr(row, "canonical_gp") else ""}</div></div></div></td>
           <td>{safe_int(getattr(row, "vintage_year", None))}</td>
           <td>{fmt_money(getattr(row, "capital_committed", None) if hasattr(row, "capital_committed") else getattr(row, "fund_size_usd_m", None) * 1_000_000 if clean_number(getattr(row, "fund_size_usd_m", None)) is not None else None)}</td>
           <td>{fmt_multiple(getattr(row, "dpi", None))}</td>
@@ -768,10 +859,15 @@ BASE_TEMPLATE = """
     .leader-row span { display:block; color:var(--muted); font-size:12px; margin-top:4px; }
     .leader-bar { height:9px; background:#F3F4F6; border-radius:99px; overflow:hidden; }
     .leader-bar i { display:block; height:100%; background:var(--accent); }
+    .logo-line { display:flex; align-items:center; gap:10px; min-width:0; }
+    .logo { width:28px; height:28px; border-radius:6px; object-fit:contain; background:#fff; border:1px solid var(--line); flex:0 0 auto; }
+    .table-logo .logo { width:22px; height:22px; border-radius:5px; }
+    .footnote { font-family:"IBM Plex Mono", monospace; color:var(--muted); font-size:11px; line-height:1.6; padding:10px 0 18px; border-top:1px solid #F3F4F6; }
     .firm-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:14px; margin:20px 0 28px; }
     .firm-card { display:block; color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:4px; padding:16px; background:#fff; min-height:176px; }
     .firm-card:hover { border-color:var(--accent); }
     .firm-title { font-family:Lora, Georgia, serif; font-weight:700; font-size:22px; margin-bottom:4px; }
+    .firm-title .logo { width:32px; height:32px; }
     .firm-sub { color:var(--muted); font-size:12px; min-height:34px; }
     .firm-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:14px 0; }
     .firm-stats span { border-top:1px solid var(--line); padding-top:8px; color:var(--muted); font-size:11px; text-transform:uppercase; }
@@ -861,6 +957,28 @@ def index():
 @app.get("/healthz")
 def healthz():
     return {"status": "ok", "app": "show-me-the-dpi"}
+
+
+@app.get("/logo/<path:name>")
+def logo(name: str):
+    token = os.environ.get("LOGO_DEV_TOKEN", "").strip()
+    domain = logo_domain(name)
+    if not token or not domain:
+        abort(404)
+    size = request.args.get("size", "64")
+    try:
+        logo_url = f"https://img.logo.dev/{domain}?token={token}&size={int(size)}&format=png"
+        resp = requests.get(logo_url, timeout=6)
+        if resp.status_code >= 400 or not resp.content:
+            abort(404)
+        content_type = resp.headers.get("content-type", "image/png")
+        return Response(
+            resp.content,
+            content_type=content_type,
+            headers={"Cache-Control": "public, max-age=86400, s-maxage=604800"},
+        )
+    except Exception:
+        abort(404)
 
 
 if __name__ == "__main__":
