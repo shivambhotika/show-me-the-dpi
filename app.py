@@ -58,6 +58,16 @@ LOGO_DOMAINS = {
     "social capital": "socialcapital.com",
     "union square ventures": "usv.com",
     "upfront ventures": "upfront.com",
+    "arch venture partners": "archventure.com",
+    "true ventures": "trueventures.com",
+    "techstars": "techstars.com",
+    "spark capital": "sparkcapital.com",
+    "union square ventures": "usv.com",
+    "ivp": "ivp.com",
+    "founders fund": "foundersfund.com",
+    "forerunner ventures": "forerunnerventures.com",
+    "tech crossover ventures": "tcv.com",
+    "technology crossover ventures": "tcv.com",
 }
 
 
@@ -198,17 +208,20 @@ def logo_img(name: str, size: int = 28) -> str:
     if not clean:
         return ""
     domain = logo_domain(clean)
-    if not domain or not LOGO_DEV_PUBLIC_KEY:
-        return ""
     src = f"https://img.logo.dev/{quote_plus(domain)}?token={quote_plus(LOGO_DEV_PUBLIC_KEY)}&size={int(size)}&format=png"
     alt = html.escape(str(name))
     initials = "".join(part[0].upper() for part in clean.split()[:2])[:2] or "GP"
-    return (
-        f'<span class="logo-wrap" style="width:{int(size)}px;height:{int(size)}px">'
-        f'<span class="logo-fallback">{html.escape(initials)}</span>'
+    image = ""
+    if domain and LOGO_DEV_PUBLIC_KEY:
+        image = (
         f'<img class="logo" src="{src}" alt="{alt}" loading="lazy" '
         'onload="this.parentNode.classList.add(\'loaded\')" '
         'onerror="this.parentNode.classList.add(\'failed\');this.remove()">'
+        )
+    return (
+        f'<span class="logo-wrap" style="width:{int(size)}px;height:{int(size)}px">'
+        f'<span class="logo-fallback">{html.escape(initials)}</span>'
+        f'{image}'
         '</span>'
     )
 
@@ -297,6 +310,36 @@ def load_benchmark_observations() -> pd.DataFrame:
     return df
 
 
+def freshness_summary(data: dict) -> dict:
+    """Return separate freshness dates for fund data, context, and checks."""
+    unified = data.get("unified", pd.DataFrame())
+    observations = data.get("benchmark_observations", pd.DataFrame())
+    external = data.get("external_benchmarks", pd.DataFrame())
+    metadata = data.get("source_metadata", pd.DataFrame())
+
+    def latest(values):
+        parsed = pd.to_datetime(pd.Series(values), errors="coerce").dropna()
+        return parsed.max().date().isoformat() if not parsed.empty else "unknown"
+
+    fund_date = latest(unified.get("scraped_date", [])) if not unified.empty else "unknown"
+    context_values = []
+    if not observations.empty:
+        context_values.extend(observations.get("data_as_of", []).tolist())
+    if not external.empty:
+        context_values.extend(external.get("data_as_of", []).tolist())
+    context_date = latest(context_values)
+    metadata_date = latest(metadata.get("Last Updated", [])) if not metadata.empty else "unknown"
+    checks = sorted((BASE_DIR / "data" / "refresh_reports").glob("source_check_*.csv"))
+    check_date = "unknown"
+    if checks:
+        try:
+            checked = pd.read_csv(checks[-1]).get("checked_at", [])
+            check_date = latest(checked)
+        except (OSError, ValueError, KeyError):
+            check_date = "unknown"
+    return {"fund_date": fund_date, "context_date": context_date, "metadata_date": metadata_date, "check_date": check_date}
+
+
 def page_data() -> dict:
     unified = load_unified()
     master = load_master()
@@ -305,7 +348,7 @@ def page_data() -> dict:
     source_metadata = load_source_metadata()
     external_benchmarks = load_external_benchmarks()
     benchmark_observations = load_benchmark_observations()
-    return {
+    result = {
         "unified": unified,
         "master": master,
         "market": market,
@@ -314,6 +357,8 @@ def page_data() -> dict:
         "external_benchmarks": external_benchmarks,
         "benchmark_observations": benchmark_observations,
     }
+    result["freshness"] = freshness_summary(result)
+    return result
 
 
 def source_badge(source_type: str) -> str:
@@ -379,6 +424,7 @@ def render_about(data: dict) -> str:
     unified = data["unified"]
     master = data["master"]
     market = data["market"]
+    freshness = data.get("freshness", {})
     source_count = unified["source"].nunique() if "source" in unified else 0
     return f"""
     <section class="hero">
@@ -392,6 +438,11 @@ def render_about(data: dict) -> str:
       <div class="metric"><span>Focus firm rows</span><strong>{len(master):,}</strong></div>
       <div class="metric"><span>Market-intel rows</span><strong>{len(market):,}</strong></div>
     </section>
+    <section class="freshness-panel">
+      <div><span class="freshness-kicker">DATA FRESHNESS</span><strong>Not every number has the same reporting date.</strong></div>
+      <div class="freshness-items"><span><b>LP fund snapshot</b>{html.escape(freshness.get('fund_date', 'unknown'))}</span><span><b>Latest benchmark context</b>{html.escape(freshness.get('context_date', 'unknown'))}</span><span><b>Source check</b>{html.escape(freshness.get('check_date', 'unknown'))}</span></div>
+    </section>
+    <section class="callout"><strong>Read the date before the number.</strong> The headline fund counts and performance figures come from the LP snapshot above. Newer benchmark or manager pages are shown as context until they provide comparable, source-backed fund-level data.</section>
     <section class="panel">
       <h2>How to read this</h2>
       <p>DPI shows how much cash has actually been returned to LPs. TVPI includes remaining unrealized value. Net IRR is useful, but it can be noisy for young funds and should be interpreted with fund age and cash distributions.</p>
@@ -838,7 +889,7 @@ def render_fund_database(data: dict) -> str:
     rows = "".join(
         f"""
         <tr>
-          <td><div class="logo-line table-logo">{logo_img(getattr(row, "canonical_gp", ""), 22)}<div><strong>{html.escape(clean_text(getattr(row, "fund_name", ""), "-"))}</strong><div class="muted">{html.escape(clean_text(getattr(row, "canonical_gp", ""))) if hasattr(row, "canonical_gp") else ""}</div></div></div></td>
+          <td><div class="logo-line table-logo">{logo_img(clean_text(getattr(row, "canonical_gp", None), clean_text(getattr(row, "fund_name", None), "Fund")), 22)}<div><strong>{html.escape(clean_text(getattr(row, "fund_name", ""), "-"))}</strong><div class="muted">{html.escape(clean_text(getattr(row, "canonical_gp", ""))) if hasattr(row, "canonical_gp") else ""}</div></div></div></td>
           <td>{safe_int(getattr(row, "vintage_year", None))}</td>
           <td>{fmt_commitment(commitment_from_row(row))}</td>
           <td>{fmt_multiple(getattr(row, "dpi", None))}</td>
@@ -1104,7 +1155,7 @@ BASE_TEMPLATE = """
   <style>
     :root { --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --accent:#E8571F; --soft:#FAFAFA; --green:#0F766E; }
     * { box-sizing: border-box; }
-    body { margin: 0; color: var(--ink); background: #fff; font-family: Inter, Arial, sans-serif; }
+    body { margin: 0; color: var(--ink); background: #fff; font-family: Inter, Arial, sans-serif; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
     .shell { width: min(1480px, calc(100vw - 44px)); margin: 0 auto; }
     header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px 0 13px; border-bottom: 1px solid var(--line); }
     .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 800; letter-spacing: .01em; }
@@ -1113,10 +1164,22 @@ BASE_TEMPLATE = """
     nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 24px; }
     nav a { color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: .06em; padding-bottom: 4px; border-bottom: 2px solid transparent; }
     nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
+    nav a:hover, .pager a:hover { color: var(--accent); }
+    a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid rgba(232,87,31,.28); outline-offset: 2px; }
+    .freshness-bar { display:flex; align-items:center; gap:9px; flex-wrap:wrap; padding:9px 0; border-bottom:1px solid var(--line); color:var(--muted); font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.04em; }
+    .freshness-bar span:first-child { color:var(--ink); font-weight:700; }
+    .freshness-bar i { display:inline-block; width:7px; height:7px; border-radius:50%; background:#0F766E; margin-right:5px; }
+    .freshness-bar a { margin-left:auto; color:var(--accent); text-decoration:none; font-weight:700; }
+    .freshness-panel { display:grid; grid-template-columns:minmax(230px,.8fr) 1.6fr; gap:20px; align-items:center; border:1px solid var(--line); border-left:4px solid var(--accent); padding:16px 18px; margin:0 0 20px; background:var(--soft); }
+    .freshness-kicker { display:block; color:var(--accent); font:700 11px "IBM Plex Mono", monospace; letter-spacing:.08em; margin-bottom:6px; }
+    .freshness-panel strong { display:block; font-size:17px; line-height:1.3; }
+    .freshness-items { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .freshness-items span { border-left:1px solid var(--line); padding-left:12px; color:var(--muted); font:11px "IBM Plex Mono", monospace; }
+    .freshness-items b { display:block; color:var(--ink); font:600 11px Inter, Arial, sans-serif; margin-bottom:5px; }
     main { padding: 26px 0 40px; }
     .hero { padding: 36px 0 28px; max-width: 920px; }
     .eyebrow { margin: 0 0 12px; font-family: "IBM Plex Mono", monospace; color: var(--accent); font-size: 12px; letter-spacing: .12em; }
-    h1 { margin: 0; font-family: Lora, Georgia, serif; font-size: clamp(42px, 7vw, 82px); line-height: .98; }
+    h1 { margin: 0; font-family: Lora, Georgia, serif; font-size: clamp(42px, 7vw, 82px); line-height: .98; text-wrap:balance; }
     h2 { margin: 0 0 10px; font-family: Lora, Georgia, serif; font-size: 28px; }
     .lede { color: #374151; font-size: 19px; line-height: 1.58; max-width: 860px; }
     .page-head { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; padding:30px 0 22px; border-bottom:1px solid var(--line); margin-bottom:18px; }
@@ -1132,7 +1195,7 @@ BASE_TEMPLATE = """
     .metric strong { font-size: 31px; line-height: 1.1; }
     .metric small { display:block; color:var(--muted); line-height:1.35; margin-top:8px; }
     .panel, .chart { border-top: 1px solid var(--line); padding: 24px 0; margin-top: 8px; }
-    .panel p { color: #374151; line-height: 1.6; max-width: 960px; }
+    .panel p { color: #374151; line-height: 1.6; max-width: 960px; text-wrap:pretty; }
     .panel ul { color:#374151; line-height:1.75; padding-left:20px; }
     .two-col { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:34px; }
     .section-intro { display:grid; grid-template-columns:190px 1fr; gap:26px; border-top:1px solid var(--line); padding:30px 0 12px; margin-top:24px; }
@@ -1206,10 +1269,15 @@ BASE_TEMPLATE = """
       .section-intro, .source-method { grid-template-columns:1fr; gap:10px; }
       .leader-row { grid-template-columns:1fr; }
       .page-head { align-items:flex-start; flex-direction:column; }
+      .freshness-panel { grid-template-columns:1fr; }
+      .freshness-items { grid-template-columns:repeat(3, minmax(0,1fr)); }
       h1 { font-size: 44px; }
     }
     @media (max-width: 520px) {
       .metric-grid { grid-template-columns: 1fr; }
+      .freshness-items { grid-template-columns:1fr; }
+      .freshness-items span { border-left:0; border-top:1px solid var(--line); padding:9px 0 0; }
+      .freshness-bar a { margin-left:0; }
       input, select, button { width: 100%; }
     }
   </style>
@@ -1224,6 +1292,7 @@ BASE_TEMPLATE = """
         {% endfor %}
       </nav>
     </header>
+    <div class="freshness-bar"><span><i></i> DATA STATUS</span><strong>LP data {{ freshness.get('fund_date', 'unknown') }}</strong><span>·</span><strong>Context {{ freshness.get('context_date', 'unknown') }}</strong><span>·</span><span>Checked {{ freshness.get('check_date', 'unknown') }}</span><a href="/?page=sources">View sources</a></div>
     <main>{{ content|safe }}</main>
     <footer>Source disclosures vary by reporting period and definitions. LP-disclosed and market-intelligence data are intentionally labeled separately.</footer>
   </div>
@@ -1239,7 +1308,7 @@ def index():
         abort(404)
     data = page_data()
     content = PAGE_RENDERERS[current_page](data)
-    return render_template_string(BASE_TEMPLATE, nav_items=NAV_ITEMS, current_page=current_page, content=content)
+    return render_template_string(BASE_TEMPLATE, nav_items=NAV_ITEMS, current_page=current_page, content=content, freshness=data.get("freshness", {}))
 
 
 @app.get("/healthz")
