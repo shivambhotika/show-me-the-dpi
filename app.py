@@ -12,6 +12,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from flask import Flask, Response, abort, render_template_string, request
 
+from data_quality import audit_frame, enrich_records
+
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
@@ -28,6 +30,7 @@ NAV_ITEMS = [
     ("FUND DATABASE", "fund_database"),
     ("SOURCES", "sources"),
     ("AUDIT", "audit"),
+    ("PE COMPARISON", "pe_comparison"),
 ]
 
 
@@ -208,7 +211,7 @@ def load_unified() -> pd.DataFrame:
             df[col] = pd.to_numeric(df[col], errors="coerce")
     if "data_source_type" not in df.columns:
         df["data_source_type"] = "LP-Disclosed"
-    return df
+    return enrich_records(df, BASE_DIR)
 
 
 def load_master() -> pd.DataFrame:
@@ -222,8 +225,6 @@ def load_master() -> pd.DataFrame:
         df = df[~df["canonical_gp"].astype(str).str.contains("Accel-KKR", case=False, na=False)].copy()
     if "fund_name" in df.columns:
         df = df[~df["fund_name"].astype(str).str.contains("Accel-KKR", case=False, na=False)].copy()
-    if "fund_category" in df.columns:
-        df = df[df["fund_category"].astype(str).ne("PE")].copy()
     if "vintage_year" in df.columns:
         df = df.dropna(subset=["vintage_year"]).copy()
         df["vintage_year"] = df["vintage_year"].astype(int)
@@ -244,7 +245,7 @@ def load_master() -> pd.DataFrame:
         df.loc[(df["source"] == "CalPERS") & (df["net_irr"] == 1.0), "net_irr"] = pd.NA
     if "data_source_type" in df.columns:
         df["data_source_type"] = df["data_source_type"].fillna("LP-Disclosed")
-    return df
+    return enrich_records(df, BASE_DIR)
 
 
 def load_market() -> pd.DataFrame:
@@ -257,7 +258,7 @@ def load_market() -> pd.DataFrame:
             df[col] = pd.to_numeric(df[col], errors="coerce")
     if "data_source_type" not in df.columns:
         df["data_source_type"] = "GP-Disclosed"
-    return df
+    return enrich_records(df, BASE_DIR)
 
 
 def load_benchmarks() -> pd.DataFrame:
@@ -398,7 +399,18 @@ def render_insights(data: dict) -> str:
     if master.empty:
         return '<section class="panel"><h2>Insights</h2><p>No master fund data found.</p></section>'
 
-    lp_full = master[master["data_source_type"].fillna("LP-Disclosed").astype(str).eq("LP-Disclosed")].copy()
+    strategy_filter = request.args.get("strategy", "Venture")
+    tier_filter = request.args.get("tier", "all")
+    source_filter = request.args.get("source", "LP-Disclosed")
+    year_filter = request.args.get("year", "all")
+    filtered = master[master["strategy"].fillna("Venture").eq(strategy_filter)].copy()
+    if tier_filter != "all":
+        filtered = filtered[filtered["fund_tier"].eq(tier_filter)]
+    if source_filter != "all":
+        filtered = filtered[filtered["data_source_type"].fillna("LP-Disclosed").eq(source_filter)]
+    if year_filter != "all":
+        filtered = filtered[pd.to_numeric(filtered["vintage_year"], errors="coerce").eq(float(year_filter))]
+    lp_full = filtered[filtered["data_source_type"].fillna("LP-Disclosed").astype(str).eq("LP-Disclosed")].copy()
     total_funds = len(master)
     post17 = lp_full[(lp_full["vintage_year"] >= 2017) & lp_full["dpi"].notna()]
     drought_pct = int((post17["dpi"] < 0.5).mean() * 100) if len(post17) else 0
@@ -407,6 +419,8 @@ def render_insights(data: dict) -> str:
     top_dpi_val = float(top_dpi["dpi"]) if top_dpi is not None else 0
     top_dpi_fund = str(top_dpi.get("fund_name", "")) if top_dpi is not None else "-"
     top_dpi_gp = str(top_dpi.get("canonical_gp", "")) if top_dpi is not None else "-"
+    scrape_dates = lp_full.get("scraped_date", pd.Series(dtype=object)).dropna().astype(str)
+    data_as_of = clean_text(scrape_dates.max() if not scrape_dates.empty else None, "unknown")
 
     by_vintage = lp_full.dropna(subset=["vintage_year", "dpi", "tvpi"]).copy()
     by_vintage["vintage_year"] = by_vintage["vintage_year"].astype(int)
@@ -450,7 +464,7 @@ def render_insights(data: dict) -> str:
         line=dict(color="#111827", width=2, dash="dot"),
         hovertemplate="Vintage %{x}<br>Median TVPI %{y:.2f}x<extra></extra>",
     ))
-    fig1.update_layout(title="DPI drought by vintage", xaxis_title="Vintage year", yaxis_title="Multiple")
+    fig1.update_layout(title=f"DPI drought by vintage · n={len(by_vintage):,} cohorts", xaxis_title="Vintage year", yaxis_title="Multiple")
 
     leaders = lp_full[lp_full["dpi"].notna() & (lp_full["dpi"] > 0)].sort_values("dpi", ascending=False).head(10)
     max_leader = max(float(leaders["dpi"].max()), 1.0) if not leaders.empty else 1.0
@@ -470,7 +484,7 @@ def render_insights(data: dict) -> str:
     fig2 = go.Figure()
     fig2.add_trace(go.Bar(x=paper["vintage_year"].astype(str), y=paper["median_dpi"], name="Realized DPI", marker_color="#E8571F"))
     fig2.add_trace(go.Bar(x=paper["vintage_year"].astype(str), y=paper["unrealized"], name="Unrealized TVPI less DPI", marker_color="#CBD5E1"))
-    fig2.update_layout(title="Paper value versus returned cash", barmode="stack", xaxis_title="Vintage year", yaxis_title="Multiple")
+    fig2.update_layout(title="Cash returned versus residual value proxy", barmode="stack", xaxis_title="Vintage year", yaxis_title="Multiple")
 
     benchmark_html = ""
     if not bench.empty and "median_dpi" in bench.columns:
@@ -545,16 +559,52 @@ def render_insights(data: dict) -> str:
             showlegend=False,
             hovertemplate=f"{html.escape(str(row.canonical_gp))}<br>%{{x:.1f}}%<extra></extra>",
         ))
-    fig3.update_layout(title="Manager variance: best and worst IRR by GP", xaxis_title="Net IRR range", yaxis_title="")
+    fig3.update_layout(title=f"Manager variance: best and worst IRR by GP · n={len(by_gp):,} managers", xaxis_title="Net IRR range", yaxis_title="")
+
+    trajectory_base = lp_full.dropna(subset=["canonical_gp", "vintage_year", "dpi", "tvpi"]).copy()
+    trajectory_counts = trajectory_base.groupby("canonical_gp")["fund_name"].count()
+    trajectory_gps = trajectory_counts[trajectory_counts >= 3].sort_values(ascending=False).head(6).index.tolist()
+    fig4 = go.Figure()
+    for gp in trajectory_gps:
+        rows = trajectory_base[trajectory_base["canonical_gp"].eq(gp)].sort_values("vintage_year")
+        fig4.add_trace(go.Scatter(x=rows["vintage_year"], y=rows["dpi"], mode="lines+markers", name=f"{gp} · DPI", hovertemplate=f"{html.escape(str(gp))}<br>Vintage %{{x}}<br>DPI %{{y:.2f}}x<extra></extra>"))
+        fig4.add_trace(go.Scatter(x=rows["vintage_year"], y=rows["tvpi"], mode="lines+markers", name=f"{gp} · TVPI", line=dict(dash="dot"), hovertemplate=f"{html.escape(str(gp))}<br>Vintage %{{x}}<br>TVPI %{{y:.2f}}x<extra></extra>"))
+    fig4.update_layout(title="Manager trajectories: DPI and TVPI by fund vintage", xaxis_title="Vintage year", yaxis_title="Multiple")
+    trajectory_html = f'<section class="chart">{plot_html(fig4)}</section>' if trajectory_gps else '<section class="callout">No manager has at least three funds with both DPI and TVPI in this filtered view.</section>'
 
     incomplete = data["unified"]
     incomplete_count = int((incomplete["vintage_year"].isna() | incomplete["capital_contributed"].isna()).sum()) if not incomplete.empty else 0
+    story_df = filtered[filtered["story_candidate"] & filtered["verification_status"].eq("verified-source")].copy()
+    story_df = story_df.sort_values(["dpi", "tvpi"], ascending=False, na_position="last").head(8)
+    stories_html = "".join(
+        f"<tr><td><strong>{html.escape(str(row.fund_name))}</strong></td><td>{safe_int(row.vintage_year)}</td><td>{fmt_multiple(row.dpi)}</td><td>{fmt_multiple(row.tvpi)}</td><td>{html.escape(str(row.source))}</td><td>{html.escape(str(row.reporting_period))}</td></tr>"
+        for row in story_df.itertuples()
+    ) or '<tr><td colspan="6">No verified exceptional candidates in this view.</td></tr>'
+    metadata = data.get("source_metadata", pd.DataFrame())
+    freshness_html = ""
+    if not metadata.empty:
+        freshness_html = "".join(
+            f"<tr><td>{html.escape(str(row.get('Source', '')))}</td><td>{html.escape(str(row.get('Last Updated', '')))}</td><td>{html.escape(str(row.get('Type', '')))}</td></tr>"
+            for _, row in metadata.iterrows()
+        )
 
     return f"""
     <section class="insight-hero">
       <p class="eyebrow">INSIGHTS — LP DISCLOSURE DATA</p>
       <h1>Most VC funds haven't returned your money yet.<br><em>Here's who has.</em></h1>
       <p class="lede">We analyze public LP disclosures from CalPERS, CalSTRS, WSIB, UC Regents, UTIMCO and others, plus select market intelligence. DPI first. Everything else is context.</p>
+      <p class="muted">Current LP snapshot: {html.escape(data_as_of)} · fund-weighted medians · source dates and definitions shown below.</p>
+    </section>
+    <section class="panel">
+      <form class="filters" method="get">
+        <input type="hidden" name="page" value="insights">
+        <select name="strategy"><option value="Venture" {"selected" if strategy_filter == "Venture" else ""}>Venture</option><option value="PE" {"selected" if strategy_filter == "PE" else ""}>PE</option></select>
+        <select name="source"><option value="LP-Disclosed" {"selected" if source_filter == "LP-Disclosed" else ""}>LP-disclosed</option><option value="all" {"selected" if source_filter == "all" else ""}>All source types</option></select>
+        <select name="tier"><option value="all" {"selected" if tier_filter == "all" else ""}>All venture tiers</option><option value="core" {"selected" if tier_filter == "core" else ""}>Core</option><option value="popular" {"selected" if tier_filter == "popular" else ""}>Popular</option><option value="exceptional" {"selected" if tier_filter == "exceptional" else ""}>Exceptional</option></select>
+        <select name="year"><option value="all">All vintages</option>{''.join(f'<option value="{year}" {"selected" if year_filter == str(year) else ""}>{year}</option>' for year in sorted(pd.to_numeric(master["vintage_year"], errors="coerce").dropna().astype(int).unique()))}</select>
+        <button type="submit">Apply view</button>
+      </form>
+      <p class="muted">Filters apply to the venture universe. Every chart is fund-weighted and uses the selected source basis; cohorts with fewer than two funds are omitted.</p>
     </section>
     <section class="metric-grid">
       <div class="metric"><span>Funds indexed</span><strong>{total_funds:,}</strong></div>
@@ -562,7 +612,7 @@ def render_insights(data: dict) -> str:
       <div class="metric"><span>Highest LP-disclosed DPI</span><strong>{fmt_multiple(top_dpi_val)}</strong><small>{html.escape(top_dpi_gp)} · {html.escape(top_dpi_fund[:42])}</small></div>
       <div class="metric"><span>Rows needing enrichment</span><strong>{incomplete_count:,}</strong></div>
     </section>
-    {section_intro("01 / DPI BY VINTAGE", "The DPI drought starts around 2017", "Pre-2015 funds have broadly returned capital. After 2016, the median fund in this dataset has returned little cash, even when TVPI still shows value on paper.")}
+    {section_intro("01 / DPI BY VINTAGE", "The DPI drought starts around 2017", "Pre-2015 funds have broadly returned capital. After 2016, the median fund in this dataset has returned little cash, even when TVPI still shows value on paper. Hover values include sample size; snapshot date: " + data_as_of + ".")}
     <section class="chart">{plot_html(fig1)}</section>
     <section class="pill-grid">{pill_html}</section>
     <section class="callout"><strong>What this means for LPs.</strong> TVPI can look healthier than the cash reality. The 2017-2021 cohort has paper marks that may still be useful, but DPI is the number that tells you whether an LP can redeploy capital.</section>
@@ -572,22 +622,27 @@ def render_insights(data: dict) -> str:
       <div class="callout"><strong>Dark-horse signal.</strong> DPI-first sorting surfaces smaller or less visible managers that brand-driven narratives often miss.</div>
       <div class="callout"><strong>Vintage pattern.</strong> The cash-return leaderboard is dominated by older vintages where realization cycles have actually had time to play out.</div>
     </section>
-    {section_intro("03 / PAPER VS REAL", "TVPI can look healthy while DPI is still thin", "The gap between TVPI and DPI is the unrealized portion. For newer vintages, that gap is the story.")}
+    {section_intro("03 / PAPER VS REAL", "TVPI can look healthy while DPI is still thin", "The stacked residual value proxy is TVPI less DPI. It is not direct RVPI unless both measures are reported on the same basis.")}
     <section class="chart">{plot_html(fig2)}</section>
     <section class="callout"><strong>The key tension.</strong> Strong TVPI without DPI means LPs are sitting on paper gains that depend on exits that have not happened yet.</section>
     {benchmark_html}
     {fee_drag_html}
     {section_intro("06 / MANAGER VARIANCE", "Same manager, different fund outcomes", "Public LP data makes it easier to compare a firm's fund-level spread instead of relying on a single brand-level reputation.")}
     <section class="chart">{plot_html(fig3)}</section>
+    {trajectory_html}
     <section class="two-col callout-grid">
       <div class="callout"><strong>Vintage timing is first-order.</strong> Picking the manager is one decision. Picking the fund cycle is another.</div>
       <div class="callout"><strong>Selection bias watch.</strong> Market-intelligence records often skew toward strong disclosed outcomes, so they should be treated as directional rather than audited.</div>
     </section>
+    {section_intro("07 / EXCEPTIONAL OUTCOMES", "Stories worth investigating", "These candidates meet the transparent exceptional-outcome rule and are still restricted to verified-source records. They are leads for source-backed reporting, not automatic claims.")}
+    <section class="panel"><div class="table-wrap"><table><thead><tr><th>Fund</th><th>Vintage</th><th>DPI</th><th>TVPI</th><th>Source</th><th>Period</th></tr></thead><tbody>{stories_html}</tbody></table></div></section>
+    <section class="panel"><h2>Data freshness</h2><p class="muted">Source-level dates are shown separately from each fund’s reporting period. A stale source is not silently treated as current.</p><div class="table-wrap"><table><thead><tr><th>Source</th><th>Last updated</th><th>Type</th></tr></thead><tbody>{freshness_html}</tbody></table></div></section>
     """
 
 
 def render_top_firms(data: dict) -> str:
     master = data["master"].copy()
+    master = master[master["strategy"].fillna("Venture").eq("Venture")].copy()
     if master.empty:
         return '<section class="panel"><h2>Top Firms</h2><p>No firm data found.</p></section>'
     firm = request.args.get("firm", "").strip()
@@ -676,6 +731,7 @@ def render_fund_database(data: dict) -> str:
         return '<section class="panel"><h2>Fund Database</h2><p>No fund rows found.</p></section>'
 
     q = request.args.get("q", "").strip()
+    strategy_filter = request.args.get("strategy", "Venture")
     source_filter = request.args.get("source", "all")
     year_filter = request.args.get("year", "all")
     sort = request.args.get("sort", "dpi")
@@ -683,6 +739,7 @@ def render_fund_database(data: dict) -> str:
     per_page = 50
 
     display = combined.copy()
+    display = display[display["strategy"].fillna("Venture").eq(strategy_filter)]
     if q:
         mask = display["fund_name"].fillna("").str.contains(q, case=False, regex=False)
         if "canonical_gp" in display:
@@ -740,6 +797,7 @@ def render_fund_database(data: dict) -> str:
           <option value="LP-Disclosed" {"selected" if source_filter == "LP-Disclosed" else ""}>LP-disclosed</option>
           <option value="GP-Disclosed" {"selected" if source_filter in ["GP-Disclosed", "Market Intelligence"] else ""}>Market intelligence</option>
         </select>
+        <select name="strategy"><option value="Venture" {"selected" if strategy_filter == "Venture" else ""}>Venture</option><option value="PE" {"selected" if strategy_filter == "PE" else ""}>PE</option></select>
         <select name="year">{year_options}</select>
         <select name="sort">
           <option value="dpi" {"selected" if sort == "dpi" else ""}>Sort by DPI</option>
@@ -823,6 +881,27 @@ def render_sources(data: dict) -> str:
     """
 
 
+def render_pe_comparison(data: dict) -> str:
+    pe = data["master"].copy()
+    pe = pe[pe["strategy"].eq("PE")].copy()
+    if pe.empty:
+        return f"{page_header('PE COMPARISON', 'SEPARATE PRIVATE-EQUITY VIEW')}<section class='panel'><p>No PE records are available.</p></section>"
+    by_vintage = pe.dropna(subset=["vintage_year", "dpi", "tvpi"]).groupby("vintage_year", as_index=False).agg(
+        median_dpi=("dpi", "median"), median_tvpi=("tvpi", "median"), funds=("fund_name", "count")
+    )
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=by_vintage["vintage_year"].astype(int), y=by_vintage["median_dpi"], name="Median DPI", marker_color="#E8571F", customdata=by_vintage["funds"], hovertemplate="Vintage %{x}<br>Median DPI %{y:.2f}x<br>n=%{customdata}<extra></extra>"))
+    fig.add_trace(go.Scatter(x=by_vintage["vintage_year"].astype(int), y=by_vintage["median_tvpi"], name="Median TVPI", mode="lines+markers", line=dict(color="#111827", dash="dot"), hovertemplate="Vintage %{x}<br>Median TVPI %{y:.2f}x<extra></extra>"))
+    fig.update_layout(title="PE comparison: cash returned versus total value", xaxis_title="Vintage year", yaxis_title="Multiple")
+    return f"""
+    {page_header('PE COMPARISON', 'SEPARATE PRIVATE-EQUITY VIEW', f'{len(pe):,} RECORDS')}
+    <section class="callout"><strong>Separate lens.</strong> PE is retained for comparison but is excluded from venture headlines, venture cohorts, and venture leaderboards.</section>
+    <section class="metric-grid"><div class="metric"><span>PE records</span><strong>{len(pe):,}</strong></div><div class="metric"><span>Funds with DPI</span><strong>{int(pe['dpi'].notna().sum()):,}</strong></div><div class="metric"><span>Funds with TVPI</span><strong>{int(pe['tvpi'].notna().sum()):,}</strong></div><div class="metric"><span>Sources</span><strong>{pe['source'].nunique():,}</strong></div></section>
+    <section class="chart">{plot_html(fig)}</section>
+    <section class="panel"><h2>PE records</h2><div class="table-wrap"><table><thead><tr><th>Fund</th><th>Vintage</th><th>DPI</th><th>TVPI</th><th>IRR</th><th>Source</th></tr></thead><tbody>{''.join(f'<tr><td>{html.escape(str(row.fund_name))}</td><td>{safe_int(row.vintage_year)}</td><td>{fmt_multiple(row.dpi)}</td><td>{fmt_multiple(row.tvpi)}</td><td>{fmt_percent(row.net_irr)}</td><td>{html.escape(str(row.source))}</td></tr>' for row in pe.sort_values('dpi', ascending=False, na_position='last').itertuples())}</tbody></table></div></section>
+    """
+
+
 def render_audit(data: dict) -> str:
     lp = data["unified"].copy()
     market = data["market"].copy()
@@ -840,13 +919,19 @@ def render_audit(data: dict) -> str:
         source_count = int(lp["source"].nunique())
 
     alerts = []
+    findings = audit_frame(lp, source_name="data/unified_funds.csv") if not lp.empty else pd.DataFrame()
+    if not findings.empty:
+        fail_count = int(findings["severity"].eq("fail").sum())
+        warn_count = int(findings["severity"].eq("warn").sum())
+        if fail_count:
+            alerts.append(("fail", f"{fail_count:,} critical validation findings in the normalized LP dataset."))
+        if warn_count:
+            alerts.append(("warn", f"{warn_count:,} source-basis warnings require documentation; reported values were preserved."))
     if not master.empty:
-        drought_fail = master[(master["vintage_year"] >= 2017) & (master["dpi"] >= 0.5)]
+        venture_master = master[master["strategy"].eq("Venture")]
+        drought_fail = venture_master[(venture_master["vintage_year"] >= 2017) & (venture_master["dpi"] >= 0.5)]
         if not drought_fail.empty:
-            alerts.append(("fail", f"DPI drought headline needs caveat: {len(drought_fail):,} 2017+ rows have DPI >= 0.5x."))
-        ia_exists = master["fund_name"].astype(str).str.contains("IA Venture Strategies", case=False, na=False).any()
-        if not ia_exists:
-            alerts.append(("fail", "IA Venture Strategies is missing from the master dataset. Any dark-horse copy should not link to it."))
+            alerts.append(("warn", f"DPI drought headline needs caveat: {len(drought_fail):,} 2017+ rows have DPI >= 0.5x."))
     if not lp.empty:
         bad_dpi = lp[lp["dpi"] > lp["tvpi"] + 0.05]
         if not bad_dpi.empty:
@@ -888,6 +973,7 @@ def render_audit(data: dict) -> str:
       <div class="metric"><span>Total market-intel funds</span><strong>{len(market):,}</strong></div>
       <div class="metric"><span>Meaningful IRR rows</span><strong>{meaningful_count:,}</strong></div>
       <div class="metric"><span>LP sources</span><strong>{source_count:,}</strong></div>
+      <div class="metric"><span>Validation findings</span><strong>{len(findings):,}</strong></div>
     </section>
     <section class="panel">
       <h2>Active alerts</h2>
@@ -910,6 +996,7 @@ PAGE_RENDERERS = {
     "fund_database": render_fund_database,
     "sources": render_sources,
     "audit": render_audit,
+    "pe_comparison": render_pe_comparison,
 }
 
 

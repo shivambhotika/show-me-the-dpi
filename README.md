@@ -37,3 +37,23 @@ Expected outputs:
 - `data/ingested_founders_fund.csv`
 - `data/unified_funds.csv`
 - Updated rows in `openlp.db` (or `openvc.db` if present)
+
+## Integrity and manual refresh
+
+Run the reproducible audit before publishing a data change:
+
+```bash
+python3 scripts/audit_data.py
+```
+
+The audit writes a dated row-level report under `data/audits/`. Reported source values are preserved; basis mismatches and impossible relationships are surfaced for review.
+
+Manual refresh commands:
+
+```bash
+python3 scripts/refresh.py check
+python3 scripts/refresh.py audit
+python3 scripts/refresh.py approve
+```
+
+`approve` only creates an immutable snapshot when the audit has no critical findings. There is no scheduled auto-publish workflow.
