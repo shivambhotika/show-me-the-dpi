@@ -1,0 +1,7 @@
+name,url,status,http_status,checked_at,note
+AngelList Fund Benchmarks,https://blog.angellist.com/fund-benchmarks-a-mid-year-2026-refresh,ok,200,2026-10-22T17:59:19.355820+00:00,final_url=https://blog.angellist.com/fund-benchmarks-a-mid-year-2026-refresh
+Carta VC Fund Performance,https://carta.com/uk/en/data/vc-fund-performance-q1-2026/,http-error,403,2026-10-22T17:59:19.355820+00:00,final_url=https://carta.com/uk/en/data/vc-fund-performance-q1-2026/
+MSCI Private Capital Benchmarks,https://www.msci.com/data-and-analytics/private-asset-solutions/private-capital-benchmarks-summary,ok,200,2026-10-22T17:59:19.355820+00:00,final_url=https://www.msci.com/data-and-analytics/private-asset-solutions/private-capital-benchmarks-summary
+Colibri Venture Fund Benchmark,https://www.colibri.institute/benchmark,ok,200,2026-10-22T17:59:19.355820+00:00,final_url=https://www.colibri.institute/benchmark
+Hummingbird Ventures,https://hummingbirdventures.com/returns.php,ok,200,2026-10-22T17:59:19.355820+00:00,final_url=https://hummingbirdventures.com/returns.php
+Ribbit Capital Perspective,https://www.ribbitcap.com/perspective,ok,200,2026-10-22T17:59:19.355820+00:00,final_url=https://www.ribbitcap.com/perspective

@@ -3,3 +3,4 @@ scrape.yml
 .github/workflows/
 .DS_Store
 **/.DS_Store
+.vercel
