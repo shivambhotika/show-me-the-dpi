@@ -1,0 +1,7 @@
+name,source_type,data_as_of,status,url,notes
+AngelList Fund Benchmarks,Fund administrator benchmark,2026-07-01,Recommended,"https://blog.angellist.com/fund-benchmarks-a-mid-year-2026-refresh","Vintage-level net IRR TVPI and DPI; use for cohort context, not manager-specific claims."
+Carta VC Fund Performance,Fund platform dataset,2026-Q1,Recommended,"https://carta.com/uk/en/data/vc-fund-performance-q1-2026/","2,775 venture funds; useful for TVPI versus realized DPI context."
+MSCI Private Capital Benchmarks,Global benchmark provider,2026-Q2,Recommended,"https://www.msci.com/data-and-analytics/private-asset-solutions/private-capital-benchmarks-summary","15,500+ closed-end funds; macro private-capital return and distribution context."
+Colibri Venture Fund Benchmark,LP and manager disclosure benchmark,2026-06-30,Recommended,"https://www.colibri.institute/benchmark","Keep LP-published and manager-reported returns separate; do not merge into one statistic."
+Hummingbird Ventures,Official manager disclosure,2026-07-01,Directional,"https://hummingbirdventures.com/returns.php","Annual manager-reported returns and venture MOIC; not standardized LP DPI/TVPI."
+Ribbit Capital Perspective,Official manager commentary,2026-Q2,Monitor,"https://www.ribbitcap.com/perspective","Newer Pulse and Power Letter material; no public audited fund-level DPI/TVPI series found."

@@ -248,15 +248,16 @@ def load_master() -> pd.DataFrame:
 
 
 def load_market() -> pd.DataFrame:
-    df = load_master()
-    if df.empty or "data_source_type" not in df.columns:
-        df = read_csv(BASE_DIR / "gp_disclosed_funds.csv")
-        for col in ["vintage_year", "fund_size_usd_m", "firm_aum_usd_b", "tvpi", "dpi", "net_irr", "gross_tvpi", "gross_dpi"]:
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
-        return df
-    source_type = df["data_source_type"].astype(str)
-    return df[source_type.isin(["Market Intelligence", "GP-Disclosed"])].copy()
+    # Keep GP-disclosed data on its own source-of-truth path.  Previously this
+    # was derived from vc_fund_master.csv, which made the Fund Database depend
+    # on whether the master file happened to contain the same rows.
+    df = read_csv(BASE_DIR / "gp_disclosed_funds.csv")
+    for col in ["vintage_year", "fund_size_usd_m", "firm_aum_usd_b", "tvpi", "dpi", "net_irr", "gross_tvpi", "gross_dpi"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    if "data_source_type" not in df.columns:
+        df["data_source_type"] = "GP-Disclosed"
+    return df
 
 
 def load_benchmarks() -> pd.DataFrame:
@@ -267,16 +268,31 @@ def load_benchmarks() -> pd.DataFrame:
     return df
 
 
+def load_source_metadata() -> pd.DataFrame:
+    df = read_csv(DATA_DIR / "source_metadata.csv")
+    if not df.empty:
+        df.columns = [str(c).strip() for c in df.columns]
+    return df
+
+
+def load_external_benchmarks() -> pd.DataFrame:
+    return read_csv(DATA_DIR / "external_benchmark_sources.csv")
+
+
 def page_data() -> dict:
     unified = load_unified()
     master = load_master()
     market = load_market()
     benchmarks = load_benchmarks()
+    source_metadata = load_source_metadata()
+    external_benchmarks = load_external_benchmarks()
     return {
         "unified": unified,
         "master": master,
         "market": market,
         "benchmarks": benchmarks,
+        "source_metadata": source_metadata,
+        "external_benchmarks": external_benchmarks,
     }
 
 
@@ -745,6 +761,8 @@ def render_fund_database(data: dict) -> str:
 def render_sources(data: dict) -> str:
     unified = data["unified"]
     market = data["market"]
+    source_metadata = data.get("source_metadata", pd.DataFrame())
+    external_benchmarks = data.get("external_benchmarks", pd.DataFrame())
     lp_rows = ""
     if not unified.empty:
         source_table = unified.groupby("source", dropna=False).agg(funds=("fund_name", "count"), latest_scrape=("scraped_date", "max")).reset_index().sort_values("funds", ascending=False)
@@ -753,6 +771,21 @@ def render_sources(data: dict) -> str:
     if not market.empty:
         market_table = market.groupby("source", dropna=False).agg(funds=("fund_name", "count"), period=("reporting_period", "max")).reset_index().sort_values("funds", ascending=False)
         market_rows = "".join(f"<tr><td>{row.source}</td><td>{int(row.funds):,}</td><td>{row.period}</td></tr>" for row in market_table.itertuples())
+    metadata_rows = ""
+    if not source_metadata.empty:
+        metadata_rows = "".join(
+            f"<tr><td>{html.escape(str(row.get('Source', '')))}</td><td>{html.escape(str(row.get('Type', '')))}</td>"
+            f"<td>{html.escape(str(row.get('Last Updated', '')))}</td><td>{html.escape(str(row.get('Notes', '')))}</td></tr>"
+            for _, row in source_metadata.iterrows()
+        )
+    benchmark_rows = ""
+    if not external_benchmarks.empty:
+        benchmark_rows = "".join(
+            f"<tr><td><a href=\"{html.escape(str(row.url), quote=True)}\" target=\"_blank\" rel=\"noopener\">{html.escape(str(row.name))}</a></td>"
+            f"<td>{html.escape(str(row.source_type))}</td><td>{html.escape(str(row.data_as_of))}</td>"
+            f"<td>{html.escape(str(row.status))}</td><td>{html.escape(str(row.notes))}</td></tr>"
+            for row in external_benchmarks.itertuples()
+        )
     return f"""
     {page_header("SOURCES", "DATA PROVENANCE & COVERAGE TRANSPARENCY")}
     <section class="source-method">
@@ -766,6 +799,11 @@ def render_sources(data: dict) -> str:
       <h2>02 / LP-disclosed source ledger</h2>
       <div class="table-wrap"><table><thead><tr><th>Source</th><th>Rows</th><th>Latest scrape</th></tr></thead><tbody>{lp_rows}</tbody></table></div>
     </section>
+    <section class="panel">
+      <h2>02A / Source freshness register</h2>
+      <p>This is the source-level freshness register. It is separate from each fund's reporting period because a file can contain multiple reporting dates.</p>
+      <div class="table-wrap"><table><thead><tr><th>Source</th><th>Type</th><th>Last updated</th><th>Notes</th></tr></thead><tbody>{metadata_rows}</tbody></table></div>
+    </section>
     <section class="callout">
       <strong>UTIMCO data notes.</strong> UTIMCO does not always disclose vintage year in fund performance reports. Inferred vintages are derived from fund names and cross-referenced close windows. UTIMCO reports invested capital rather than original commitment, so contribution fields should be read carefully.
     </section>
@@ -777,6 +815,7 @@ def render_sources(data: dict) -> str:
     <section class="panel">
       <h2>04 / Benchmark provenance</h2>
       <p>The CA benchmark file is approximate. It is synthesized from public LP annual reports, academic literature, and public quartile references. Cambridge Associates' actual benchmark data is proprietary, so these figures are directional reference bands rather than formal LP reporting values.</p>
+      <div class="table-wrap"><table><thead><tr><th>External source</th><th>Type</th><th>Data as of</th><th>Status</th><th>Use</th></tr></thead><tbody>{benchmark_rows}</tbody></table></div>
     </section>
     <section class="callout">
       <strong>Data quality notes.</strong> IRR values can be non-meaningful for very young funds. DPI of 0.00x on post-2017 funds is often expected in a distribution drought. LPs may report the same fund differently because of accounting treatment and valuation dates.
