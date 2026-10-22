@@ -65,6 +65,14 @@ class DataIntegrityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             self.assertEqual(refresh.display_path(Path(tmp) / "snapshot.csv"), str(Path(tmp) / "snapshot.csv"))
 
+    def test_source_registry_is_classified_without_being_fund_data(self):
+        registry = pd.read_csv(ROOT / "data" / "external_benchmark_sources.csv")
+        self.assertGreaterEqual(len(registry), 6)
+        self.assertIn("Ribbit Capital Perspective", set(registry["name"]))
+        ribbit = registry.loc[registry["name"].eq("Ribbit Capital Perspective")].iloc[0]
+        self.assertEqual(ribbit["status"], "Monitor")
+        self.assertNotIn("unified_funds.csv", str(ribbit.to_dict()))
+
 
 if __name__ == "__main__":
     unittest.main()
