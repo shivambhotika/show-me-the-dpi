@@ -95,10 +95,22 @@ def enrich_records(df: pd.DataFrame, base_dir: Path, *, retrieved_at: str | None
     )
     out["metric_basis"] = out["metric_basis"].where(out["metric_basis"].notna(), metric_defaults)
     out["verification_status"] = out["verification_status"].where(out["verification_status"].notna(), verification_defaults)
+    out["dispute_reason"] = out.get("dispute_reason", pd.Series("", index=out.index)).fillna("")
     out["calculation_method"] = out["calculation_method"].fillna("reported or normalized; see source")
     out["dpi_calculation_method"] = np.where(original_dpi, "reported", "derived from distributed/contributed when possible")
     out["tvpi_calculation_method"] = np.where(original_tvpi, "reported", "derived from distributed+NAV/contributed when possible")
     out["vintage_source"] = out["vintage_source"].fillna("reported" if "vintage_year" in out else "unknown")
+
+    # A reported DPI above reported TVPI cannot be reconciled from the row's
+    # available fields. Preserve both source values, but do not present the
+    # row as verified until the source explains its basis or a reviewer clears
+    # it. This is deliberately a classification, not a silent correction.
+    if {"dpi", "tvpi"}.issubset(out.columns):
+        dpi_values = pd.to_numeric(out["dpi"], errors="coerce")
+        tvpi_values = pd.to_numeric(out["tvpi"], errors="coerce")
+        disputed = dpi_values.notna() & tvpi_values.notna() & (dpi_values > tvpi_values + 0.05)
+        out.loc[disputed, "verification_status"] = "disputed-source"
+        out.loc[disputed, "dispute_reason"] = "reported DPI exceeds reported TVPI; source basis requires review"
 
     patterns = popular_patterns(base_dir)
     def tier(row: pd.Series) -> str:
@@ -151,7 +163,7 @@ def audit_frame(df: pd.DataFrame, *, source_name: str = "dataset") -> pd.DataFra
                 reported = row.get("tvpi_calculation_method", "reported") == "reported"
                 findings.append({"source": source_name, "row": idx, "metric": "tvpi", "severity": "warn" if reported else "fail", "finding": f"reported {tvpi:.4f} differs from (distributed+nav)/contributed {expected:.4f}", "disposition": "document source basis" if reported else "repair calculation"})
         if pd.notna(dpi) and pd.notna(tvpi) and dpi > tvpi + 0.05:
-            findings.append({"source": source_name, "row": idx, "metric": "dpi/tvpi", "severity": "fail", "finding": f"DPI {dpi:.4f} exceeds TVPI {tvpi:.4f}", "disposition": "preserve and mark disputed"})
+            findings.append({"source": source_name, "row": idx, "metric": "dpi/tvpi", "severity": "disputed", "finding": f"DPI {dpi:.4f} exceeds TVPI {tvpi:.4f}", "disposition": "preserve values and exclude from verified rankings until source basis is confirmed"})
         irr = numeric.get("net_irr", pd.Series(dtype=float)).get(idx, np.nan)
         if pd.notna(irr) and abs(irr) > 10:
             findings.append({"source": source_name, "row": idx, "metric": "net_irr", "severity": "fail", "finding": "IRR is not normalized to decimal scale", "disposition": "normalize in pipeline"})

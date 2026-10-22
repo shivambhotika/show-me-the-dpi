@@ -3,10 +3,17 @@ Venture fund returns basis open available data
 
 ## Deployment
 
-This repo now includes two app entrypoints:
+The supported product is the Flask app deployed on Vercel. `app.py` is the
+single production entrypoint and `vercel.json` makes the Python runtime and
+catch-all route explicit. The former Streamlit implementation is not part of
+the Vercel build or refresh workflow and is intentionally left untouched.
 
-- `app.py`: Flask app for Vercel. Vercel should detect the top-level `app` variable automatically.
-- `streamlit_app.py`: legacy Streamlit app for Streamlit Community Cloud or local Streamlit runs. Use `requirements-streamlit.txt` for that version.
+Local smoke test:
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 -m flask --app app run
+```
 
 Firm logos use logo.dev. The Vercel app includes a publishable fallback key, and you can override it with:
 
@@ -56,4 +63,15 @@ python3 scripts/refresh.py audit
 python3 scripts/refresh.py approve
 ```
 
-`approve` only creates an immutable snapshot when the audit has no critical findings. There is no scheduled auto-publish workflow.
+`approve` only creates an immutable snapshot when the audit has no blocking
+schema or calculation failures. Documented source-basis disputes remain
+visible, are excluded from verified rankings, and are carried into the
+snapshot report. There is no scheduled auto-publish workflow.
+
+## Vercel-only operating model
+
+- Deploy from the repository root using the Flask entrypoint.
+- Use `/healthz` as the deployment smoke check.
+- Do not install Streamlit or run the old Streamlit entrypoints.
+- Run refresh, audit, review, and approval manually; a deployment never
+  mutates the data snapshot.

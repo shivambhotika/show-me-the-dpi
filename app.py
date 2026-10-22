@@ -411,10 +411,13 @@ def render_insights(data: dict) -> str:
     if year_filter != "all":
         filtered = filtered[pd.to_numeric(filtered["vintage_year"], errors="coerce").eq(float(year_filter))]
     lp_full = filtered[filtered["data_source_type"].fillna("LP-Disclosed").astype(str).eq("LP-Disclosed")].copy()
+    # Keep source inconsistencies visible in the database/audit page, but do
+    # not let them enter verified venture rankings or benchmark cohorts.
+    verified_lp = lp_full[~lp_full["verification_status"].fillna("verified-source").eq("disputed-source")].copy()
     total_funds = len(master)
-    post17 = lp_full[(lp_full["vintage_year"] >= 2017) & lp_full["dpi"].notna()]
+    post17 = verified_lp[(verified_lp["vintage_year"] >= 2017) & verified_lp["dpi"].notna()]
     drought_pct = int((post17["dpi"] < 0.5).mean() * 100) if len(post17) else 0
-    top_dpi_df = lp_full[lp_full["dpi"].notna()].sort_values("dpi", ascending=False)
+    top_dpi_df = verified_lp[verified_lp["dpi"].notna()].sort_values("dpi", ascending=False)
     top_dpi = top_dpi_df.iloc[0] if not top_dpi_df.empty else None
     top_dpi_val = float(top_dpi["dpi"]) if top_dpi is not None else 0
     top_dpi_fund = str(top_dpi.get("fund_name", "")) if top_dpi is not None else "-"
@@ -422,7 +425,7 @@ def render_insights(data: dict) -> str:
     scrape_dates = lp_full.get("scraped_date", pd.Series(dtype=object)).dropna().astype(str)
     data_as_of = clean_text(scrape_dates.max() if not scrape_dates.empty else None, "unknown")
 
-    by_vintage = lp_full.dropna(subset=["vintage_year", "dpi", "tvpi"]).copy()
+    by_vintage = verified_lp.dropna(subset=["vintage_year", "dpi", "tvpi"]).copy()
     by_vintage["vintage_year"] = by_vintage["vintage_year"].astype(int)
     by_vintage = (
         by_vintage.groupby("vintage_year", as_index=False)
@@ -432,7 +435,7 @@ def render_insights(data: dict) -> str:
     pill_years = [2010, 2011, 2012, 2014, 2015, 2017, 2019, 2021]
     pill_html = ""
     for year in pill_years:
-        rows = lp_full[lp_full["vintage_year"].eq(year)]["dpi"].dropna()
+        rows = verified_lp[verified_lp["vintage_year"].eq(year)]["dpi"].dropna()
         dpi_value = float(rows.median()) if len(rows) >= 2 else None
         if dpi_value is None:
             pill_class, label, value = "pill-none", "No data", "-"
@@ -466,7 +469,7 @@ def render_insights(data: dict) -> str:
     ))
     fig1.update_layout(title=f"DPI drought by vintage · n={len(by_vintage):,} cohorts", xaxis_title="Vintage year", yaxis_title="Multiple")
 
-    leaders = lp_full[lp_full["dpi"].notna() & (lp_full["dpi"] > 0)].sort_values("dpi", ascending=False).head(10)
+    leaders = verified_lp[verified_lp["dpi"].notna() & (verified_lp["dpi"] > 0)].sort_values("dpi", ascending=False).head(10)
     max_leader = max(float(leaders["dpi"].max()), 1.0) if not leaders.empty else 1.0
     leader_rows = "".join(
         f"""
@@ -542,7 +545,7 @@ def render_insights(data: dict) -> str:
         """
 
     by_gp = (
-        lp_full[lp_full["net_irr"].notna() & lp_full["canonical_gp"].notna()]
+        verified_lp[verified_lp["net_irr"].notna() & verified_lp["canonical_gp"].notna()]
         .groupby("canonical_gp", dropna=True)
         .agg(min_irr=("net_irr", "min"), max_irr=("net_irr", "max"), funds=("fund_name", "count"))
         .reset_index()
@@ -561,7 +564,7 @@ def render_insights(data: dict) -> str:
         ))
     fig3.update_layout(title=f"Manager variance: best and worst IRR by GP · n={len(by_gp):,} managers", xaxis_title="Net IRR range", yaxis_title="")
 
-    trajectory_base = lp_full.dropna(subset=["canonical_gp", "vintage_year", "dpi", "tvpi"]).copy()
+    trajectory_base = verified_lp.dropna(subset=["canonical_gp", "vintage_year", "dpi", "tvpi"]).copy()
     trajectory_counts = trajectory_base.groupby("canonical_gp")["fund_name"].count()
     trajectory_gps = trajectory_counts[trajectory_counts >= 3].sort_values(ascending=False).head(6).index.tolist()
     fig4 = go.Figure()
@@ -604,7 +607,7 @@ def render_insights(data: dict) -> str:
         <select name="year"><option value="all">All vintages</option>{''.join(f'<option value="{year}" {"selected" if year_filter == str(year) else ""}>{year}</option>' for year in sorted(pd.to_numeric(master["vintage_year"], errors="coerce").dropna().astype(int).unique()))}</select>
         <button type="submit">Apply view</button>
       </form>
-      <p class="muted">Filters apply to the venture universe. Every chart is fund-weighted and uses the selected source basis; cohorts with fewer than two funds are omitted.</p>
+      <p class="muted">Filters apply to the venture universe. Verified charts exclude disputed source-basis rows; every chart is fund-weighted and cohorts with fewer than two funds are omitted.</p>
     </section>
     <section class="metric-grid">
       <div class="metric"><span>Funds indexed</span><strong>{total_funds:,}</strong></div>
@@ -923,8 +926,11 @@ def render_audit(data: dict) -> str:
     if not findings.empty:
         fail_count = int(findings["severity"].eq("fail").sum())
         warn_count = int(findings["severity"].eq("warn").sum())
+        disputed_count = int(findings["severity"].eq("disputed").sum())
         if fail_count:
-            alerts.append(("fail", f"{fail_count:,} critical validation findings in the normalized LP dataset."))
+            alerts.append(("fail", f"{fail_count:,} blocking validation findings in the normalized LP dataset."))
+        if disputed_count:
+            alerts.append(("warn", f"{disputed_count:,} source-basis discrepancies are preserved and excluded from verified rankings."))
         if warn_count:
             alerts.append(("warn", f"{warn_count:,} source-basis warnings require documentation; reported values were preserved."))
     if not master.empty:
@@ -935,7 +941,7 @@ def render_audit(data: dict) -> str:
     if not lp.empty:
         bad_dpi = lp[lp["dpi"] > lp["tvpi"] + 0.05]
         if not bad_dpi.empty:
-            alerts.append(("fail", f"{len(bad_dpi):,} LP rows have DPI greater than TVPI by more than 0.05x."))
+            alerts.append(("warn", f"{len(bad_dpi):,} LP rows have DPI greater than TVPI by more than 0.05x; these are marked disputed."))
         placeholders = lp[(lp["tvpi"] == 1.0) & (lp["vintage_year"] <= 2018)]
         if not placeholders.empty:
             alerts.append(("warn", f"{len(placeholders):,} older LP rows still show TVPI = 1.0x."))

@@ -1,0 +1,11 @@
+.streamlit/
+streamlit_app.py
+streamlit_dashboard.py
+requirements-streamlit.txt
+openlp.db
+data/raw/
+data/snapshots/
+data/audits/
+data/refresh_reports/
+tests/
+work/

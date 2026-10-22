@@ -4,16 +4,16 @@
 Show Me the DPI
 
 ## Current Project Goal
-Provide an analyst-focused Streamlit research tool for evaluating VC/PE fund performance using LP-disclosed data, with explicit source attribution, benchmark context, and a separate market-intelligence lens.
+Provide an analyst-focused Flask/Vercel research tool for evaluating VC/PE fund performance using LP-disclosed data, with explicit source attribution, benchmark context, and a separate market-intelligence lens. Streamlit is legacy and outside the supported product path.
 
 ## Tech Stack
 - Language: Python 3.9
-- App framework: Streamlit
+- App framework: Flask
 - Data processing: pandas, numpy
 - Visualization: Plotly (`plotly.express`, `plotly.graph_objects`)
 - Database: SQLite (`openlp.db`, fallback `openvc.db`) used as legacy/fallback in project context
 - Data ingestion/parsing: `requests`, `beautifulsoup4`, `pdfplumber`
-- Deployment: Streamlit Cloud / GitHub-based deploy flow
+- Deployment: Vercel / GitHub-based deploy flow
 
 ## Data Pipeline
 `scrapers/*.py` -> source CSVs in `data/` -> `normalize.py` -> `data/unified_funds.csv` -> `app.py`
@@ -52,9 +52,10 @@ Provide an analyst-focused Streamlit research tool for evaluating VC/PE fund per
 - Includes benchmark provenance section for CA-approximate benchmark dataset.
 
 ## Immediate Next Step
-1. Improve entity matching quality for canonical GP assignment (reduce false positives/false negatives in coverage).
-2. Improve UTIMCO/WSIB row-level enrichment for missing vintage/contribution fields.
-3. Add lightweight automated validation checks for chart input completeness after normalization.
+1. Close and approve the Phase 1 data baseline before adding new coverage.
+2. Improve entity matching quality for canonical GP assignment.
+3. Improve UTIMCO/WSIB row-level enrichment for missing vintage/contribution fields.
+4. Add benchmark/source adapters only through the manual refresh workflow.
 
 ## Development Principles
 - Keep UI minimal, legible, and analyst-oriented.

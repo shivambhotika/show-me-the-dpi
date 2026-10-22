@@ -18,6 +18,14 @@ from data_quality import audit_frame, enrich_records
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def display_path(path: Path) -> str:
+    """Render paths inside or outside the repository without failing."""
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Prepare or approve a manual data refresh")
     parser.add_argument("command", choices=["check", "audit", "approve"])
@@ -41,7 +49,7 @@ def main() -> int:
 
     if args.command == "check":
         print(f"Checked {len(current):,} rows; {len(findings):,} findings")
-        print(f"Report: {report_path.relative_to(ROOT) if report_path.is_relative_to(ROOT) else report_path}")
+        print(f"Report: {display_path(report_path)}")
         print("No files were replaced. Use audit for the full report or approve after review.")
         return 1 if not findings.empty else 0
 
@@ -50,13 +58,16 @@ def main() -> int:
         print(findings.to_string(index=False) if not findings.empty else "No findings.")
         return 1 if not findings.empty else 0
 
-    if not findings.empty:
-        print("Approval refused: resolve or explicitly document findings before publishing.")
-        print(f"Review: {report_path.relative_to(ROOT) if report_path.is_relative_to(ROOT) else report_path}")
+    blocking = findings[findings["severity"].eq("fail")] if not findings.empty else findings
+    if not blocking.empty:
+        print("Approval refused: resolve blocking schema or calculation failures before publishing.")
+        print(f"Review: {display_path(report_path)}")
         return 1
+    if not findings.empty:
+        print(f"Publishing with {len(findings):,} documented warnings/disputes; these remain visible in the audit trail.")
     snapshot_path = snapshot_dir / f"unified_funds_{stamp}.csv"
     shutil.copy2(input_path, snapshot_path)
-    print(f"Approved immutable snapshot: {snapshot_path.relative_to(ROOT)}")
+    print(f"Approved immutable snapshot: {display_path(snapshot_path)}")
     return 0
 
 
