@@ -28,6 +28,11 @@ PROVENANCE_COLUMNS = [
     "vintage_source",
     "story_candidate",
     "story_reason",
+    "dispute_reason",
+    "fund_sequence",
+    "stage",
+    "geography",
+    "fund_size_band",
 ]
 
 
@@ -70,6 +75,61 @@ def popular_patterns(base_dir: Path) -> list[tuple[str, str]]:
     return [(str(row.canonical_gp), str(row.match_pattern).lower()) for row in df.itertuples()]
 
 
+_ROMAN = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7, "VIII": 8, "IX": 9, "X": 10, "XI": 11, "XII": 12, "XIII": 13, "XIV": 14, "XV": 15}
+
+
+def fund_sequence_from_name(value) -> str:
+    text = _text(value).upper()
+    match = re.search(r"(?:FUND|PARTNERS|VENTURES|CAPITAL|SELECT)\s+([IVXLCDM]+|\d+)", text)
+    if not match:
+        return ""
+    token = match.group(1)
+    if token.isdigit():
+        return str(int(token))
+    return str(_ROMAN.get(token, ""))
+
+
+def stage_from_row(row: pd.Series) -> str:
+    text = " ".join(_text(row.get(col)).lower() for col in ("stage_focus", "sub_strategy", "fund_category"))
+    if any(token in text for token in ("seed", "accelerator", "pre-seed")):
+        return "Seed / accelerator"
+    if any(token in text for token in ("growth", "late", "crossover", "series c", "series d")):
+        return "Growth / late stage"
+    if any(token in text for token in ("multi-stage", "multi stage")):
+        return "Multi-stage"
+    if any(token in text for token in ("early", "series a", "series b")):
+        return "Early stage"
+    return "Unclassified"
+
+
+def geography_from_row(row: pd.Series) -> str:
+    text = " ".join(_text(row.get(col)).lower() for col in ("hq_city", "investment_focus"))
+    if any(token in text for token in ("europe", "uk", "london", "israel", "tel aviv", "beijing", "china", "singapore")):
+        return "International"
+    if any(token in text for token in ("new york", "boston", "chicago", "austin", "texas", "miami", "washington")):
+        return "US non-West"
+    if any(token in text for token in ("california", "san francisco", "menlo park", "palo alto", "los angeles", "boulder")):
+        return "US West"
+    return "Unknown"
+
+
+def fund_size_band_from_row(row: pd.Series) -> str:
+    value = pd.to_numeric(pd.Series([row.get("fund_size_usd_m")]), errors="coerce").iloc[0]
+    if pd.isna(value):
+        value = pd.to_numeric(pd.Series([row.get("capital_committed")]), errors="coerce").iloc[0]
+        if pd.notna(value):
+            value = value / 1_000_000 if value > 10_000 else value
+    if pd.isna(value):
+        return "Unknown"
+    if value < 100:
+        return "<$100M"
+    if value < 500:
+        return "$100M–$500M"
+    if value < 1_000:
+        return "$500M–$1B"
+    return "$1B+"
+
+
 def enrich_records(df: pd.DataFrame, base_dir: Path, *, retrieved_at: str | None = None) -> pd.DataFrame:
     """Add explicit classifications/provenance defaults without changing metrics."""
     out = df.copy()
@@ -100,6 +160,10 @@ def enrich_records(df: pd.DataFrame, base_dir: Path, *, retrieved_at: str | None
     out["dpi_calculation_method"] = np.where(original_dpi, "reported", "derived from distributed/contributed when possible")
     out["tvpi_calculation_method"] = np.where(original_tvpi, "reported", "derived from distributed+NAV/contributed when possible")
     out["vintage_source"] = out["vintage_source"].fillna("reported" if "vintage_year" in out else "unknown")
+    out["fund_sequence"] = out["fund_sequence"].where(out["fund_sequence"].notna(), out.get("fund_name", pd.Series("", index=out.index)).map(fund_sequence_from_name))
+    out["stage"] = out["stage"].where(out["stage"].notna(), out.apply(stage_from_row, axis=1))
+    out["geography"] = out["geography"].where(out["geography"].notna(), out.apply(geography_from_row, axis=1))
+    out["fund_size_band"] = out["fund_size_band"].where(out["fund_size_band"].notna(), out.apply(fund_size_band_from_row, axis=1))
 
     # A reported DPI above reported TVPI cannot be reconciled from the row's
     # available fields. Preserve both source values, but do not present the

@@ -1,0 +1,5 @@
+name,source,metric,vintage_year,percentile,value,units,data_as_of,verification_status,source_url,notes
+AngelList 2017 median,AngelList Fund Benchmarks,median_dpi,2017,50,0.34,x,2026-07-01,published-benchmark,https://blog.angellist.com/fund-benchmarks-a-mid-year-2026-refresh,Published cohort benchmark; context only and not a manager-specific fund record.
+AngelList 2019 median,AngelList Fund Benchmarks,median_dpi,2019,50,0.15,x,2026-07-01,published-benchmark,https://blog.angellist.com/fund-benchmarks-a-mid-year-2026-refresh,Published cohort benchmark; context only and not a manager-specific fund record.
+AngelList 2021 median,AngelList Fund Benchmarks,median_tvpi,2021,50,1.12,x,2026-07-01,published-benchmark,https://blog.angellist.com/fund-benchmarks-a-mid-year-2026-refresh,Published cohort benchmark; context only and not a manager-specific fund record.
+Hummingbird annual venture claim,Hummingbird Ventures,reported_moic,,,10.0,x,2026-07-01,manager-reported,https://hummingbirdventures.com/returns.php,Manager-level annual claim; never converted to DPI or TVPI.

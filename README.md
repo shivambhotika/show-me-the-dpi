@@ -63,6 +63,17 @@ python3 scripts/refresh.py audit
 python3 scripts/refresh.py approve
 ```
 
+`check` also probes the configured benchmark/source pages and writes a dated
+source report plus a row-level new/changed/removed diff. Use
+`--skip-source-check` only for offline development. Benchmark observations in
+`data/benchmark_observations.csv` are context-only and are never merged into
+the verified fund-level dataset.
+
+The Insights page supports venture filters for vintage, fund sequence, stage,
+geography, fund-size band, source type, and verification state. It keeps
+fund-weighted medians, capital-weighted averages, percentile ranges, and
+source-specific observations visibly separate.
+
 `approve` only creates an immutable snapshot when the audit has no blocking
 schema or calculation failures. Documented source-basis disputes remain
 visible, are excluded from verified rankings, and are carried into the

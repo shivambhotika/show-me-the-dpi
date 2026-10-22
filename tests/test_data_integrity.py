@@ -73,6 +73,26 @@ class DataIntegrityTests(unittest.TestCase):
         self.assertEqual(ribbit["status"], "Monitor")
         self.assertNotIn("unified_funds.csv", str(ribbit.to_dict()))
 
+    def test_refresh_change_report_detects_added_changed_removed(self):
+        old = pd.DataFrame({
+            "fund_name": ["A", "B"], "vintage_year": [2010, 2011], "source": ["S", "S"], "reporting_period": ["P", "P"],
+            "dpi": [1.0, 0.2],
+        })
+        new = pd.DataFrame({
+            "fund_name": ["A", "C"], "vintage_year": [2010, 2012], "source": ["S", "S"], "reporting_period": ["P", "P"],
+            "dpi": [1.2, 0.1],
+        })
+        diff = refresh.build_change_report(new, old)
+        self.assertEqual(set(diff["change_type"]), {"new", "removed", "changed"})
+        self.assertTrue(((diff["change_type"] == "changed") & (diff["field"] == "dpi")).any())
+
+    def test_refresh_change_report_does_not_churn_missing_keys(self):
+        frame = pd.DataFrame({
+            "fund_name": ["A"], "vintage_year": [None], "source": ["S"], "reporting_period": ["P"], "dpi": [1.0],
+        })
+        diff = refresh.build_change_report(frame, frame.copy())
+        self.assertTrue(diff.empty)
+
 
 if __name__ == "__main__":
     unittest.main()

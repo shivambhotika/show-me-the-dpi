@@ -163,6 +163,15 @@ def median_or_nan(series) -> float:
     return float(values.median())
 
 
+def weighted_mean(frame: pd.DataFrame, value_col: str, weight_col: str) -> float:
+    values = pd.to_numeric(frame.get(value_col), errors="coerce")
+    weights = pd.to_numeric(frame.get(weight_col), errors="coerce")
+    valid = values.notna() & weights.notna() & (weights > 0)
+    if not valid.any():
+        return float("nan")
+    return float((values[valid] * weights[valid]).sum() / weights[valid].sum())
+
+
 def normalize_logo_name(name: str) -> str:
     text = clean_text(name)
     if not text:
@@ -280,6 +289,14 @@ def load_external_benchmarks() -> pd.DataFrame:
     return read_csv(DATA_DIR / "external_benchmark_sources.csv")
 
 
+def load_benchmark_observations() -> pd.DataFrame:
+    df = read_csv(DATA_DIR / "benchmark_observations.csv")
+    for col in ["vintage_year", "percentile", "value"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    return df
+
+
 def page_data() -> dict:
     unified = load_unified()
     master = load_master()
@@ -287,6 +304,7 @@ def page_data() -> dict:
     benchmarks = load_benchmarks()
     source_metadata = load_source_metadata()
     external_benchmarks = load_external_benchmarks()
+    benchmark_observations = load_benchmark_observations()
     return {
         "unified": unified,
         "master": master,
@@ -294,6 +312,7 @@ def page_data() -> dict:
         "benchmarks": benchmarks,
         "source_metadata": source_metadata,
         "external_benchmarks": external_benchmarks,
+        "benchmark_observations": benchmark_observations,
     }
 
 
@@ -302,6 +321,12 @@ def source_badge(source_type: str) -> str:
     css = "badge-gp" if label.startswith("GP") or label == "Market Intelligence" else "badge-lp"
     display = "Market Intelligence" if label.startswith("GP") else label
     return f'<span class="badge {css}">{html.escape(display)}</span>'
+
+
+def verification_badge(status: str) -> str:
+    label = str(status or "unknown")
+    css = "badge-gp" if label in {"directional", "disputed-source", "manager-reported"} else "badge-lp"
+    return f'<span class="badge {css}">{html.escape(label)}</span>'
 
 
 def source_type_mask(series: pd.Series, selected: str) -> pd.Series:
@@ -403,6 +428,11 @@ def render_insights(data: dict) -> str:
     tier_filter = request.args.get("tier", "all")
     source_filter = request.args.get("source", "LP-Disclosed")
     year_filter = request.args.get("year", "all")
+    sequence_filter = request.args.get("sequence", "all")
+    stage_filter = request.args.get("stage", "all")
+    geography_filter = request.args.get("geography", "all")
+    size_filter = request.args.get("size", "all")
+    verification_filter = request.args.get("verification", "verified-source")
     filtered = master[master["strategy"].fillna("Venture").eq(strategy_filter)].copy()
     if tier_filter != "all":
         filtered = filtered[filtered["fund_tier"].eq(tier_filter)]
@@ -410,11 +440,21 @@ def render_insights(data: dict) -> str:
         filtered = filtered[filtered["data_source_type"].fillna("LP-Disclosed").eq(source_filter)]
     if year_filter != "all":
         filtered = filtered[pd.to_numeric(filtered["vintage_year"], errors="coerce").eq(float(year_filter))]
+    if sequence_filter != "all":
+        filtered = filtered[filtered["fund_sequence"].fillna("").astype(str).eq(sequence_filter)]
+    if stage_filter != "all":
+        filtered = filtered[filtered["stage"].fillna("Unclassified").eq(stage_filter)]
+    if geography_filter != "all":
+        filtered = filtered[filtered["geography"].fillna("Unknown").eq(geography_filter)]
+    if size_filter != "all":
+        filtered = filtered[filtered["fund_size_band"].fillna("Unknown").eq(size_filter)]
+    if verification_filter != "all":
+        filtered = filtered[filtered["verification_status"].fillna("verified-source").eq(verification_filter)]
     lp_full = filtered[filtered["data_source_type"].fillna("LP-Disclosed").astype(str).eq("LP-Disclosed")].copy()
     # Keep source inconsistencies visible in the database/audit page, but do
     # not let them enter verified venture rankings or benchmark cohorts.
     verified_lp = lp_full[~lp_full["verification_status"].fillna("verified-source").eq("disputed-source")].copy()
-    total_funds = len(master)
+    total_funds = len(filtered)
     post17 = verified_lp[(verified_lp["vintage_year"] >= 2017) & verified_lp["dpi"].notna()]
     drought_pct = int((post17["dpi"] < 0.5).mean() * 100) if len(post17) else 0
     top_dpi_df = verified_lp[verified_lp["dpi"].notna()].sort_values("dpi", ascending=False)
@@ -424,6 +464,23 @@ def render_insights(data: dict) -> str:
     top_dpi_gp = str(top_dpi.get("canonical_gp", "")) if top_dpi is not None else "-"
     scrape_dates = lp_full.get("scraped_date", pd.Series(dtype=object)).dropna().astype(str)
     data_as_of = clean_text(scrape_dates.max() if not scrape_dates.empty else None, "unknown")
+    stats_base = verified_lp.copy()
+    stats_base["capital_contributed"] = pd.to_numeric(stats_base.get("capital_contributed"), errors="coerce")
+    stats_base["dpi"] = pd.to_numeric(stats_base.get("dpi"), errors="coerce")
+    stats_base["tvpi"] = pd.to_numeric(stats_base.get("tvpi"), errors="coerce")
+    dpi_stats = stats_base[stats_base["dpi"].notna()]
+    tvpi_stats = stats_base[stats_base["tvpi"].notna()]
+    stats_html = f"""
+    <section class="panel"><h2>How the summary is calculated</h2>
+      <p class="muted">Fund-weighted medians describe the typical row. Capital-weighted averages show where contributed capital is concentrated. They are intentionally separate and use verified LP rows only.</p>
+      <div class="metric-grid compact">
+        <div class="metric"><span>Median DPI <span data-tooltip="Fund-weighted middle value of reported or supported DPI">ⓘ</span></span><strong>{fmt_multiple(median_or_nan(dpi_stats['dpi']))}</strong><small>n={len(dpi_stats):,}</small></div>
+        <div class="metric"><span>Capital-weighted DPI <span data-tooltip="DPI weighted by contributed capital">ⓘ</span></span><strong>{fmt_multiple(weighted_mean(stats_base, 'dpi', 'capital_contributed'))}</strong><small>contribution-weighted</small></div>
+        <div class="metric"><span>Median TVPI <span data-tooltip="Total value to paid-in capital, including residual NAV">ⓘ</span></span><strong>{fmt_multiple(median_or_nan(tvpi_stats['tvpi']))}</strong><small>n={len(tvpi_stats):,}</small></div>
+        <div class="metric"><span>DPI middle 50%</span><strong>{fmt_multiple(dpi_stats['dpi'].quantile(.25) if not dpi_stats.empty else None)}–{fmt_multiple(dpi_stats['dpi'].quantile(.75) if not dpi_stats.empty else None)}</strong><small>25th–75th percentile</small></div>
+      </div>
+    </section>
+    """
 
     by_vintage = verified_lp.dropna(subset=["vintage_year", "dpi", "tvpi"]).copy()
     by_vintage["vintage_year"] = by_vintage["vintage_year"].astype(int)
@@ -465,7 +522,8 @@ def render_insights(data: dict) -> str:
         name="Median TVPI",
         mode="lines+markers",
         line=dict(color="#111827", width=2, dash="dot"),
-        hovertemplate="Vintage %{x}<br>Median TVPI %{y:.2f}x<extra></extra>",
+        customdata=by_vintage["funds"],
+        hovertemplate="Vintage %{x}<br>Median TVPI %{y:.2f}x<br>n=%{customdata}<extra></extra>",
     ))
     fig1.update_layout(title=f"DPI drought by vintage · n={len(by_vintage):,} cohorts", xaxis_title="Vintage year", yaxis_title="Multiple")
 
@@ -487,7 +545,7 @@ def render_insights(data: dict) -> str:
     fig2 = go.Figure()
     fig2.add_trace(go.Bar(x=paper["vintage_year"].astype(str), y=paper["median_dpi"], name="Realized DPI", marker_color="#E8571F"))
     fig2.add_trace(go.Bar(x=paper["vintage_year"].astype(str), y=paper["unrealized"], name="Unrealized TVPI less DPI", marker_color="#CBD5E1"))
-    fig2.update_layout(title="Cash returned versus residual value proxy", barmode="stack", xaxis_title="Vintage year", yaxis_title="Multiple")
+    fig2.update_layout(title=f"Cash returned versus residual value proxy · n={len(paper):,} cohorts", barmode="stack", xaxis_title="Vintage year", yaxis_title="Multiple")
 
     benchmark_html = ""
     if not bench.empty and "median_dpi" in bench.columns:
@@ -515,7 +573,7 @@ def render_insights(data: dict) -> str:
                 name="Approx. CA top-quartile DPI",
                 line=dict(color="#9CA3AF", width=2, dash="dot"),
             ))
-        fig_bench.update_layout(title="LP-observed DPI versus approximate benchmark bands", xaxis_title="Vintage year", yaxis_title="DPI")
+        fig_bench.update_layout(title=f"LP-observed DPI versus approximate benchmark bands · n={len(by_vintage):,} cohorts", xaxis_title="Vintage year", yaxis_title="DPI")
         benchmark_html = f"""
         {section_intro("04 / BENCHMARK CONTEXT", "DPI against directional CA-style bands", "The benchmark dataset is approximate, but it gives a useful sense of when the observed LP-disclosed cohort is tracking below, near, or above a broad US VC realization baseline.")}
         <section class="chart">{plot_html(fig_bench)}</section>
@@ -531,7 +589,7 @@ def render_insights(data: dict) -> str:
         fig_fee.add_trace(go.Bar(x=a16z_labels, y=a16z["gross_tvpi"], name="Gross TVPI", marker_color="#CBD5E1"))
         fig_fee.add_trace(go.Bar(x=a16z_labels, y=a16z["tvpi"], name="Net TVPI", marker_color="#E8571F"))
         fig_fee.add_trace(go.Bar(x=a16z_labels, y=a16z["dpi"], name="Net DPI", marker_color="#111827"))
-        fig_fee.update_layout(title="a16z gross vs net disclosure", barmode="group", xaxis_title="", yaxis_title="Multiple")
+        fig_fee.update_layout(title=f"a16z gross vs net disclosure · n={len(a16z):,} funds", barmode="group", xaxis_title="", yaxis_title="Multiple")
         fund_three = a16z[a16z["fund_name"].astype(str).str.contains("Fund III", case=False, na=False)].head(1)
         drag_text = ""
         if not fund_three.empty:
@@ -572,7 +630,7 @@ def render_insights(data: dict) -> str:
         rows = trajectory_base[trajectory_base["canonical_gp"].eq(gp)].sort_values("vintage_year")
         fig4.add_trace(go.Scatter(x=rows["vintage_year"], y=rows["dpi"], mode="lines+markers", name=f"{gp} · DPI", hovertemplate=f"{html.escape(str(gp))}<br>Vintage %{{x}}<br>DPI %{{y:.2f}}x<extra></extra>"))
         fig4.add_trace(go.Scatter(x=rows["vintage_year"], y=rows["tvpi"], mode="lines+markers", name=f"{gp} · TVPI", line=dict(dash="dot"), hovertemplate=f"{html.escape(str(gp))}<br>Vintage %{{x}}<br>TVPI %{{y:.2f}}x<extra></extra>"))
-    fig4.update_layout(title="Manager trajectories: DPI and TVPI by fund vintage", xaxis_title="Vintage year", yaxis_title="Multiple")
+    fig4.update_layout(title=f"Manager trajectories: DPI and TVPI by fund vintage · n={len(trajectory_gps):,} managers", xaxis_title="Vintage year", yaxis_title="Multiple")
     trajectory_html = f'<section class="chart">{plot_html(fig4)}</section>' if trajectory_gps else '<section class="callout">No manager has at least three funds with both DPI and TVPI in this filtered view.</section>'
 
     incomplete = data["unified"]
@@ -590,6 +648,11 @@ def render_insights(data: dict) -> str:
             f"<tr><td>{html.escape(str(row.get('Source', '')))}</td><td>{html.escape(str(row.get('Last Updated', '')))}</td><td>{html.escape(str(row.get('Type', '')))}</td></tr>"
             for _, row in metadata.iterrows()
         )
+    observations = data.get("benchmark_observations", pd.DataFrame())
+    observations_html = "".join(
+        f"<tr><td>{html.escape(str(row.name))}</td><td>{html.escape(str(row.metric)).replace('_', ' ')}</td><td>{safe_int(row.vintage_year)}</td><td>{fmt_multiple(row.value)}</td><td>{html.escape(str(row.data_as_of))}</td><td>{html.escape(str(row.verification_status))}</td></tr>"
+        for row in observations.itertuples()
+    ) if not observations.empty else '<tr><td colspan="6">No published benchmark observations loaded.</td></tr>'
 
     return f"""
     <section class="insight-hero">
@@ -605,9 +668,14 @@ def render_insights(data: dict) -> str:
         <select name="source"><option value="LP-Disclosed" {"selected" if source_filter == "LP-Disclosed" else ""}>LP-disclosed</option><option value="all" {"selected" if source_filter == "all" else ""}>All source types</option></select>
         <select name="tier"><option value="all" {"selected" if tier_filter == "all" else ""}>All venture tiers</option><option value="core" {"selected" if tier_filter == "core" else ""}>Core</option><option value="popular" {"selected" if tier_filter == "popular" else ""}>Popular</option><option value="exceptional" {"selected" if tier_filter == "exceptional" else ""}>Exceptional</option></select>
         <select name="year"><option value="all">All vintages</option>{''.join(f'<option value="{year}" {"selected" if year_filter == str(year) else ""}>{year}</option>' for year in sorted(pd.to_numeric(master["vintage_year"], errors="coerce").dropna().astype(int).unique()))}</select>
+        <select name="sequence"><option value="all">All fund sequences</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if sequence_filter == str(value) else ""}>Fund {html.escape(str(value))}</option>' for value in sorted(filtered["fund_sequence"].dropna().astype(str).unique(), key=lambda x: int(x) if x.isdigit() else 999))}</select>
+        <select name="stage"><option value="all">All stages</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if stage_filter == str(value) else ""}>{html.escape(str(value))}</option>' for value in sorted(master["stage"].dropna().astype(str).unique()))}</select>
+        <select name="geography"><option value="all">All geographies</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if geography_filter == str(value) else ""}>{html.escape(str(value))}</option>' for value in sorted(master["geography"].dropna().astype(str).unique()))}</select>
+        <select name="size"><option value="all">All fund sizes</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if size_filter == str(value) else ""}>{html.escape(str(value))}</option>' for value in sorted(master["fund_size_band"].dropna().astype(str).unique()))}</select>
+        <select name="verification"><option value="verified-source" {"selected" if verification_filter == "verified-source" else ""}>Verified only</option><option value="all" {"selected" if verification_filter == "all" else ""}>All verification states</option><option value="disputed-source" {"selected" if verification_filter == "disputed-source" else ""}>Disputed only</option></select>
         <button type="submit">Apply view</button>
       </form>
-      <p class="muted">Filters apply to the venture universe. Verified charts exclude disputed source-basis rows; every chart is fund-weighted and cohorts with fewer than two funds are omitted.</p>
+      <p class="muted">Filters apply to the venture universe. Verified charts exclude disputed source-basis rows; every chart is fund-weighted and cohorts with fewer than two funds are omitted. Hover chart marks for source dates and sample sizes.</p>
     </section>
     <section class="metric-grid">
       <div class="metric"><span>Funds indexed</span><strong>{total_funds:,}</strong></div>
@@ -615,6 +683,7 @@ def render_insights(data: dict) -> str:
       <div class="metric"><span>Highest LP-disclosed DPI</span><strong>{fmt_multiple(top_dpi_val)}</strong><small>{html.escape(top_dpi_gp)} · {html.escape(top_dpi_fund[:42])}</small></div>
       <div class="metric"><span>Rows needing enrichment</span><strong>{incomplete_count:,}</strong></div>
     </section>
+    {stats_html}
     {section_intro("01 / DPI BY VINTAGE", "The DPI drought starts around 2017", "Pre-2015 funds have broadly returned capital. After 2016, the median fund in this dataset has returned little cash, even when TVPI still shows value on paper. Hover values include sample size; snapshot date: " + data_as_of + ".")}
     <section class="chart">{plot_html(fig1)}</section>
     <section class="pill-grid">{pill_html}</section>
@@ -629,6 +698,7 @@ def render_insights(data: dict) -> str:
     <section class="chart">{plot_html(fig2)}</section>
     <section class="callout"><strong>The key tension.</strong> Strong TVPI without DPI means LPs are sitting on paper gains that depend on exits that have not happened yet.</section>
     {benchmark_html}
+    <section class="panel"><h2>Recent published benchmark signals</h2><p class="muted">These are aggregate or manager-reported observations, not fund-level LP records. They provide context and never enter the verified leaderboard.</p><div class="table-wrap"><table><thead><tr><th>Observation</th><th>Metric</th><th>Vintage</th><th>Value</th><th>As of</th><th>Status</th></tr></thead><tbody>{observations_html}</tbody></table></div></section>
     {fee_drag_html}
     {section_intro("06 / MANAGER VARIANCE", "Same manager, different fund outcomes", "Public LP data makes it easier to compare a firm's fund-level spread instead of relying on a single brand-level reputation.")}
     <section class="chart">{plot_html(fig3)}</section>
@@ -699,6 +769,7 @@ def render_top_firms(data: dict) -> str:
           <td>{fmt_percent(getattr(row, "net_irr", None))}</td>
           <td>{html.escape(str(getattr(row, "source", "-")))}</td>
           <td>{source_badge(getattr(row, "data_source_type", "LP-Disclosed"))}</td>
+          <td>{verification_badge(getattr(row, "verification_status", "unknown"))}</td>
         </tr>
         """
         for row in gp_df.itertuples()
@@ -716,7 +787,7 @@ def render_top_firms(data: dict) -> str:
         <div class="metric"><span>Median TVPI</span><strong>{fmt_multiple(median_or_nan(meaningful["tvpi"]))}</strong></div>
       </section>
       <div class="table-wrap"><table>
-        <thead><tr><th>Fund</th><th>Vintage</th><th>Size</th><th>DPI</th><th>TVPI</th><th>Net IRR</th><th>Source</th><th>Type</th></tr></thead>
+        <thead><tr><th>Fund</th><th>Vintage</th><th>Size</th><th>DPI</th><th>TVPI</th><th>Net IRR</th><th>Source</th><th>Type</th><th>Verification</th></tr></thead>
         <tbody>{fund_rows}</tbody>
       </table></div>
     </section>
@@ -775,6 +846,7 @@ def render_fund_database(data: dict) -> str:
           <td>{fmt_percent(getattr(row, "net_irr", None))}</td>
           <td>{html.escape(clean_text(getattr(row, "source", ""), "-"))}</td>
           <td>{source_badge(getattr(row, "data_source_type", "LP-Disclosed"))}</td>
+          <td>{verification_badge(getattr(row, "verification_status", "unknown"))}</td>
         </tr>
         """
         for row in display.itertuples()
@@ -811,7 +883,7 @@ def render_fund_database(data: dict) -> str:
         <button type="submit">Apply</button>
       </form>
       <div class="table-wrap"><table>
-        <thead><tr><th>Fund</th><th>Vintage</th><th>Size / commitment</th><th>DPI</th><th>TVPI</th><th>Net IRR</th><th>Source</th><th>Type</th></tr></thead>
+        <thead><tr><th>Fund</th><th>Vintage</th><th>Size / commitment</th><th>DPI</th><th>TVPI</th><th>Net IRR</th><th>Source</th><th>Type</th><th>Verification</th></tr></thead>
         <tbody>{rows}</tbody>
       </table></div>
       {pager}
@@ -824,6 +896,7 @@ def render_sources(data: dict) -> str:
     market = data["market"]
     source_metadata = data.get("source_metadata", pd.DataFrame())
     external_benchmarks = data.get("external_benchmarks", pd.DataFrame())
+    benchmark_observations = data.get("benchmark_observations", pd.DataFrame())
     lp_rows = ""
     if not unified.empty:
         source_table = unified.groupby("source", dropna=False).agg(funds=("fund_name", "count"), latest_scrape=("scraped_date", "max")).reset_index().sort_values("funds", ascending=False)
@@ -846,6 +919,12 @@ def render_sources(data: dict) -> str:
             f"<td>{html.escape(str(row.source_type))}</td><td>{html.escape(str(row.data_as_of))}</td>"
             f"<td>{html.escape(str(row.status))}</td><td>{html.escape(str(row.notes))}</td></tr>"
             for row in external_benchmarks.itertuples()
+        )
+    observation_rows = ""
+    if not benchmark_observations.empty:
+        observation_rows = "".join(
+            f"<tr><td>{html.escape(str(row.name))}</td><td>{html.escape(str(row.source))}</td><td>{html.escape(str(row.metric)).replace('_', ' ')}</td><td>{fmt_multiple(row.value)}</td><td>{html.escape(str(row.data_as_of))}</td><td>{html.escape(str(row.verification_status))}</td></tr>"
+            for row in benchmark_observations.itertuples()
         )
     return f"""
     {page_header("SOURCES", "DATA PROVENANCE & COVERAGE TRANSPARENCY")}
@@ -877,6 +956,11 @@ def render_sources(data: dict) -> str:
       <h2>04 / Benchmark provenance</h2>
       <p>The CA benchmark file is approximate. It is synthesized from public LP annual reports, academic literature, and public quartile references. Cambridge Associates' actual benchmark data is proprietary, so these figures are directional reference bands rather than formal LP reporting values.</p>
       <div class="table-wrap"><table><thead><tr><th>External source</th><th>Type</th><th>Data as of</th><th>Status</th><th>Use</th></tr></thead><tbody>{benchmark_rows}</tbody></table></div>
+    </section>
+    <section class="panel">
+      <h2>05 / Published benchmark observations</h2>
+      <p>These observations are retained for context only. Aggregate benchmarks and manager-level claims are never treated as verified fund-level LP records.</p>
+      <div class="table-wrap"><table><thead><tr><th>Observation</th><th>Source</th><th>Metric</th><th>Value</th><th>As of</th><th>Status</th></tr></thead><tbody>{observation_rows or '<tr><td colspan="6">No observations loaded.</td></tr>'}</tbody></table></div>
     </section>
     <section class="callout">
       <strong>Data quality notes.</strong> IRR values can be non-meaningful for very young funds. DPI of 0.00x on post-2017 funds is often expected in a distribution drought. LPs may report the same fund differently because of accounting treatment and valuation dates.

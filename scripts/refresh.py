@@ -58,6 +58,41 @@ def check_external_sources(path: Path, *, timeout: int = 12) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["name", "url", "status", "http_status", "checked_at", "note"])
 
 
+def build_change_report(current: pd.DataFrame, previous: pd.DataFrame | None) -> pd.DataFrame:
+    """Return a row-level diff without mutating either snapshot."""
+    columns = ["change_type", "fund_name", "vintage_year", "source", "reporting_period", "field", "previous_value", "current_value"]
+    if previous is None or previous.empty:
+        return pd.DataFrame(columns=columns)
+    key = ["fund_name", "vintage_year", "source", "reporting_period"]
+    if not set(key).issubset(current.columns) or not set(key).issubset(previous.columns):
+        return pd.DataFrame([{"change_type": "error", "field": "canonical_key", "previous_value": "", "current_value": "missing required key columns"}], columns=columns)
+    # Normalize missing key components before indexing. Pandas NaN values do
+    # not compare equal to themselves, which would otherwise create false
+    # new/removed records on every refresh for funds without a vintage.
+    old = previous.drop_duplicates(key).copy()
+    new = current.drop_duplicates(key).copy()
+    for frame in (old, new):
+        for field in key:
+            frame[field] = frame[field].where(frame[field].notna(), "__MISSING__").astype(str)
+    old = old.set_index(key)
+    new = new.set_index(key)
+    rows = []
+    for record_key in sorted(set(new.index) - set(old.index), key=str):
+        rows.append({"change_type": "new", **dict(zip(key, record_key)), "field": "", "previous_value": "", "current_value": "record added"})
+    for record_key in sorted(set(old.index) - set(new.index), key=str):
+        rows.append({"change_type": "removed", **dict(zip(key, record_key)), "field": "", "previous_value": "record removed", "current_value": ""})
+    compare_columns = sorted((set(old.columns) & set(new.columns)) - {"retrieved_at"})
+    for record_key in sorted(set(old.index) & set(new.index), key=str):
+        before = old.loc[record_key]
+        after = new.loc[record_key]
+        for field in compare_columns:
+            left = "" if pd.isna(before[field]) else str(before[field])
+            right = "" if pd.isna(after[field]) else str(after[field])
+            if left != right:
+                rows.append({"change_type": "changed", **dict(zip(key, record_key)), "field": field, "previous_value": left, "current_value": right})
+    return pd.DataFrame(rows, columns=columns)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Prepare or approve a manual data refresh")
     parser.add_argument("command", choices=["check", "audit", "approve"])
@@ -85,12 +120,19 @@ def main() -> int:
     else:
         source_checks = check_external_sources(ROOT / "data" / "external_benchmark_sources.csv")
     source_checks.to_csv(source_report_path, index=False)
+    previous_paths = sorted(snapshot_dir.glob("unified_funds_*.csv"))
+    previous_path = previous_paths[-1] if previous_paths else None
+    previous = pd.read_csv(previous_path) if previous_path else None
+    change_report = build_change_report(current, previous)
+    change_report_path = report_dir / f"changes_{stamp}.csv"
+    change_report.to_csv(change_report_path, index=False)
 
     if args.command == "check":
         print(f"Checked {len(current):,} rows; {len(findings):,} findings")
         print(f"Report: {display_path(report_path)}")
         print(f"Checked {len(source_checks):,} configured source pages; {int(source_checks['status'].eq('ok').sum()) if not source_checks.empty else 0} reachable")
         print(f"Source report: {display_path(source_report_path)}")
+        print(f"Change report: {display_path(change_report_path)} ({len(change_report):,} changes)")
         print("No files were replaced. Use audit for the full report or approve after review.")
         source_failures = source_checks[~source_checks["status"].eq("ok")] if not source_checks.empty else source_checks
         return 1 if not findings.empty or not source_failures.empty else 0
@@ -98,6 +140,7 @@ def main() -> int:
     if args.command == "audit":
         print(f"Audit report: {report_path.relative_to(ROOT)}")
         print(f"Source report: {display_path(source_report_path)}")
+        print(f"Change report: {display_path(change_report_path)} ({len(change_report):,} changes)")
         print(findings.to_string(index=False) if not findings.empty else "No findings.")
         return 1 if not findings.empty else 0
 
