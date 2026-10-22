@@ -51,10 +51,21 @@ class DataIntegrityTests(unittest.TestCase):
 
     def test_app_routes_render(self):
         client = app.app.test_client()
-        for path in ["/healthz", "/?page=insights", "/?page=sources", "/?page=audit", "/?page=pe_comparison"]:
+        for path in ["/healthz", "/?page=about", "/?page=insights", "/?page=fund_database", "/?page=sources", "/?page=audit", "/?page=pe_comparison"]:
             with self.subTest(path=path):
                 response = client.get(path)
                 self.assertEqual(response.status_code, 200)
+
+    def test_freshness_is_exposed_without_collapsing_dates(self):
+        loaded = app.page_data()
+        self.assertEqual(set(loaded["freshness"]), {"fund_date", "context_date", "metadata_date", "check_date"})
+        self.assertNotEqual(loaded["freshness"]["fund_date"], loaded["freshness"]["check_date"])
+
+    def test_fund_database_has_identity_for_every_visible_row(self):
+        response = app.app.test_client().get("/?page=fund_database")
+        self.assertEqual(response.status_code, 200)
+        body = response.get_data(as_text=True)
+        self.assertGreaterEqual(body.count('class="logo-wrap"'), body.count("<tr>") - 1)
 
     def test_market_data_is_separate_from_master(self):
         market = app.load_market()

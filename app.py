@@ -433,20 +433,19 @@ def render_about(data: dict) -> str:
       <p class="lede">A DPI-first research tool for evaluating VC and PE fund performance using public LP disclosures, explicit source attribution, benchmark context, and a separate market-intelligence lens.</p>
     </section>
     <section class="metric-grid">
-      <div class="metric"><span>Funds in LP dataset</span><strong>{len(unified):,}</strong></div>
+      <div class="metric"><span>LP funds indexed</span><strong>{len(unified):,}</strong></div>
       <div class="metric"><span>LP sources</span><strong>{source_count:,}</strong></div>
       <div class="metric"><span>Focus firm rows</span><strong>{len(master):,}</strong></div>
-      <div class="metric"><span>Market-intel rows</span><strong>{len(market):,}</strong></div>
+      <div class="metric"><span>Context records</span><strong>{len(market):,}</strong></div>
     </section>
     <section class="freshness-panel">
       <div><span class="freshness-kicker">DATA FRESHNESS</span><strong>Not every number has the same reporting date.</strong></div>
       <div class="freshness-items"><span><b>LP fund snapshot</b>{html.escape(freshness.get('fund_date', 'unknown'))}</span><span><b>Latest benchmark context</b>{html.escape(freshness.get('context_date', 'unknown'))}</span><span><b>Source check</b>{html.escape(freshness.get('check_date', 'unknown'))}</span></div>
     </section>
-    <section class="callout"><strong>Read the date before the number.</strong> The headline fund counts and performance figures come from the LP snapshot above. Newer benchmark or manager pages are shown as context until they provide comparable, source-backed fund-level data.</section>
     <section class="panel">
       <h2>How to read this</h2>
-      <p>DPI shows how much cash has actually been returned to LPs. TVPI includes remaining unrealized value. Net IRR is useful, but it can be noisy for young funds and should be interpreted with fund age and cash distributions.</p>
-      <p>LP-disclosed rows and GP/market-intelligence rows are kept separate so you can see where each datapoint came from.</p>
+      <p><strong>DPI is cash returned.</strong> TVPI is total value, including what remains unrealized. Net IRR adds timing, but can be noisy for young funds.</p>
+      <p>The date beside a number matters: LP disclosures support the verified dataset; newer benchmark and manager records remain context until they provide comparable fund-level evidence.</p>
     </section>
     <section class="panel two-col">
       <div>
@@ -715,18 +714,18 @@ def render_insights(data: dict) -> str:
     <section class="panel">
       <form class="filters" method="get">
         <input type="hidden" name="page" value="insights">
-        <select name="strategy"><option value="Venture" {"selected" if strategy_filter == "Venture" else ""}>Venture</option><option value="PE" {"selected" if strategy_filter == "PE" else ""}>PE</option></select>
-        <select name="source"><option value="LP-Disclosed" {"selected" if source_filter == "LP-Disclosed" else ""}>LP-disclosed</option><option value="all" {"selected" if source_filter == "all" else ""}>All source types</option></select>
-        <select name="tier"><option value="all" {"selected" if tier_filter == "all" else ""}>All venture tiers</option><option value="core" {"selected" if tier_filter == "core" else ""}>Core</option><option value="popular" {"selected" if tier_filter == "popular" else ""}>Popular</option><option value="exceptional" {"selected" if tier_filter == "exceptional" else ""}>Exceptional</option></select>
-        <select name="year"><option value="all">All vintages</option>{''.join(f'<option value="{year}" {"selected" if year_filter == str(year) else ""}>{year}</option>' for year in sorted(pd.to_numeric(master["vintage_year"], errors="coerce").dropna().astype(int).unique()))}</select>
-        <select name="sequence"><option value="all">All fund sequences</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if sequence_filter == str(value) else ""}>Fund {html.escape(str(value))}</option>' for value in sorted(filtered["fund_sequence"].dropna().astype(str).unique(), key=lambda x: int(x) if x.isdigit() else 999))}</select>
-        <select name="stage"><option value="all">All stages</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if stage_filter == str(value) else ""}>{html.escape(str(value))}</option>' for value in sorted(master["stage"].dropna().astype(str).unique()))}</select>
-        <select name="geography"><option value="all">All geographies</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if geography_filter == str(value) else ""}>{html.escape(str(value))}</option>' for value in sorted(master["geography"].dropna().astype(str).unique()))}</select>
-        <select name="size"><option value="all">All fund sizes</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if size_filter == str(value) else ""}>{html.escape(str(value))}</option>' for value in sorted(master["fund_size_band"].dropna().astype(str).unique()))}</select>
-        <select name="verification"><option value="verified-source" {"selected" if verification_filter == "verified-source" else ""}>Verified only</option><option value="all" {"selected" if verification_filter == "all" else ""}>All verification states</option><option value="disputed-source" {"selected" if verification_filter == "disputed-source" else ""}>Disputed only</option></select>
+        <label class="filter-control"><span>Strategy</span><select name="strategy"><option value="Venture" {"selected" if strategy_filter == "Venture" else ""}>Venture</option><option value="PE" {"selected" if strategy_filter == "PE" else ""}>PE</option></select></label>
+        <label class="filter-control"><span>Source</span><select name="source"><option value="LP-Disclosed" {"selected" if source_filter == "LP-Disclosed" else ""}>LP-disclosed</option><option value="all" {"selected" if source_filter == "all" else ""}>All source types</option></select></label>
+        <label class="filter-control"><span>Tier</span><select name="tier"><option value="all" {"selected" if tier_filter == "all" else ""}>All venture tiers</option><option value="core" {"selected" if tier_filter == "core" else ""}>Core</option><option value="popular" {"selected" if tier_filter == "popular" else ""}>Popular</option><option value="exceptional" {"selected" if tier_filter == "exceptional" else ""}>Exceptional</option></select></label>
+        <label class="filter-control"><span>Vintage</span><select name="year"><option value="all">All vintages</option>{''.join(f'<option value="{year}" {"selected" if year_filter == str(year) else ""}>{year}</option>' for year in sorted(pd.to_numeric(master["vintage_year"], errors="coerce").dropna().astype(int).unique()))}</select></label>
+        <label class="filter-control"><span>Fund sequence</span><select name="sequence"><option value="all">All fund sequences</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if sequence_filter == str(value) else ""}>Fund {html.escape(str(value))}</option>' for value in sorted(filtered["fund_sequence"].dropna().astype(str).unique(), key=lambda x: int(x) if x.isdigit() else 999))}</select></label>
+        <label class="filter-control"><span>Stage</span><select name="stage"><option value="all">All stages</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if stage_filter == str(value) else ""}>{html.escape(str(value))}</option>' for value in sorted(master["stage"].dropna().astype(str).unique()))}</select></label>
+        <label class="filter-control"><span>Geography</span><select name="geography"><option value="all">All geographies</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if geography_filter == str(value) else ""}>{html.escape(str(value))}</option>' for value in sorted(master["geography"].dropna().astype(str).unique()))}</select></label>
+        <label class="filter-control"><span>Fund size</span><select name="size"><option value="all">All fund sizes</option>{''.join(f'<option value="{html.escape(str(value))}" {"selected" if size_filter == str(value) else ""}>{html.escape(str(value))}</option>' for value in sorted(master["fund_size_band"].dropna().astype(str).unique()))}</select></label>
+        <label class="filter-control"><span>Evidence</span><select name="verification"><option value="verified-source" {"selected" if verification_filter == "verified-source" else ""}>Verified only</option><option value="all" {"selected" if verification_filter == "all" else ""}>All verification states</option><option value="disputed-source" {"selected" if verification_filter == "disputed-source" else ""}>Disputed only</option></select></label>
         <button type="submit">Apply view</button>
       </form>
-      <p class="muted">Filters apply to the venture universe. Verified charts exclude disputed source-basis rows; every chart is fund-weighted and cohorts with fewer than two funds are omitted. Hover chart marks for source dates and sample sizes.</p>
+      <p class="muted">Start with verified LP evidence. Every chart is fund-weighted; cohorts with fewer than two funds are labelled insufficient rather than ranked. Hover marks for source dates and sample sizes.</p>
     </section>
     <section class="metric-grid">
       <div class="metric"><span>Funds indexed</span><strong>{total_funds:,}</strong></div>
@@ -738,16 +737,15 @@ def render_insights(data: dict) -> str:
     {section_intro("01 / DPI BY VINTAGE", "The DPI drought starts around 2017", "Pre-2015 funds have broadly returned capital. After 2016, the median fund in this dataset has returned little cash, even when TVPI still shows value on paper. Hover values include sample size; snapshot date: " + data_as_of + ".")}
     <section class="chart">{plot_html(fig1)}</section>
     <section class="pill-grid">{pill_html}</section>
-    <section class="callout"><strong>What this means for LPs.</strong> TVPI can look healthier than the cash reality. The 2017-2021 cohort has paper marks that may still be useful, but DPI is the number that tells you whether an LP can redeploy capital.</section>
+    <section class="callout"><strong>Read this as cash versus paper.</strong> TVPI can look healthier than the cash reality. DPI tells you whether an LP can redeploy capital; TVPI tells you what may still be realized.</section>
     {section_intro("02 / DPI LEADERBOARD", "The funds that actually sent cash back", "A DPI-first leaderboard surfaces realized outcomes rather than unrealized marks. These are not marks. They are cash distributions reported by LPs.")}
     <section class="panel leader-list">{leader_rows}</section>
     <section class="two-col callout-grid">
-      <div class="callout"><strong>Dark-horse signal.</strong> DPI-first sorting surfaces smaller or less visible managers that brand-driven narratives often miss.</div>
-      <div class="callout"><strong>Vintage pattern.</strong> The cash-return leaderboard is dominated by older vintages where realization cycles have actually had time to play out.</div>
+      <div class="callout"><strong>Use the leaderboard carefully.</strong> DPI-first sorting surfaces realized outcomes, but older vintages have had more time to distribute and should not be compared with young funds without context.</div>
     </section>
     {section_intro("03 / PAPER VS REAL", "TVPI can look healthy while DPI is still thin", "The stacked residual value proxy is TVPI less DPI. It is not direct RVPI unless both measures are reported on the same basis.")}
     <section class="chart">{plot_html(fig2)}</section>
-    <section class="callout"><strong>The key tension.</strong> Strong TVPI without DPI means LPs are sitting on paper gains that depend on exits that have not happened yet.</section>
+    <section class="callout"><strong>Residual value proxy.</strong> This is TVPI less DPI, not directly reported RVPI. It represents value that has not yet shown up as cash on the selected basis.</section>
     {benchmark_html}
     <section class="panel"><h2>Recent published benchmark signals</h2><p class="muted">These are aggregate or manager-reported observations, not fund-level LP records. They provide context and never enter the verified leaderboard.</p><div class="table-wrap"><table><thead><tr><th>Observation</th><th>Metric</th><th>Vintage</th><th>Value</th><th>As of</th><th>Status</th></tr></thead><tbody>{observations_html}</tbody></table></div></section>
     {fee_drag_html}
@@ -755,12 +753,11 @@ def render_insights(data: dict) -> str:
     <section class="chart">{plot_html(fig3)}</section>
     {trajectory_html}
     <section class="two-col callout-grid">
-      <div class="callout"><strong>Vintage timing is first-order.</strong> Picking the manager is one decision. Picking the fund cycle is another.</div>
-      <div class="callout"><strong>Selection bias watch.</strong> Market-intelligence records often skew toward strong disclosed outcomes, so they should be treated as directional rather than audited.</div>
+      <div class="callout"><strong>Compare like with like.</strong> Manager trajectories are useful only when fund sequence, vintage, strategy, and evidence type are comparable.</div>
     </section>
     {section_intro("07 / EXCEPTIONAL OUTCOMES", "Stories worth investigating", "These candidates meet the transparent exceptional-outcome rule and are still restricted to verified-source records. They are leads for source-backed reporting, not automatic claims.")}
     <section class="panel"><div class="table-wrap"><table><thead><tr><th>Fund</th><th>Vintage</th><th>DPI</th><th>TVPI</th><th>Source</th><th>Period</th></tr></thead><tbody>{stories_html}</tbody></table></div></section>
-    <section class="panel"><h2>Data freshness</h2><p class="muted">Source-level dates are shown separately from each fund’s reporting period. A stale source is not silently treated as current.</p><div class="table-wrap"><table><thead><tr><th>Source</th><th>Last updated</th><th>Type</th></tr></thead><tbody>{freshness_html}</tbody></table></div></section>
+    <section class="panel"><h2>Source freshness details</h2><p class="muted">The status bar gives the quick read. This register shows each source’s own update date and type; a stale source is never silently treated as current.</p><div class="table-wrap"><table><thead><tr><th>Source</th><th>Last updated</th><th>Type</th></tr></thead><tbody>{freshness_html}</tbody></table></div></section>
     """
 
 
@@ -1252,7 +1249,9 @@ BASE_TEMPLATE = """
     .badge { display: inline-block; border-radius: 999px; padding: 4px 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
     .badge-lp { color: #1D4ED8; background: #EFF6FF; }
     .badge-gp { color: var(--green); background: #ECFDF5; }
-    .filters { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+    .filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin: 16px 0; }
+    .filter-control { display:flex; flex-direction:column; gap:5px; min-width:145px; color:var(--muted); font:700 10px "IBM Plex Mono", monospace; letter-spacing:.06em; text-transform:uppercase; }
+    .filter-control select { width:100%; min-width:145px; text-transform:none; letter-spacing:normal; }
     input, select, button { height: 40px; border: 1px solid var(--line); border-radius: 4px; padding: 0 11px; font: inherit; background: #fff; }
     input { min-width: 260px; }
     button { background: var(--ink); color: #fff; cursor: pointer; border-color: var(--ink); font-weight: 700; }
@@ -1278,7 +1277,7 @@ BASE_TEMPLATE = """
       .freshness-items { grid-template-columns:1fr; }
       .freshness-items span { border-left:0; border-top:1px solid var(--line); padding:9px 0 0; }
       .freshness-bar a { margin-left:0; }
-      input, select, button { width: 100%; }
+      input, select, button, .filter-control, .filter-control select { width: 100%; }
     }
   </style>
 </head>
