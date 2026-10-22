@@ -60,6 +60,7 @@ class DataIntegrityTests(unittest.TestCase):
         loaded = app.page_data()
         self.assertEqual(set(loaded["freshness"]), {"fund_date", "context_date", "metadata_date", "check_date"})
         self.assertNotEqual(loaded["freshness"]["fund_date"], loaded["freshness"]["check_date"])
+        self.assertNotEqual(loaded["freshness"]["check_date"], "unknown")
 
     def test_fund_database_has_identity_for_every_visible_row(self):
         response = app.app.test_client().get("/?page=fund_database")

@@ -6,6 +6,5 @@ openlp.db
 data/raw/
 data/snapshots/
 data/audits/
-data/refresh_reports/
 tests/
 work/
