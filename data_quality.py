@@ -62,7 +62,7 @@ def strategy_from_row(row: pd.Series) -> str:
     category = _text(row.get("fund_category")).lower()
     sub = _text(row.get("sub_strategy")).lower()
     text = " ".join((category, sub, _text(row.get("investment_focus")).lower()))
-    if any(token in text for token in ("private equity", "buyout", "credit", "distress", "special situations", "pe ")):
+    if category in {"pe", "private equity", "buyout", "growth"} or any(token in text for token in ("private equity", "buyout", "credit", "distress", "special situations", "pe ")):
         return "PE"
     return "Venture"
 

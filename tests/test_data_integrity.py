@@ -56,6 +56,26 @@ class DataIntegrityTests(unittest.TestCase):
                 response = client.get(path)
                 self.assertEqual(response.status_code, 200)
 
+    def test_homepage_opens_on_about_not_a_detail_view(self):
+        response = app.app.test_client().get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("PUBLIC LP DISCLOSURE RESEARCH", response.get_data(as_text=True))
+
+    def test_pe_view_includes_growth_equity_records(self):
+        pe = app.page_data()["master"]
+        self.assertGreaterEqual(int(pe["strategy"].eq("PE").sum()), 40)
+        response = app.app.test_client().get("/?page=pe_comparison")
+        self.assertIn("PE / growth records", response.get_data(as_text=True))
+
+    def test_popular_watchlist_is_separate_from_performance_data(self):
+        watchlist = app.page_data()["popular_firms"]
+        self.assertGreaterEqual(len(watchlist), 10)
+        self.assertIn("Ribbit Capital", set(watchlist["canonical_gp"]))
+        response = app.app.test_client().get("/?page=top_firms")
+        body = response.get_data(as_text=True)
+        self.assertIn("Popular and active watchlist", body)
+        self.assertIn("not a performance ranking", body)
+
     def test_freshness_is_exposed_without_collapsing_dates(self):
         loaded = app.page_data()
         self.assertEqual(set(loaded["freshness"]), {"fund_date", "context_date", "metadata_date", "check_date"})

@@ -4,6 +4,7 @@ import math
 import html
 import os
 import re
+from functools import lru_cache
 from pathlib import Path
 from urllib.parse import quote_plus
 
@@ -310,6 +311,11 @@ def load_benchmark_observations() -> pd.DataFrame:
     return df
 
 
+def load_popular_firms() -> pd.DataFrame:
+    """Load a transparent market-watchlist; it is never performance data."""
+    return read_csv(BASE_DIR / "metadata" / "popular_venture_firms.csv")
+
+
 def freshness_summary(data: dict) -> dict:
     """Return separate freshness dates for fund data, context, and checks."""
     unified = data.get("unified", pd.DataFrame())
@@ -340,6 +346,7 @@ def freshness_summary(data: dict) -> dict:
     return {"fund_date": fund_date, "context_date": context_date, "metadata_date": metadata_date, "check_date": check_date}
 
 
+@lru_cache(maxsize=1)
 def page_data() -> dict:
     unified = load_unified()
     master = load_master()
@@ -348,6 +355,7 @@ def page_data() -> dict:
     source_metadata = load_source_metadata()
     external_benchmarks = load_external_benchmarks()
     benchmark_observations = load_benchmark_observations()
+    popular_firms = load_popular_firms()
     result = {
         "unified": unified,
         "master": master,
@@ -356,6 +364,7 @@ def page_data() -> dict:
         "source_metadata": source_metadata,
         "external_benchmarks": external_benchmarks,
         "benchmark_observations": benchmark_observations,
+        "popular_firms": popular_firms,
     }
     result["freshness"] = freshness_summary(result)
     return result
@@ -768,6 +777,8 @@ def render_top_firms(data: dict) -> str:
         return '<section class="panel"><h2>Top Firms</h2><p>No firm data found.</p></section>'
     firm = request.args.get("firm", "").strip()
     mature = master[pd.to_numeric(master.get("vintage_year"), errors="coerce") <= 2018].copy()
+    popular = data.get("popular_firms", pd.DataFrame()).copy()
+    popular_names = set(popular.get("canonical_gp", pd.Series(dtype=str)).dropna().astype(str)) if not popular.empty else set()
     table = (
         master.groupby(["canonical_gp", "gp_display_name"], dropna=True)
         .agg(
@@ -782,7 +793,8 @@ def render_top_firms(data: dict) -> str:
             data_type=("data_source_type", lambda s: " / ".join(sorted(set(s.dropna().astype(str))))),
         )
         .reset_index()
-        .sort_values(["median_dpi", "funds"], ascending=[False, False])
+        .assign(watchlist=lambda frame: frame["canonical_gp"].astype(str).isin(popular_names))
+        .sort_values(["watchlist", "funds", "mature_funds", "median_dpi"], ascending=[False, False, False, False])
     )
     selected = firm or (str(table.iloc[0]["canonical_gp"]) if not table.empty else "")
     card_rows = table.head(24)
@@ -790,7 +802,7 @@ def render_top_firms(data: dict) -> str:
         f"""
         <a class="firm-card" href="/?page=top_firms&firm={quote_plus(str(row.canonical_gp))}">
           <div class="firm-title logo-line">{logo_img(row.gp_display_name, 32)}<span>{html.escape(str(row.gp_display_name))}</span></div>
-          <div class="firm-sub">{html.escape(clean_text(row.hq, "-"))} · {html.escape(clean_text(row.data_type, "-"))}</div>
+          <div class="firm-sub">{html.escape(clean_text(row.hq, "-"))} · {"WATCHLIST" if bool(row.watchlist) else "DATA UNIVERSE"} · {html.escape(clean_text(row.data_type, "-"))}</div>
           <div class="firm-stats">
             <span><b>{fmt_multiple(row.median_dpi)}</b>DPI</span>
             <span><b>{fmt_multiple(row.median_tvpi)}</b>TVPI</span>
@@ -823,7 +835,13 @@ def render_top_firms(data: dict) -> str:
         for row in gp_df.itertuples()
     )
     return f"""
-    {page_header("TOP FIRMS", "VC & GROWTH EQUITY MANAGERS — PUBLIC LP DATA", f"{table.shape[0]:,} FIRMS TRACKED")}
+    {page_header("TOP FIRMS", "POPULAR / ACTIVE WATCHLIST + VERIFIED PERFORMANCE", f"{table.shape[0]:,} VENTURE FIRMS TRACKED")}
+    <section class="callout"><strong>Two different rankings live here.</strong> Watchlist status reflects public activity, fundraising, or market visibility—not returns and not a performance ranking. The cards and fund table show what this project can verify from disclosed fund-level data.</section>
+    <section class="panel">
+      <h2>Popular and active watchlist</h2>
+      <p class="muted">This is a discovery layer based on public market coverage and fundraising/activity signals. It is deliberately not merged into the DPI leaderboard.</p>
+      <div class="watchlist-grid">{"".join(f'<a class="watchlist-item" href="{html.escape(str(row.source_url))}" target="_blank" rel="noopener"><strong>{html.escape(str(row.display_name))}</strong><span>{html.escape(str(row.signal))}</span><small>{html.escape(str(row.basis))} · checked {html.escape(str(row.retrieved_at))}</small></a>' for row in popular.itertuples()) if not popular.empty else '<p class="muted">No watchlist records loaded.</p>'}</div>
+    </section>
     <section class="firm-grid">{cards}</section>
     <section class="panel">
       <h2 class="logo-line">{logo_img(detail_title, 34)}<span>{html.escape(detail_title)}</span></h2>
@@ -1020,20 +1038,21 @@ def render_pe_comparison(data: dict) -> str:
     pe = data["master"].copy()
     pe = pe[pe["strategy"].eq("PE")].copy()
     if pe.empty:
-        return f"{page_header('PE COMPARISON', 'SEPARATE PRIVATE-EQUITY VIEW')}<section class='panel'><p>No PE records are available.</p></section>"
+        return f"{page_header('PE COMPARISON', 'SEPARATE PRIVATE-EQUITY VIEW')}<section class='panel'><h2>PE coverage is not available yet</h2><p>Only records explicitly classified as PE or growth equity appear here. No records were loaded in the current snapshot.</p><p class='muted'>This page will not borrow venture rows just to fill the chart.</p></section>"
     by_vintage = pe.dropna(subset=["vintage_year", "dpi", "tvpi"]).groupby("vintage_year", as_index=False).agg(
         median_dpi=("dpi", "median"), median_tvpi=("tvpi", "median"), funds=("fund_name", "count")
     )
     fig = go.Figure()
     fig.add_trace(go.Bar(x=by_vintage["vintage_year"].astype(int), y=by_vintage["median_dpi"], name="Median DPI", marker_color="#E8571F", customdata=by_vintage["funds"], hovertemplate="Vintage %{x}<br>Median DPI %{y:.2f}x<br>n=%{customdata}<extra></extra>"))
     fig.add_trace(go.Scatter(x=by_vintage["vintage_year"].astype(int), y=by_vintage["median_tvpi"], name="Median TVPI", mode="lines+markers", line=dict(color="#111827", dash="dot"), hovertemplate="Vintage %{x}<br>Median TVPI %{y:.2f}x<extra></extra>"))
-    fig.update_layout(title="PE comparison: cash returned versus total value", xaxis_title="Vintage year", yaxis_title="Multiple")
+    fig.update_layout(title=f"PE and growth equity: cash returned versus total value · n={len(pe):,} records", xaxis_title="Vintage year", yaxis_title="Multiple")
+    source_rows = "".join(f"<tr><td>{html.escape(str(source))}</td><td>{int(count):,}</td></tr>" for source, count in pe["source"].value_counts().items())
     return f"""
     {page_header('PE COMPARISON', 'SEPARATE PRIVATE-EQUITY VIEW', f'{len(pe):,} RECORDS')}
-    <section class="callout"><strong>Separate lens.</strong> PE is retained for comparison but is excluded from venture headlines, venture cohorts, and venture leaderboards.</section>
-    <section class="metric-grid"><div class="metric"><span>PE records</span><strong>{len(pe):,}</strong></div><div class="metric"><span>Funds with DPI</span><strong>{int(pe['dpi'].notna().sum()):,}</strong></div><div class="metric"><span>Funds with TVPI</span><strong>{int(pe['tvpi'].notna().sum()):,}</strong></div><div class="metric"><span>Sources</span><strong>{pe['source'].nunique():,}</strong></div></section>
+    <section class="callout"><strong>Separate lens.</strong> This comparison includes explicit PE and growth-equity rows. It is excluded from venture headlines, venture cohorts, and venture leaderboards. Young growth funds with 0.00x DPI are not automatically underperformers.</section>
+    <section class="metric-grid"><div class="metric"><span>PE / growth records</span><strong>{len(pe):,}</strong></div><div class="metric"><span>Funds with DPI</span><strong>{int(pe['dpi'].notna().sum()):,}</strong></div><div class="metric"><span>Funds with TVPI</span><strong>{int(pe['tvpi'].notna().sum()):,}</strong></div><div class="metric"><span>Reporting sources</span><strong>{pe['source'].nunique():,}</strong></div></section>
     <section class="chart">{plot_html(fig)}</section>
-    <section class="panel"><h2>PE records</h2><div class="table-wrap"><table><thead><tr><th>Fund</th><th>Vintage</th><th>DPI</th><th>TVPI</th><th>IRR</th><th>Source</th></tr></thead><tbody>{''.join(f'<tr><td>{html.escape(str(row.fund_name))}</td><td>{safe_int(row.vintage_year)}</td><td>{fmt_multiple(row.dpi)}</td><td>{fmt_multiple(row.tvpi)}</td><td>{fmt_percent(row.net_irr)}</td><td>{html.escape(str(row.source))}</td></tr>' for row in pe.sort_values('dpi', ascending=False, na_position='last').itertuples())}</tbody></table></div></section>
+    <section class="panel two-col"><div><h2>PE records</h2><p class="muted">Fund-level rows retained from the normalized LP snapshot. Metrics remain as reported or are marked by their calculation method in the audit.</p><div class="table-wrap"><table><thead><tr><th>Fund</th><th>Vintage</th><th>DPI</th><th>TVPI</th><th>IRR</th><th>Source</th></tr></thead><tbody>{''.join(f'<tr><td>{html.escape(str(row.fund_name))}</td><td>{safe_int(row.vintage_year)}</td><td>{fmt_multiple(row.dpi)}</td><td>{fmt_multiple(row.tvpi)}</td><td>{fmt_percent(row.net_irr)}</td><td>{html.escape(str(row.source))}</td></tr>' for row in pe.sort_values('dpi', ascending=False, na_position='last').itertuples())}</tbody></table></div></div><div><h2>Source mix</h2><p class="muted">Coverage is still narrower than venture; this makes the source mix visible instead of implying a complete PE benchmark.</p><div class="table-wrap"><table><thead><tr><th>Source</th><th>Records</th></tr></thead><tbody>{source_rows}</tbody></table></div></div></section>
     """
 
 
@@ -1212,6 +1231,11 @@ BASE_TEMPLATE = """
     .table-logo .logo-wrap { border-radius:5px; }
     .footnote { font-family:"IBM Plex Mono", monospace; color:var(--muted); font-size:11px; line-height:1.6; padding:10px 0 18px; border-top:1px solid #F3F4F6; }
     .firm-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:14px; margin:20px 0 28px; }
+    .watchlist-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:16px; }
+    .watchlist-item { display:flex; flex-direction:column; gap:6px; border:1px solid var(--line); border-radius:4px; padding:13px; color:var(--ink); text-decoration:none; background:#fff; min-height:108px; transition-property:border-color,transform; transition-duration:.15s; }
+    .watchlist-item:hover { border-color:var(--accent); transform:translateY(-1px); }
+    .watchlist-item span { color:var(--accent); font:700 10px "IBM Plex Mono",monospace; letter-spacing:.07em; text-transform:uppercase; }
+    .watchlist-item small { color:var(--muted); line-height:1.4; margin-top:auto; }
     .firm-card { display:block; color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:4px; padding:16px; background:#fff; min-height:176px; }
     .firm-card:hover { border-color:var(--accent); }
     .firm-title { font-family:Lora, Georgia, serif; font-weight:700; font-size:22px; margin-bottom:4px; }
@@ -1263,7 +1287,7 @@ BASE_TEMPLATE = """
       header { align-items: flex-start; flex-direction: column; }
       nav { justify-content: flex-start; gap: 14px 18px; }
       .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .firm-grid, .two-col { grid-template-columns:1fr; }
+      .firm-grid, .watchlist-grid, .two-col { grid-template-columns:1fr; }
       .pill-grid { grid-template-columns:repeat(2, minmax(0,1fr)); }
       .section-intro, .source-method { grid-template-columns:1fr; gap:10px; }
       .leader-row { grid-template-columns:1fr; }
@@ -1302,7 +1326,7 @@ BASE_TEMPLATE = """
 
 @app.get("/")
 def index():
-    current_page = request.args.get("page", "fund_database")
+    current_page = request.args.get("page", "about")
     if current_page not in PAGE_RENDERERS:
         abort(404)
     data = page_data()
